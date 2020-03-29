@@ -5,9 +5,9 @@ nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105
 
 # pT4l observable
 #nohup python -u efficiencyFactors.py -l -q -b --dir="root://cmsio5.rc.ufl.edu//store/user/t2/users/klo/Higgs/HZZ4l/NTuple/Run2/MC2018_M19_Feb19_fixGENjet_bestCandLegacy/" --obsName="pT4l" --obsBins="|0|15|30|45|80|120|200|13000|"  >& effs_pT4l_2102.log &
-nohup python -u efficiencyFactors.py -l -q -b --obsName="pT4l" --obsBins="|0|10|20|30|45|80|120|200|13000|" -c "4mu" >& effs_pT4l_4mu.log &  # new binning suggested from Combination group
-nohup python -u efficiencyFactors.py -l -q -b --obsName="pT4l" --obsBins="|0|10|20|30|45|80|120|200|13000|" -c "4e" >& effs_pT4l_4e.log &  # new binning suggested from Combination group
-nohup python -u efficiencyFactors.py -l -q -b --obsName="pT4l" --obsBins="|0|10|20|30|45|80|120|200|13000|" -c "2e2mu" >& effs_pT4l_2e2mu.log &  # new binning suggested from Combination group
+nohup python -u efficiencyFactors.py -l -q -b --obsName="pT4l" --obsBins="|0|15|30|45|80|120|200|13000|" -c "4mu" >& effs_pT4l_4mu.log &  # PAS
+nohup python -u efficiencyFactors.py -l -q -b --obsName="pT4l" --obsBins="|0|15|30|45|80|120|200|13000|" -c "4e" >& effs_pT4l_4e.log &  # PAS
+nohup python -u efficiencyFactors.py -l -q -b --obsName="pT4l" --obsBins="|0|15|30|45|80|120|200|13000|" -c "2e2mu" >& effs_pT4l_2e2mu.log &  # PAS
 
 # rapdity of Higgs
 nohup python -u efficiencyFactors.py -l -q -b --obsName="rapidity4l" --obsBins="|0.0|0.15|0.3|0.6|0.9|1.2|2.5|"  -c "4mu" >& log_rapidity4l_4mu.log &
