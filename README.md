@@ -22,7 +22,7 @@ cd Fiducial_XS/FidXS_13TeV_2018_80X_preM19_newBinning_preApp
 
 voms-proxy-init -voms cms
 
-# Now set is ready for measurement
+# Now setup is ready for measurement
 
 1) sh doAllEffs_channels_PAS.sh #This macro is to compute in bins of differential variables the efficiencies, acceptance etc. and corresponding uncertainties.
 
