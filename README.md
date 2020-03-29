@@ -24,14 +24,14 @@ voms-proxy-init -voms cms
 
 # Now set is ready for measurement
 
-sh doAllEffs_channels_PAS.sh #This macro is to compute in bins of differential variables the efficiencies, acceptance etc. and corresponding uncertainties.
+1) sh doAllEffs_channels_PAS.sh #This macro is to compute in bins of differential variables the efficiencies, acceptance etc. and corresponding uncertainties.
 
-python collectInputs.py # This will combine, for specified observable(s), all channel-wise computed outputs to a single file and will store in "datacardsInputs" dirctory
+2) python collectInputs.py # This will combine, for specified observable(s), all channel-wise computed outputs to a single file and will store in "datacardsInputs" dirctory
 
-sh doAll2DEff_PAS.sh # Will produce 2D plots to see migrated events in reconstruction bins for differential variables
+3) sh doAll2DEff_PAS.sh # Will produce 2D plots to see migrated events in reconstruction bins for differential variables
 
-sh doAllTemplates_PAS.sh # This macro is to compute in bins of differential variables the background templates
+4) sh doAllTemplates_PAS.sh # This macro is to compute in bins of differential variables the background templates
 
-sh doAllUnc_PAS.sh # This macro is to compute in bins of differential variables the theoretical predictions and uncertainties
+5) sh doAllUnc_PAS.sh # This macro is to compute in bins of differential variables the theoretical predictions and uncertainties
 
-sh doAllObs_PAS.sh # This macro will use ingredients produced as outputs of previous steps to give final differential plots.
+6) sh doAllObs_PAS.sh # This macro will use ingredients produced as outputs of previous steps to give final differential plots.
