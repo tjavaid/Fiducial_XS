@@ -1,0 +1,28 @@
+Combination of hzz4l_4muS_13TeV_xs_mass4l_bin0_v2.txt
+imax 1 number of bins
+jmax 5 number of processes minus 1
+kmax 13 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *    ch1  hzz4l_4muS_13TeV_xs_SMdn_125_mass4l_v2.Databin0.root w:$PROCESS
+----------------------------------------------------------------------------------------------------------------------------------
+bin          ch1        
+observation  59.0       
+----------------------------------------------------------------------------------------------------------------------------------
+bin                                    ch1           ch1           ch1           ch1           ch1           ch1         
+process                                trueH4muBin0  bkg_zjets     bkg_ggzz      fakeH         out_trueH     bkg_qqzz    
+process                                0             1             2             3             4             5           
+rate                                   1.0000        17.2210       3.9344        1.0000        1.0000        39.0042     
+----------------------------------------------------------------------------------------------------------------------------------
+CMS_eff_m               lnN            0.953/1.046   -             0.953/1.046   0.953/1.046   0.953/1.046   0.953/1.046 
+CMS_hzz4mu_Zjets        lnN            -             1.080/0.925   -             -             -             -           
+CMS_zjets_bkgdcompo     lnN            -             1.35          -             -             -             -           
+QCDscale_VV             lnN            -             -             -             -             -             1.035/0.958 
+QCDscale_ggVV           lnN            -             -             1.039/0.961   -             -             -           
+kfactor_ggzz            lnN            -             -             1.1           -             -             -           
+lumi_13TeV              lnN            1.025         -             1.025         1.025         1.025         1.025       
+norm_fakeH              lnU            -             -             -             10.0          -             -           
+pdf_gg                  lnN            -             -             1.032/0.968   -             -             -           
+pdf_qqbar               lnN            -             -             -             -             -             1.031/0.966 
+CMS_zz4l_sigma_m_sig  param  0.0 0.2
+CMS_zz4l_n_sig_1_8  param  0.0 0.01
+CMS_zz4l_mean_m_sig  param  0.0 1.0

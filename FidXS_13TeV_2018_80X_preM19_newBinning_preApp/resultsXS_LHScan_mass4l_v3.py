@@ -1,0 +1,1 @@
+resultsXS = {'SM_125_mass4l_genbin0': {'uncerDn': -0.391984, 'uncerUp': 0.432616, 'central': 2.7690839767456055}, 'SM_125_mass4l_genbin0_statOnly': {'uncerDn': -0.329284, 'uncerUp': 0.352266, 'central': 2.7690839767456055}} 

@@ -1,0 +1,850 @@
+nohup: ignoring input
+[?1034hTClass::Init:0: RuntimeWarning: no dictionary for class ROOT::TIOFeatures is available
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 nevents 977600.0 sumw 977600.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 nevents 847600.0 sumw 847600.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 nevents 494000.0 sumw 494000.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 nevents 6689900.0 sumw 6622242.0
+data_13TeV_2017_duplicated_removed nevents 0.0 sumw 0.0
+results for observable==== mass4l and channel===== 4mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4mu mass4l 105 - 140 GeV
+EventCat== -1
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 38.0329665095
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 85.0
+
+ZZ Bkg:   41.8910241543
+ggZZ Bkg:   3.85805764479
+qqZZ Bkg:   38.0329665095
+Red Bkg:   12.8790159822
+Data  :   85.0
+
+==========================================
+
+results for observable==== mass4l and channel===== 4e  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4e mass4l 105 - 140 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 14.7674388388
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 26.0
+
+ZZ Bkg:   16.4732702725
+ggZZ Bkg:   1.70583143376
+qqZZ Bkg:   14.7674388388
+Red Bkg:   5.4391579628
+Data  :   26.0
+
+==========================================
+
+results for observable==== mass4l and channel===== 2e2mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+2e2mu mass4l 105 - 140 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 45.0323131973
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 86.0
+
+ZZ Bkg:   47.7980901364
+ggZZ Bkg:   2.76577693912
+qqZZ Bkg:   45.0323131973
+Red Bkg:   19.5657358468
+Data  :   86.0
+
+==========================================
+
+results for observable==== mass4l and channel===== 4l  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4l mass4l 105 - 140 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 97.8327185456
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 197.0
+
+ZZ Bkg:   106.162384563
+ggZZ Bkg:   8.32966601767
+qqZZ Bkg:   97.8327185456
+Red Bkg:   36.3671559095
+Data  :   197.0
+
+==========================================
+
+results for observable==== pT4l and channel===== 4mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4mu pT4l 0 - 13000 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: red_bkg (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 38.0329665095
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 85.0
+
+ZZ Bkg:   41.8910241543
+ggZZ Bkg:   3.85805764479
+qqZZ Bkg:   38.0329665095
+Red Bkg:   34.4000000721
+Data  :   85.0
+
+==========================================
+
+results for observable==== pT4l and channel===== 4e  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4e pT4l 0 - 13000 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 14.7674388388
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 26.0
+
+ZZ Bkg:   16.4732702725
+ggZZ Bkg:   1.70583143376
+qqZZ Bkg:   14.7674388388
+Red Bkg:   21.0999999768
+Data  :   26.0
+
+==========================================
+
+results for observable==== pT4l and channel===== 2e2mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+2e2mu pT4l 0 - 13000 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 45.0323131973
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 86.0
+
+ZZ Bkg:   47.7980901364
+ggZZ Bkg:   2.76577693912
+qqZZ Bkg:   45.0323131973
+Red Bkg:   59.8999998961
+Data  :   86.0
+
+==========================================
+
+results for observable==== pT4l and channel===== 4l  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4l pT4l 0 - 13000 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 97.8327185456
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 197.0
+
+ZZ Bkg:   106.162384563
+ggZZ Bkg:   8.32966601767
+qqZZ Bkg:   97.8327185456
+Red Bkg:   115.39999968
+Data  :   197.0
+
+==========================================
+
+results for observable==== njets_pt30_eta2p5 and channel===== 4mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4mu njets_pt30_eta2p5 0.0 - 10.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 38.0329665095
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 85.0
+Error in <TH1D::FillRandom>: Integral = zero
+
+ZZ Bkg:   41.8910241543
+ggZZ Bkg:   3.85805764479
+qqZZ Bkg:   38.0329665095
+Red Bkg:   0.0
+Data  :   85.0
+
+==========================================
+
+results for observable==== njets_pt30_eta2p5 and channel===== 4e  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4e njets_pt30_eta2p5 0.0 - 10.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 14.7674388388
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 26.0
+
+ZZ Bkg:   16.4732702725
+ggZZ Bkg:   1.70583143376
+qqZZ Bkg:   14.7674388388
+Red Bkg:   0.0
+Data  :   26.0
+
+==========================================
+
+results for observable==== njets_pt30_eta2p5 and channel===== 2e2mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+2e2mu njets_pt30_eta2p5 0.0 - 10.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 45.0323131973
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 86.0
+
+ZZ Bkg:   47.7980901364
+ggZZ Bkg:   2.76577693912
+qqZZ Bkg:   45.0323131973
+Red Bkg:   0.0
+Data  :   86.0
+
+==========================================
+
+results for observable==== njets_pt30_eta2p5 and channel===== 4l  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4l njets_pt30_eta2p5 0.0 - 10.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 97.8327185456
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 197.0
+
+ZZ Bkg:   106.162384563
+ggZZ Bkg:   8.32966601767
+qqZZ Bkg:   97.8327185456
+Red Bkg:   0.0
+Data  :   197.0
+
+==========================================
+
+results for observable==== pt_leadingjet_pt30_eta2p5 and channel===== 4mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4mu pt_leadingjet_pt30_eta2p5 -2.0 - 13000.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 38.0329665095
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 85.0
+
+ZZ Bkg:   41.8910241543
+ggZZ Bkg:   3.85805764479
+qqZZ Bkg:   38.0329665095
+Red Bkg:   34.399999887
+Data  :   85.0
+
+==========================================
+
+results for observable==== pt_leadingjet_pt30_eta2p5 and channel===== 4e  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4e pt_leadingjet_pt30_eta2p5 -2.0 - 13000.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 14.7674388388
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 26.0
+
+ZZ Bkg:   16.4732702725
+ggZZ Bkg:   1.70583143376
+qqZZ Bkg:   14.7674388388
+Red Bkg:   21.1000000402
+Data  :   26.0
+
+==========================================
+
+results for observable==== pt_leadingjet_pt30_eta2p5 and channel===== 2e2mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+2e2mu pt_leadingjet_pt30_eta2p5 -2.0 - 13000.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 45.0323131973
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 86.0
+
+ZZ Bkg:   47.7980901364
+ggZZ Bkg:   2.76577693912
+qqZZ Bkg:   45.0323131973
+Red Bkg:   59.9000000084
+Data  :   86.0
+
+==========================================
+
+results for observable==== pt_leadingjet_pt30_eta2p5 and channel===== 4l  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4l pt_leadingjet_pt30_eta2p5 -2.0 - 13000.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 97.8327185456
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 197.0
+
+ZZ Bkg:   106.162384563
+ggZZ Bkg:   8.32966601767
+qqZZ Bkg:   97.8327185456
+Red Bkg:   115.399999915
+Data  :   197.0
+
+==========================================
+
+results for observable==== rapidity4l and channel===== 4mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4mu rapidity4l 0 - 2.5 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 1.94898762721
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 19.4974074325
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 39.0
+Error in <TH1D::FillRandom>: Integral = zero
+
+ZZ Bkg:   21.4463950598
+ggZZ Bkg:   1.94898762721
+qqZZ Bkg:   19.4974074325
+Red Bkg:   0.0
+Data  :   39.0
+
+==========================================
+
+results for observable==== rapidity4l and channel===== 4e  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4e rapidity4l 0 - 2.5 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.840778721044
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 7.25855377575
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 15.0
+
+ZZ Bkg:   8.0993324968
+ggZZ Bkg:   0.840778721044
+qqZZ Bkg:   7.25855377575
+Red Bkg:   0.0
+Data  :   15.0
+
+==========================================
+
+results for observable==== rapidity4l and channel===== 2e2mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+2e2mu rapidity4l 0 - 2.5 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 1.38423291039
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 21.9712281213
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 53.0
+
+ZZ Bkg:   23.3554610317
+ggZZ Bkg:   1.38423291039
+qqZZ Bkg:   21.9712281213
+Red Bkg:   0.0
+Data  :   53.0
+
+==========================================
+
+results for observable==== rapidity4l and channel===== 4l  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4l rapidity4l 0 - 2.5 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.840778721044
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 1.94898762721
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 1.38423291039
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 48.7271893296
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 107.0
+
+ZZ Bkg:   52.9011885883
+ggZZ Bkg:   4.17399925865
+qqZZ Bkg:   48.7271893296
+Red Bkg:   0.0
+Data  :   107.0
+
+==========================================
+
+results for observable==== njets_pt30_eta4p7 and channel===== 4mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4mu njets_pt30_eta4p7 0.0 - 10.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 38.0329665095
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 85.0
+Error in <TH1D::FillRandom>: Integral = zero
+
+ZZ Bkg:   41.8910241543
+ggZZ Bkg:   3.85805764479
+qqZZ Bkg:   38.0329665095
+Red Bkg:   0.0
+Data  :   85.0
+
+==========================================
+
+results for observable==== njets_pt30_eta4p7 and channel===== 4e  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4e njets_pt30_eta4p7 0.0 - 10.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 14.7674388388
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 26.0
+
+ZZ Bkg:   16.4732702725
+ggZZ Bkg:   1.70583143376
+qqZZ Bkg:   14.7674388388
+Red Bkg:   0.0
+Data  :   26.0
+
+==========================================
+
+results for observable==== njets_pt30_eta4p7 and channel===== 2e2mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+2e2mu njets_pt30_eta4p7 0.0 - 10.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 45.0323131973
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 86.0
+
+ZZ Bkg:   47.7980901364
+ggZZ Bkg:   2.76577693912
+qqZZ Bkg:   45.0323131973
+Red Bkg:   0.0
+Data  :   86.0
+
+==========================================
+
+results for observable==== njets_pt30_eta4p7 and channel===== 4l  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4l njets_pt30_eta4p7 0.0 - 10.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 97.8327185456
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 197.0
+
+ZZ Bkg:   106.162384563
+ggZZ Bkg:   8.32966601767
+qqZZ Bkg:   97.8327185456
+Red Bkg:   0.0
+Data  :   197.0
+
+==========================================
+
+results for observable==== pt_leadingjet_pt30_eta4p7 and channel===== 4mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4mu pt_leadingjet_pt30_eta4p7 -2.0 - 13000.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 38.0329665095
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 85.0
+
+ZZ Bkg:   41.8910241543
+ggZZ Bkg:   3.85805764479
+qqZZ Bkg:   38.0329665095
+Red Bkg:   34.3999999055
+Data  :   85.0
+
+==========================================
+
+results for observable==== pt_leadingjet_pt30_eta4p7 and channel===== 4e  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4e pt_leadingjet_pt30_eta4p7 -2.0 - 13000.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 0.0
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 14.7674388388
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 26.0
+
+ZZ Bkg:   16.4732702725
+ggZZ Bkg:   1.70583143376
+qqZZ Bkg:   14.7674388388
+Red Bkg:   21.0999999887
+Data  :   26.0
+
+==========================================
+
+results for observable==== pt_leadingjet_pt30_eta4p7 and channel===== 2e2mu  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+2e2mu pt_leadingjet_pt30_eta4p7 -2.0 - 13000.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 0.0
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 45.0323131973
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 86.0
+
+ZZ Bkg:   47.7980901364
+ggZZ Bkg:   2.76577693912
+qqZZ Bkg:   45.0323131973
+Red Bkg:   59.8999999642
+Data  :   86.0
+
+==========================================
+
+results for observable==== pt_leadingjet_pt30_eta4p7 and channel===== 4l  +++++++++++++++++++++++++++++++++++++++++ 
+
+==========================================
+4l pt_leadingjet_pt30_eta4p7 -2.0 - 13000.0 GeV
+EventCat== -1
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: qqzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: ggzz (Potential memory leak).
+TFile::Append:0: RuntimeWarning: Replacing existing TH1: sig (Potential memory leak).
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/977600.0)*(k_ggZZ)
+GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8 ======== 1.70583143376
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/847600.0)*(k_ggZZ)
+GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8 ======== 3.85805764479
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8
+ggZZ weight is=================== (genWeight*crossSection*dataMCWeight*pileupWeight*58800.0/494000.0)*(k_ggZZ)
+GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8 ======== 2.76577693912
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8
+ZZTo4L_TuneCP5_13TeV_powheg_pythia8 ======== 97.8327185456
+data_13TeV_2017_duplicated_removed
+data_13TeV_2017_duplicated_removed ======== 197.0
+
+ZZ Bkg:   106.162384563
+ggZZ Bkg:   8.32966601767
+qqZZ Bkg:   97.8327185456
+Red Bkg:   115.400000292
+Data  :   197.0
+
+==========================================
+
+===========================================================================================
+all observables and channels compiled

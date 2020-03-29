@@ -1,0 +1,7 @@
+nohup: ignoring input
+[?1034hTraceback (most recent call last):
+  File "runHZZFiducialXS.py", line 17, in <module>
+    from sample_shortnames_bkg import *
+  File "/cvmfs/cms.cern.ch/slc6_amd64_gcc491/lcg/root/6.02.00-odfocd5/lib/ROOT.py", line 353, in _importhook
+    return _orig_ihook( name, glbls, lcls, fromlist, level )
+ImportError: No module named sample_shortnames_bkg

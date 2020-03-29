@@ -1,0 +1,37 @@
+nohup: ignoring input
+argc 12 argv[11] 0
+[preparing 2D XS templates, process: qqZZ, sqrts: 13TeV, fstate: 4l][DTreeXS][105 < m4l < 140]
+fitType: none templatesXS using refit? 0
+     [qqZZ,      3][GEN: 6.66919e+06, passed:   4386][GEN-final-eff: 0.000657651]
+[Observable tag: mass4l_105.0_140.0]
+[Tree and templates saved in: templatesXS/DTreeXS_mass4l/13TeV/]
+[Bin fraction: 1][end fraction]
+     [qqZZ,      2][GEN: 6.66919e+06, passed:   1646][GEN-final-eff: 0.000246807]
+[Observable tag: mass4l_105.0_140.0]
+[Tree and templates saved in: templatesXS/DTreeXS_mass4l/13TeV/]
+[Bin fraction: 1][end fraction]
+     [qqZZ,      1][GEN: 6.66919e+06, passed:   3630][GEN-final-eff: 0.000544294]
+[Observable tag: mass4l_105.0_140.0]
+[Tree and templates saved in: templatesXS/DTreeXS_mass4l/13TeV/]
+[Bin fraction: 1][end fraction]
+argc 12 argv[11] 0
+[preparing 2D XS templates, process: ggZZ, sqrts: 13TeV, fstate: 4e][DTreeXS][105 < m4l < 140]
+fitType: none templatesXS using refit? 0
+     [ggZZ,      2][GEN: 977000, passed:   9616][GEN-final-eff: 0.00984237]
+[Observable tag: mass4l_105.0_140.0]
+[Tree and templates saved in: templatesXS/DTreeXS_mass4l/13TeV/]
+[Bin fraction: 1][end fraction]
+argc 12 argv[11] 0
+[preparing 2D XS templates, process: ggZZ, sqrts: 13TeV, fstate: 4mu][DTreeXS][105 < m4l < 140]
+fitType: none templatesXS using refit? 0
+     [ggZZ,      1][GEN: 418000, passed:   8286][GEN-final-eff: 0.019823]
+[Observable tag: mass4l_105.0_140.0]
+[Tree and templates saved in: templatesXS/DTreeXS_mass4l/13TeV/]
+[Bin fraction: 1][end fraction]
+argc 12 argv[11] 0
+[preparing 2D XS templates, process: ggZZ, sqrts: 13TeV, fstate: 2e2mu][DTreeXS][105 < m4l < 140]
+fitType: none templatesXS using refit? 0
+     [ggZZ,      3][GEN: 1.4784e+06, passed:  11216][GEN-final-eff: 0.00758658]
+[Observable tag: mass4l_105.0_140.0]
+[Tree and templates saved in: templatesXS/DTreeXS_mass4l/13TeV/]
+[Bin fraction: 1][end fraction]
