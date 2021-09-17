@@ -132,7 +132,10 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins):
     sZZname2e2mu = 'ZZTo2e2mu_powheg'; sZZname4mu = 'ZZTo4mu_powheg'; sZZname4e = 'ZZTo4e_powheg'
     if (opt.doZ4l):
         sZZname2e2mu = 'ZZTo2e2mu_powheg_tchan'; sZZname4mu = 'ZZTo4mu_powheg_tchan'; sZZname4e = 'ZZTo4e_powheg_tchan'
-    bkg_sample_tags = [sZZname2e2mu, sZZname4e, sZZname4mu,'ggZZ_2e2mu_MCFM67', 'ggZZ_4e_MCFM67', 'ggZZ_4mu_MCFM67', 'ZX4l_CR']
+    bkg_sample_tags = ['ggZZ_2e2mu_MCFM67', 'ggZZ_4e_MCFM67', 'ggZZ_4mu_MCFM67',sZZname2e2mu, sZZname4e, sZZname4mu,'ZX4l_CR']
+    #bkg_sample_tags = [sZZname2e2mu, sZZname4e, sZZname4mu,'ggZZ_2e2mu_MCFM67', 'ggZZ_4e_MCFM67', 'ggZZ_4mu_MCFM67', 'ZX4l_CR']
+#    bkg_sample_tags = ['ZX4l_CR', sZZname2e2mu, sZZname4e, sZZname4mu,'ggZZ_2e2mu_MCFM67', 'ggZZ_4e_MCFM67', 'ggZZ_4mu_MCFM67']
+    #bkg_sample_tags = ['ZX4l_CR'] #, sZZname2e2mu, sZZname4e, sZZname4mu,'ggZZ_2e2mu_MCFM67', 'ggZZ_4e_MCFM67', 'ggZZ_4mu_MCFM67']
     bkg_samples_shorttags = {sZZname2e2mu:'qqZZ', sZZname4e:'qqZZ', sZZname4mu:'qqZZ', 'ggZZ_2e2mu_MCFM67':'ggZZ', 'ggZZ_4e_MCFM67':'ggZZ', 'ggZZ_4mu_MCFM67':'ggZZ', 'ZX4l_CR':'ZJetsCR'}
     bkg_samples_fStates = {sZZname2e2mu:'2e2mu', sZZname4e:'4e', sZZname4mu:'4mu', 'ggZZ_2e2mu_MCFM67':'2e2mu', 'ggZZ_4e_MCFM67':'4e', 'ggZZ_4mu_MCFM67':'4mu', 'ZX4l_CR':'AllChans'}
 
@@ -140,7 +143,9 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins):
         tmpObsName = obsName
         tmpSrcDir = opt.SOURCEDIR
         if (sample_tag=='ZX4l_CR'):
-            tmpSrcDir = '/raid/raid5/dsperka/Run2/HZZ4l/SubmitArea_13TeV/Ana_ZZ4L_80X/'
+            tmpSrcDir ='root://cmsio5.rc.ufl.edu//store/user/t2/users/ferrico/Qianying/2018/DATA/'  #Qianying   2018, Paper
+	if (sample_tag==sZZname2e2mu or sample_tag==sZZname4e or sample_tag==sZZname4mu):
+	    tmpSrcDir = 'root://cmsio5.rc.ufl.edu//store/user/qguo/raid/fiducial/ntuple_2018/'
         fitTypeZ4l = [['none','doRatio'],['doZ4l','doZ4l']][opt.doZ4l][opt.doRatio]
         cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+tmpObsName+' "'+opt.OBSBINS+'" "'+opt.OBSBINS+'" 13TeV templatesXS DTreeXS ' + fitTypeZ4l+ ' 0'
         print cmd
@@ -185,11 +190,17 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel):
     for fState in fStates:
         if (not obsName.startswith("mass4l")):
             for obsBin in range(nBins-1):
-                # first bool = cfactor second bool = add fake H
+                # first bool = cfactor second bool = add fake H               #
                 ndata = createXSworkspace(obsName,fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel)
+                if ((nBins-1)==7):
+                    os.system("cp xs_125.0_7bins/hzz4l_"+fState+"S_13TeV_xs_bin"+str(obsBin)+".txt xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
+                if ((nBins-1)==6):
+                    os.system("cp xs_125.0_6bins/hzz4l_"+fState+"S_13TeV_xs_bin"+str(obsBin)+".txt xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
+
                 if ((nBins-1)==5):
                     os.system("cp xs_125.0_5bins/hzz4l_"+fState+"S_13TeV_xs_bin"+str(obsBin)+".txt xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
-                else:
+
+                if ((nBins-1)==4):
                     os.system("cp xs_125.0_4bins/hzz4l_"+fState+"S_13TeV_xs_bin"+str(obsBin)+".txt xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")    
                 os.system("sed -i 's~observation [0-9]*~observation "+str(ndata)+"~g' xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
                 os.system("sed -i 's~_xs.Databin"+str(obsBin)+"~_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+"~g' xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
@@ -434,7 +445,7 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
             if (opt.FIXMASS=="False"):
                 processCmd('cp higgsCombine'+obsName+'.MultiDimFit.mH125.root '+modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root',1)
             else:
-                processCmd('cp higgsCombine'+obsName+'.MultiDimFit.mH'+opt.FIXMASS.repalce('.0.root','.root')+'.root '+modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root',1)
+                processCmd('cp higgsCombine'+obsName+'.MultiDimFit.mH'+opt.FIXMASS.replace('.0.root','.root')+'.root '+modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root',1)
             cmd = cmd + ' --algo=singles --cl=0.68 --robustFit=1'
             print cmd
             output=processCmd(cmd)
@@ -706,13 +717,13 @@ def runFiducialXS():
                 print "resultsXS: \n", resultsXS
                 # plot the fit results
                 if (not obsName.startswith("mass4l")):
-                    cmd = 'python plotAsimov_simultaneous.py -l -q -b --obsName="'+obsName+'" --obsBins="'+opt.OBSBINS+'" --asimovModel="'+asimovDataModelName+'" --unfoldModel="'+modelName+'"'
+                    cmd = 'python plotAsimov_simultaneous.py -l -q -b --obsName="'+obsName+'" --obsBins="'+opt.OBSBINS+'" --asimovModel="'+asimovDataModelName+'" --unfoldModel="'+modelName+'"'# +' --lumiscale=str(opt.LUMISCALE)'
                     if (opt.UNBLIND): cmd = cmd + ' --unblind'
                     print cmd
                     output = processCmd(cmd)
                     print output                                                
                 elif (physicalModel=="v2"):
-                    cmd = 'python plotAsimov_inclusive.py -l -q -b --obsName="'+obsName+'" --obsBins="'+opt.OBSBINS+'" --asimovModel="'+asimovDataModelName+'" --unfoldModel="'+modelName+'"'            
+                    cmd = 'python plotAsimov_inclusive.py -l -q -b --obsName="'+obsName+'" --obsBins="'+opt.OBSBINS+'" --asimovModel="'+asimovDataModelName+'" --unfoldModel="'+modelName+'"' #+' --lumiscale=str(opt.LUMISCALE)'            
                     if (opt.UNBLIND): cmd = cmd + ' --unblind'
                     print cmd
                     output = processCmd(cmd)
@@ -751,28 +762,35 @@ def runFiducialXS():
             cmd = './doLScan_ptjet1.sh'
         if (obsName=="pt_leadingjet_pt30_eta2p5"):
             cmd = './doLScan_ptjet12p5.sh'
-
+        if (obsName=="rapidity4l"):
+            cmd = './doLScan_rapidity4l.sh' 
+	if (obsName=="cosThetaStar"):
+            cmd = './doLScan_cosThetaStar.sh'
+	if (obsName=="massZ2"):
+            cmd = './doLScan_massZ2.sh'
+        if (obsName=="massZ1"):
+            cmd = './doLScan_massZ1.sh'
         output = processCmd(cmd)
         
         cmd = 'python plotLHScans.py -l -q -b --obsName='+obsName
         output = processCmd(cmd)
-
         for modelName in modelNames:
 
             if (not opt.FIXMASS=="False"):
                 cmd = 'python producePlots.py -l -q -b --obsName="'+obsName+'" --obsBins="'+opt.OBSBINS+'" --unfoldModel="'+modelName+'" --theoryMass="'+opt.FIXMASS+'"'
             else:
-                cmd = 'python producePlots.py -l -q -b --obsName="'+obsName+'" --obsBins="'+opt.OBSBINS+'" --unfoldModel="'+modelName+'" --theoryMass="125.0"'    
+                cmd = 'python producePlots.py -l -q -b --obsName="'+obsName+'" --obsBins="'+opt.OBSBINS+'" --unfoldModel="'+modelName+'" --theoryMass="125.0"'
             if (opt.FIXFRAC): cmd = cmd + ' --fixFrac'
             if (opt.UNBLIND): cmd = cmd + ' --unblind'
-            print cmd   
-            output = processCmd(cmd)  
-            print output  
+            print cmd
+            output = processCmd(cmd)
+            print output
             cmd = cmd + ' --setLog'
-            print cmd   
-            output = processCmd(cmd)  
-            print output  
+            print cmd
+            output = processCmd(cmd)
+            print output
 
         
 if __name__ == "__main__":   
     runFiducialXS()  
+print "all modules successfully compiled"

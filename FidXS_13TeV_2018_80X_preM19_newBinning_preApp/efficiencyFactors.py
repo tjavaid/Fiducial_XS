@@ -45,7 +45,47 @@ if (not os.path.exists("plots") and doPlots):
     os.system("mkdir plots")
 
 from ROOT import *
-from LoadData import *
+#from LoadData import *
+# start LoadData
+dirMC_94 = '/eos/cms/store/group/phys_muon/TagAndProbe/HZZ4L/2018/'
+print "samples directory: ", dirMC_94
+SamplesMC_94 = [
+'GluGluHToZZTo4L_M124_2018_newMuonSF_th1f_all.root',
+'GluGluHToZZTo4L_M125_2018_newMuonSF_all.root',
+'GluGluHToZZTo4L_M126_2018_newMuonSF_th1f_all.root',
+'VBF_HToZZTo4L_M125_2018_newMuonSF_all.root',
+'WH_HToZZTo4L_M125_2018_newMuonSF_all.root',
+'ZH_HToZZ_4LFilter_M125_2018_newMuonSF_all.root',
+]
+RootFile = {}
+Tree = {}
+nEvents = {}
+sumw = {}
+for i in range(0,len(SamplesMC_94)):
+    sample = SamplesMC_94[i].rstrip('.root')
+    if ("NNLOPS" in sample):
+        RootFile[sample] = TFile(dirMC_94_1+'/'+sample+'.root',"READ")
+        Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
+
+    else:
+        RootFile[sample] = TFile.Open(dirMC_94+'/'+sample+'.root',"READ")
+	Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
+    h_nevents = RootFile[sample].Get("Ana/nEvents")
+    h_sumw = RootFile[sample].Get("Ana/sumWeights")
+
+    if (h_nevents): nEvents[sample] = h_nevents.Integral()
+    else: nEvents[sample] = 0.
+
+    if (h_sumw): sumw[sample] = h_sumw.Integral()
+    else: sumw[sample] = 0.
+
+    if (not Tree[sample]): print sample+' has no passedEvents tree'
+    else:
+        print sample,"nevents",nEvents[sample],"sumw",sumw[sample]
+
+# end, LoadData
+
+
 #LoadData(opt.SOURCEDIR)
 save = ""
 
@@ -91,10 +131,12 @@ dfolding = {}
 
 def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, genbin):    
     gSystem.AddIncludePath("-I$CMSSW_BASE/src/ ");
+    #gSystem.Load("$CMSSW_BASE/lib/slc7_amd64_gcc530/libHiggsAnalysisCombinedLimit.so");
     gSystem.Load("$CMSSW_BASE/lib/slc6_amd64_gcc491/libHiggsAnalysisCombinedLimit.so");
     gSystem.AddIncludePath("-I$ROOFITSYS/include");
     
-    recoweight = "genWeight*pileupWeight*dataMCWeight"
+    #recoweight = "genWeight*pileupWeight*dataMCWeight"
+    recoweight = "genWeight*pileupWeight*dataMCWeight_new"
     #recoweight = "genWeight"
     #recoweight = "totalWeight"
     #recoweight = "1.0"

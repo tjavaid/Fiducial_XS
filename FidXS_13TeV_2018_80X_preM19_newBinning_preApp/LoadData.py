@@ -18,7 +18,8 @@ import os
 #dirMC_94 = '/store/user/t2/users/klo/Higgs/HZZ4l/NTuple/Run2/MC2018_M19_Feb19_fixGENjet_bestCandLegacy/'    # copied MC samples from Lucien to local
 #dirMC_94 = '/store/user/t2/users/klo/Higgs/HZZ4l/NTuple/Run2/MC2018_M19_Feb28_NewSF_2017Jets_bestCandLegacy/'    # David included new SFs 01.03.2019
 #dirMC_94 = '/store/user/t2/users/rosedj1/Higgs/HZZ4l/NTuple/Run2/MC2018_M19_Mar5_3l_2018Jets_bestCandLegacy/'    # David included 2018 jet corr. 
-dirMC_94 = '/store/user/t2/users/rosedj1/Higgs/HZZ4l/NTuple/Run2/MC2018_M19_Mar12_4l_2018Jets_JER_bestCandLegacy/'    # David included 2018 JER arrived 
+#dirMC_94 = '/store/user/t2/users/rosedj1/Higgs/HZZ4l/NTuple/Run2/MC2018_M19_Mar12_4l_2018Jets_JER_bestCandLegacy/'    # David included 2018 JER arrived 
+dirMC_94 = '/eos/cms/store/group/phys_muon/TagAndProbe/HZZ4L/2018/'
 print "samples directory: ", dirMC_94
 ##dirMC_94 = '/store/user/t2/users/klo/Higgs/DarkZ/NTuples/BkgMC_Run2017/'    # copied MC samples from Lucien to local
 dirMC_94_1 = '/raid/raid7/tjavaid/sig_samples_mc/'    # after copying to the local from Lucien working directory
@@ -53,20 +54,19 @@ dirData_94 = '/raid/raid7/tjavaid/data_root_files_2017'  # /cms/data/store/user/
 #]
 
 SamplesMC_94 = [
-'GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8.root',
-'VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8.root',
-#'WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8.root',
-#'WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8.root',
-'WH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8.root',
-'ZH_HToZZ_4LFilter_M125_13TeV_powheg2-minlo-HZJ_JHUGenV7011_pythia8.root',
-'ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8.root',
-'GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8.root',   # path needs to be redirected
+'GluGluHToZZTo4L_M124_2018_newMuonSF_th1f_all.root',
+'GluGluHToZZTo4L_M125_2018_newMuonSF_all.root',
+'GluGluHToZZTo4L_M126_2018_newMuonSF_th1f_all.root',
+'VBF_HToZZTo4L_M125_2018_newMuonSF_all.root',
+'WH_HToZZTo4L_M125_2018_newMuonSF_all.root',
+'ZH_HToZZ_4LFilter_M125_2018_newMuonSF_all.root',
+'ttH_HToZZ_4LFilter_M125_2018_newMuonSF_all.root',
 #'ttH_p.root'
 ]
 
 SamplesData_94 = [
-'DoubleEG_Run2017B-17Nov2017-v1.root','DoubleEG_Run2017C-17Nov2017-v1.root','DoubleEG_Run2017D-17Nov2017-v1.root','DoubleEG_Run2017E-17Nov2017-v1.root','DoubleEG_Run2017F-17Nov2017-v1.root',
-'DoubleMuon_Run2017-17Nov2017-v1.root','DoubleMuon_Run2017B-17Nov2017-v1.root','DoubleMuon_Run2017C-17Nov2017-v1.root'
+#'DoubleEG_Run2017B-17Nov2017-v1.root','DoubleEG_Run2017C-17Nov2017-v1.root','DoubleEG_Run2017D-17Nov2017-v1.root','DoubleEG_Run2017E-17Nov2017-v1.root','DoubleEG_Run2017F-17Nov2017-v1.root',
+#'DoubleMuon_Run2017-17Nov2017-v1.root','DoubleMuon_Run2017B-17Nov2017-v1.root','DoubleMuon_Run2017C-17Nov2017-v1.root'
 ]
 ###################################################### 
 RootFile = {} 
@@ -92,7 +92,8 @@ for i in range(0,len(SamplesMC_94)):
         Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
 
     else: 
-        RootFile[sample] = TFile.Open('root://cmsio5.rc.ufl.edu/'+dirMC_94+'/'+sample+'.root',"READ")
+        RootFile[sample] = TFile.Open(dirMC_94+'/'+sample+'.root',"READ")
+        #RootFile[sample] = TFile.Open('root://cmsio5.rc.ufl.edu/'+dirMC_94+'/'+sample+'.root',"READ")
 ##    RootFile[sample] = TFile.Open('root://cms-xrd-global.cern.ch//store/test/xrootd/T2_US_Florida/'+dirMC_94+'/'+sample+'.root',"READ")
 ##    RootFile[sample] = TFile('root://cms-xrd-global.cern.ch//store/test/xrootd/T2_US_Florida/'+dirMC_94+'/'+sample+'.root',"READ")
 #    RootFile[sample] = TFile.Open('gsiftp://cmsio.rc.ufl.edu/cms/data/'+dirMC_94+'/'+sample+'.root',"READ")

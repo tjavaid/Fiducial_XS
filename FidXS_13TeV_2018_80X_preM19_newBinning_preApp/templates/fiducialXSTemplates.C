@@ -412,8 +412,8 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
     if (processNameTag == "Data") {
         sigTree = new TChain("Ana/passedEvents");
     } else if (processNameTag == "ZJetsCR") {
-//        sigTree = new TChain("passedEvents");  //test 2016
-        sigTree = new TChain("Ana/passedEvents"); // David 2018
+        sigTree = new TChain("passedEvents");  
+//        sigTree = new TChain("Ana/passedEvents"); // 
         loadFakeRateHists();
     } else {
         sigTree = new TChain("Ana/passedEvents");

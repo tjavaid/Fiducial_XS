@@ -22,16 +22,16 @@ sample_shortnames = {
 ##'testGGH_nnlops_GENonly':'ggH_NNLOPS_JHUgen_125',
 
 
-## 2017 (Lucien)
 
-'GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8':'ggH_powheg_JHUgen_125',
-'GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8':'ggH_NNLOPS_JHUgen_125',      ##NNLOPS 2016
-'VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8':'VBF_powheg_JHUgen_125',
-##'WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8':'WplusH_powheg_JHUgen_125',
-##'WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8':'WminusH_powheg_JHUgen_125',
-'WH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8':'WH_powheg_JHUgen_125',
-'ZH_HToZZ_4LFilter_M125_13TeV_powheg2-minlo-HZJ_JHUGenV7011_pythia8':'ZH_powheg_JHUgen_125',
-'ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8':'ttH_powheg_JHUgen_125',
+
+'GluGluHToZZTo4L_M125_2018_newMuonSF_all':'ggH_powheg_JHUgen_125',
+'GluGluHToZZTo4L_M124_2018_newMuonSF_th1f_all':'ggH_powheg_JHUgen_124',
+'GluGluHToZZTo4L_M126_2018_newMuonSF_th1f_all':'ggH_powheg_JHUgen_126',
+##'GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8':'ggH_NNLOPS_JHUgen_125',      ##NNLOPS 2016, skipped
+'VBF_HToZZTo4L_M125_2018_newMuonSF_all':'VBF_powheg_JHUgen_125',
+'WH_HToZZTo4L_M125_2018_newMuonSF_all':'WH_powheg_JHUgen_125',
+'ZH_HToZZ_4LFilter_M125_2018_newMuonSF_all':'ZH_powheg_JHUgen_125',
+'ttH_HToZZ_4LFilter_M125_2018_newMuonSF_all':'ttH_powheg_JHUgen_125',
 
 
 ## ttH from Qinaying

@@ -132,8 +132,8 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins):
     sZZname2e2mu = 'ZZTo2e2mu_powheg'; sZZname4mu = 'ZZTo4mu_powheg'; sZZname4e = 'ZZTo4e_powheg'
     if (opt.doZ4l):
         sZZname2e2mu = 'ZZTo2e2mu_powheg_tchan'; sZZname4mu = 'ZZTo4mu_powheg_tchan'; sZZname4e = 'ZZTo4e_powheg_tchan'
-#    bkg_sample_tags = [sZZname2e2mu, sZZname4e, sZZname4mu,'ggZZ_2e2mu_MCFM67', 'ggZZ_4e_MCFM67', 'ggZZ_4mu_MCFM67', 'ZX4l_CR']
     bkg_sample_tags = ['ZX4l_CR', sZZname2e2mu, sZZname4e, sZZname4mu,'ggZZ_2e2mu_MCFM67', 'ggZZ_4e_MCFM67', 'ggZZ_4mu_MCFM67']
+    #bkg_sample_tags = ['ZX4l_CR'] #, sZZname2e2mu, sZZname4e, sZZname4mu,'ggZZ_2e2mu_MCFM67', 'ggZZ_4e_MCFM67', 'ggZZ_4mu_MCFM67']
     bkg_samples_shorttags = {sZZname2e2mu:'qqZZ', sZZname4e:'qqZZ', sZZname4mu:'qqZZ', 'ggZZ_2e2mu_MCFM67':'ggZZ', 'ggZZ_4e_MCFM67':'ggZZ', 'ggZZ_4mu_MCFM67':'ggZZ', 'ZX4l_CR':'ZJetsCR'}
     bkg_samples_fStates = {sZZname2e2mu:'2e2mu', sZZname4e:'4e', sZZname4mu:'4mu', 'ggZZ_2e2mu_MCFM67':'2e2mu', 'ggZZ_4e_MCFM67':'4e', 'ggZZ_4mu_MCFM67':'4mu', 'ZX4l_CR':'AllChans'}
 
@@ -141,10 +141,9 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins):
         tmpObsName = obsName
         tmpSrcDir = opt.SOURCEDIR
         if (sample_tag=='ZX4l_CR'):
-#            tmpSrcDir = '/raid/raid5/dsperka/Run2/HZZ4l/SubmitArea_13TeV/Ana_ZZ4L_80X/'  #test
-#            tmpSrcDir = '/raid/raid7/dsperka/Run2/HZZ4l/SubmitArea_13TeV/liteUFHZZ4LAnalyzer/'
-#            tmpSrcDir = '/raid/raid7/lucien/Higgs/HZZ4l/NTuple/ZPlusX/ZXCR/SkimTree_ZX_Run2018Data_190221/'  #Lucien
-            tmpSrcDir = '/raid/raid7/dsperka/Run2/HZZ4l/SubmitArea_13TeV'  #David   2018
+            tmpSrcDir ='root://cmsio5.rc.ufl.edu//store/user/t2/users/ferrico/Qianying/2018/DATA/'  #Qianying   2018, Paper
+	if (sample_tag==sZZname2e2mu or sample_tag==sZZname4e or sample_tag==sZZname4mu):
+	    tmpSrcDir = 'root://cmsio5.rc.ufl.edu//store/user/qguo/raid/fiducial/ntuple_2018/'
         fitTypeZ4l = [['none','doRatio'],['doZ4l','doZ4l']][opt.doZ4l][opt.doRatio]
         cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+tmpObsName+' "'+opt.OBSBINS+'" "'+opt.OBSBINS+'" 13TeV templatesXS DTreeXS ' + fitTypeZ4l+ ' 0'
         print cmd

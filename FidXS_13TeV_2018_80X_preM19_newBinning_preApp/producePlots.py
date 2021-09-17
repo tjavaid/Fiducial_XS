@@ -2,6 +2,7 @@ import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
 from array import array
 from math import *
 from decimal import *
+
 from sample_shortnames import *
 
 grootargs = []
@@ -42,6 +43,7 @@ sys.argv = grootargs
 
 if (not os.path.exists("plots")):
     os.system("mkdir plots")
+
 
 from ROOT import *
 
@@ -459,6 +461,10 @@ def plotXS(obsName, obs_bins):
 
             obsBin=0
 
+            sigyield = higgs_xs['ggH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
+            sigyield *= 58.8*eff['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']*(1.0+outinratio['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0'])
+            print "YIELDS ggH",channel,sigyield
+
             print obsBin,acc
             XH_fs = higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
             XH_fs += higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
@@ -617,6 +623,16 @@ def plotXS(obsName, obs_bins):
         v_observable    = TVectorD(len(a_observable),a_observable)
         a_dobservable = array('d',[0.5 for i in range(0,4)])
         v_dobservable = TVectorD(len(a_dobservable),a_dobservable)
+
+        a_observable_1  = array('d',[0.5+i for i in range(0,4)])
+        v_observable_1  = TVectorD(len(a_observable_1),a_observable_1)
+        a_dobservable_1 = array('d',[0.5 for i in range(0,4)])
+        v_dobservable_1 = TVectorD(len(a_dobservable_1),a_dobservable_1)
+
+        a_observable_2  = array('d',[0.5+i for i in range(0,4)])
+        v_observable_2  = TVectorD(len(a_observable_2),a_observable_2)
+        a_dobservable_2 = array('d',[0.5 for i in range(0,4)])
+        v_dobservable_2 = TVectorD(len(a_dobservable_2),a_dobservable_2)
         
         a_zeros = array('d',[0.0 for i in range(0,4)])
         v_zeros = TVectorD(len(a_zeros),a_zeros)
@@ -1195,10 +1211,10 @@ def plotXS(obsName, obs_bins):
     latex2.SetTextAlign(31) # align right
     print opt.LUMISCALE
     if (not opt.LUMISCALE=="1.0"):
-        lumi = round(59.7*float(opt.LUMISCALE),1)
+        lumi = round(58.8*float(opt.LUMISCALE),1)
         latex2.DrawLatex(0.94, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
     else:
-        latex2.DrawLatex(0.94, 0.94,"59.7 fb^{-1} (13 TeV)")
+        latex2.DrawLatex(0.94, 0.94,"58.8 fb^{-1} (13 TeV)")
     latex2.SetTextSize(0.7*c.GetTopMargin())
     latex2.SetTextFont(62)
     latex2.SetTextAlign(11) # align right
@@ -1346,6 +1362,8 @@ def plotXS(obsName, obs_bins):
     c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.png')
     c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.root')
     c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.C')
+
+
     #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.pdf')
     #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.png')
     #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.root')
