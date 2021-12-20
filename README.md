@@ -66,6 +66,14 @@ python -u runHZZFiducialXS.py --dir="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/" --
 
 ### 2.4 Runing the final measurement and plotters
 
+For the last step a data file is needed as input, even for the blinded step (!). I've stored the previous one in my public folder:
+```
+/afs/cern.ch/user/v/vmilosev/public/data_13TeV.root
+```
+or one can copy the data file from the data/mc folder and properly rename it.
+The command to run the measurement and the plotters is:
+
+
 ```
 nohup python -u runHZZFiducialXS.py --obsName="mass4l" --obsBins="|105.0|140.0|"  --calcSys --asimovMass 125.0  >& log_mass4l_Run2Fid.txt &
 ```
