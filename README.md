@@ -1,26 +1,34 @@
-# Fiducial_XS
+# Instructions to run the BBBF differential xs code for CMSSW_10_X relesases
 
-SCRAM_ARCH=slc6_amd64_gcc491
+## 1. CMSSW and cobmine release setup
 
-cmsrel CMSSW_7_4_7
+Taken from Combine official instructions: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/
 
-cd CMSSW_7_4_7/src/
+CC7 release CMSSW_10_2_X - recommended version
+Setting up the environment (once):
 
+```
+export SCRAM_ARCH=slc7_amd64_gcc700
+cmsrel CMSSW_10_2_13
+cd CMSSW_10_2_13/src
 cmsenv
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+```
 
-git clone git@github.com:tjavaid/fiducial_xs.git
+Update to a recommended tag - currently the recommended tag is v8.2.0: see release notes
 
-git clone git@github.com:cms-analysis/higgsanalysis-combinedlimit.git HiggsAnalysis/CombinedLimit
+```
+cd $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit
+git fetch origin
+git checkout v8.2.0
+scramv1 b clean; scramv1 b # always make a clean build
+```
+Depending on where the data/mc is stored, one might need:
 
-scramv1 b 
-
-cd ..
-
-scramv1 b 
-
-cd Fiducial_XS/FidXS_13TeV_2018_80X_preM19_newBinning_preApp
-
+```
 voms-proxy-init -voms cms
+```
 
 # Now set is ready for measurement
 
