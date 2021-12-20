@@ -43,4 +43,7 @@ nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105
 nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "4e" >& effs_mass4l_4e.log &
 nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "2e2mu" >& effs_mass4l_2e2mu.log &
 nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "4l" >& effs_mass4l_4l.log &
+
+python collectInputs.py # currently only active for mass4l, calls be uncommented for the rest of variables
+
 ```

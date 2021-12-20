@@ -36,7 +36,7 @@ sample_shortnames = {
 ##'ggH_amcatnloFXFX_':'ggH_amcatnloFXFX_125',
 
 'GluGluHToZZTo4L_M125_2018_slimmed':'ggH_powheg_JHUgen_125',
-#'testGGH_nnlops_GENonly_slimmed':'ggH_NNLOPS_JHUgen_125',      ##NNLOPS 2016
+'testGGH_nnlops_GENonly_slimmed':'ggH_NNLOPS_JHUgen_125',    
 'VBF_HToZZTo4L_M125_2018_slimmed':'VBF_powheg_JHUgen_125',
 'WH_HToZZTo4L_M125_2018_slimmed':'WH_powheg_JHUgen_125',
 'ZH_HToZZ_4LFilter_M125_2018_slimmed':'ZH_powheg_JHUgen_125',

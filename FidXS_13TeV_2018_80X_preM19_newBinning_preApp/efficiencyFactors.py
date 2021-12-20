@@ -95,7 +95,7 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
     gSystem.AddIncludePath("-I$ROOFITSYS/include")
     
     if ("NNLOPS" in sample or "nnlops" in sample):
-        print ("Skipping: "+ sample)
+        print ("Will skip: "+ sample)
     #    recoweight = "genWeight*pileupWeight*dataMCWeight"
     #else:
     #    recoweight = "genWeight*pileupWeight*dataMCWeight"
@@ -124,7 +124,9 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
 
     for Sample in List:
         if ("NNLOPS" in Sample or "nnlops" in Sample):
+            print ("Skipping: "+ sample)
             recoweight = "genWeight*pileupWeight*dataMCWeight"
+            continue
         else:
             recoweight = "genWeight*pileupWeight*dataMCWeight"
 
