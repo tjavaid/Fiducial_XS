@@ -37,6 +37,8 @@ voms-proxy-init -voms cms
 Current example running ```mass4l``` variable via ```nohup```. For local testing remove ```nohup``` (and pipelining into a .log file if wanting terminal printout).
 
 ```
+mkdir datacardInputs
+
 nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "4mu" >& effs_mass4l_4mu.log &
 nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "4e" >& effs_mass4l_4e.log &
 nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "2e2mu" >& effs_mass4l_2e2mu.log &
