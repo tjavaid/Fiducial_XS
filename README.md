@@ -57,3 +57,9 @@ Running the plotter:
 ```
 python -u getUnc_Unc.py --obsName="mass4l" --obsBins="|105.0|140.0|" >& unc_mass4l.log &
 ```
+
+### 2.3 Running the background template maker
+
+```
+python -u runHZZFiducialXS.py --dir="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/" --obsName="mass4l" --obsBins="|105.0|140.0|" --redoTemplates --templatesOnly 
+```
