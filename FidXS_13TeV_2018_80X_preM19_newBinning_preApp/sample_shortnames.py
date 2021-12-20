@@ -10,6 +10,9 @@ sample_shortnames = {
 
 background_samples = {
     'ZX4l_CR':'2018_noDuplicates.root',
+    'ZX4l_CR_4e':'2018_noDuplicates.root',
+    'ZX4l_CR_4mu':'2018_noDuplicates.root',
+    'ZX4l_CR_2e2mu':'2018_noDuplicates.root',
     'ZZTo2e2mu_powheg':'ZZTo4L_powheg_ext1_slimmed.root',
     'ZZTo4e_powheg':'ZZTo4L_powheg_ext1_slimmed.root',
     'ZZTo4mu_powheg':'ZZTo4L_powheg_ext1_slimmed.root',
