@@ -30,16 +30,15 @@ Depending on where the data/mc is stored, one might need:
 voms-proxy-init -voms cms
 ```
 
-# Now set is ready for measurement
+## 2. Running the measurement
 
-sh doAllEffs_channels_PAS.sh #This macro is to compute in bins of differential variables the efficiencies, acceptance etc. and corresponding uncertainties.
+### 2.1 Running the efficiencies step
 
-python collectInputs.py # This will combine, for specified observable(s), all channel-wise computed outputs to a single file and will store in "datacardsInputs" dirctory
+Current example running ```mass4l``` variable via ```nohup```. For local testing remove ```nohup``` (and pipelining into a .log file if wanting terminal printout).
 
-sh doAll2DEff_PAS.sh # Will produce 2D plots to see migrated events in reconstruction bins for differential variables
-
-sh doAllTemplates_PAS.sh # This macro is to compute in bins of differential variables the background templates
-
-sh doAllUnc_PAS.sh # This macro is to compute in bins of differential variables the theoretical predictions and uncertainties
-
-sh doAllObs_PAS.sh # This macro will use ingredients produced as outputs of previous steps to give final differential plots.
+```
+nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "4mu" >& effs_mass4l_4mu.log &
+nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "4e" >& effs_mass4l_4e.log &
+nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "2e2mu" >& effs_mass4l_2e2mu.log &
+nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "4l" >& effs_mass4l_4l.log &
+```
