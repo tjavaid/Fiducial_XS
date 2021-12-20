@@ -63,3 +63,9 @@ python -u getUnc_Unc.py --obsName="mass4l" --obsBins="|105.0|140.0|" >& unc_mass
 ```
 python -u runHZZFiducialXS.py --dir="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/" --obsName="mass4l" --obsBins="|105.0|140.0|" --redoTemplates --templatesOnly 
 ```
+
+### 2.4 Runing the final measurement and plotters
+
+```
+nohup python -u runHZZFiducialXS.py --obsName="mass4l" --obsBins="|105.0|140.0|"  --calcSys --asimovMass 125.0  >& log_mass4l_Run2Fid.txt &
+```
