@@ -47,3 +47,9 @@ nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105
 python collectInputs.py # currently only active for mass4l, calls be uncommented for the rest of variables
 
 ```
+
+### 2.2. Running the uncertainties step
+
+```
+python -u getUnc_Unc.py --obsName="mass4l" --obsBins="|105.0|140.0|" >& unc_mass4l.log &
+```
