@@ -1,6 +1,0 @@
-For observable   rapidity4l    and channel   2e2mu 
-ZZ Bkg:   23.3554610317 
-ggZZ Bkg:   1.38423291039 
-qqZZ Bkg:   21.9712281213 
-Red Bkg:   0.0 
-Data:   53.0 

@@ -1,6 +1,0 @@
-For observable   pT4l    and channel   2e2mu 
-ZZ Bkg:   47.7980901364 
-ggZZ Bkg:   2.76577693912 
-qqZZ Bkg:   45.0323131973 
-Red Bkg:   59.8999998961 
-Data:   86.0 

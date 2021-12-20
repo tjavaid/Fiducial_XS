@@ -1,6 +1,0 @@
-For observable   pt_leadingjet_pt30_eta2p5    and channel   4mu 
-ZZ Bkg:   42.9385503189 
-ggZZ Bkg:   3.93439351046 
-qqZZ Bkg:   39.0041568084 
-Red Bkg:   34.3999999097 
-Data:   85.0 

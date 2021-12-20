@@ -1,6 +1,0 @@
-For observable   pt_leadingjet_pt30_eta2p5    and channel   4e 
-ZZ Bkg:   16.4732702725 
-ggZZ Bkg:   1.70583143376 
-qqZZ Bkg:   14.7674388388 
-Red Bkg:   21.1000000402 
-Data:   26.0 

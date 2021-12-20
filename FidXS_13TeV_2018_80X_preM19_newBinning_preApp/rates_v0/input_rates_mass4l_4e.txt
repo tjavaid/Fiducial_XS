@@ -1,6 +1,0 @@
-For observable   mass4l    and channel   4e 
-ZZ Bkg:   15.020431984 
-ggZZ Bkg:   1.56950761954 
-qqZZ Bkg:   13.4509243645 
-Red Bkg:   5.4391579628 
-Data:   26.0 

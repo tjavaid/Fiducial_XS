@@ -1,6 +1,0 @@
-For observable   rapidity4l    and channel   4e 
-ZZ Bkg:   7.37325057609 
-ggZZ Bkg:   0.770426345434 
-qqZZ Bkg:   6.60282423066 
-Red Bkg:   0.0 
-Data:   15.0 

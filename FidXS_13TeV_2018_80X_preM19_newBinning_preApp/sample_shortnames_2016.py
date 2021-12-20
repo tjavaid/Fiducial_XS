@@ -1,8 +1,0 @@
-sample_shortnames = {
-'GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8':'ggH_powheg_JHUgen_125',
-'VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8':'VBF_powheg_JHUgen_125',
-'WH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8':'WH_powheg_JHUgen_125',
-'ZH_HToZZ_4LFilter_M125_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8':'ZH_powheg_JHUgen_125',
-'ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUgenV6_pythia8':'ttH_powheg_JHUgen_125',
-'GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8':'ggH_NNLOPS_JHUgen_125'
-}
