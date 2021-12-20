@@ -46,6 +46,11 @@ nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105
 
 python collectInputs.py # currently only active for mass4l, calls be uncommented for the rest of variables
 
+Running the plotter:
+
+```
+#skipping for mass4l 
+#python -u plot2dsigeffs.py -l -q -b --obsName="pT4l" --obsBins="|0|10|20|30|45|80|120|200|13000|"
 ```
 
 ### 2.2. Running the uncertainties step
