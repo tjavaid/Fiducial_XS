@@ -1,4 +1,4 @@
-# Instructions to run the BBBF differential xs code for CMSSW_10_X relesases
+# Instructions to run the BBBF differential xs code for CMSSW_10_X releases
 
 ## 1. CMSSW and cobmine release setup
 
