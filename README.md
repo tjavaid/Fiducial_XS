@@ -70,7 +70,12 @@ For the last step a data file is needed as input, even for the blinded step (!).
 ```
 /afs/cern.ch/user/v/vmilosev/public/data_13TeV.root
 ```
-or one can copy the data file from the data/mc folder and properly rename it.
+or one can copy the data file from the data/mc folder and properly rename it. One additional set of models is needed in order to run the combine step. The HZZ4l specific modules stored here:
+```
+/afs/cern.ch/user/v/vmilosev/public/HZZ4l_models/
+```
+needs to be added to the corresponding ```$CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/python``` collection of libraries.
+
 The command to run the measurement and the plotters is:
 
 
