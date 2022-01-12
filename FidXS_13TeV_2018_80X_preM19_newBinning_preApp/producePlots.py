@@ -1256,19 +1256,19 @@ def plotXS(obsName, obs_bins):
         label = "|y(H)|"
         unit = ""
     elif (obsName=="cosThetaStar"):
-        label = "|cos#theta*|"
+        label = "cos#theta*"
         unit = ""
     elif (obsName=="cosTheta1"):
-        label = "|cos#theta_{1}|"
+        label = "cos#theta_{1}"
         unit = ""
     elif (obsName=="cosTheta2"):
-        label = "|cos#theta_{2}|"
+        label = "cos#theta_{2}"
         unit = ""
     elif (obsName=="Phi"):
-        label = "|#Phi|"
+        label = "#Phi"
         unit = ""
     elif (obsName=="Phi1"):
-        label = "|#Phi_{1}|"
+        label = "#Phi_{1}"
         unit = ""
     elif (obsName=="mass4l"):
         label = "inclusive"

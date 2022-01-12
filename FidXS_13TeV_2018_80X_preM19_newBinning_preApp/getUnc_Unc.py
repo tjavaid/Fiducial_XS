@@ -118,7 +118,7 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
  
         shortname = sample_shortnames[Sample]
         processBin = shortname+'_'+channel+'_'+opt.OBSNAME+'_genbin'+str(genbin)
-
+	print "processBin is  : ", processBin
         #if ("NNNLOPS" in processBin):
         #    cutchan_gen = "("+cutchan_gen+" && Sum$(abs(nnloWeights[]/qcdWeights[0])>100.0)==0 )"
         #    cutchan_gen_out = "("+cutchan_gen_out+" && Sum$(abs(nnloWeights[]/qcdWeights[0])>100.0)==0 )"
@@ -245,6 +245,20 @@ obs_reco_high = 140.0
 obs_gen_low = 105.0
 obs_gen_high = 140.0
 
+obs_reco = opt.OBSNAME 
+obs_gen = "GEN"+opt.OBSNAME 
+
+# variables measured in absolute values
+
+if (opt.OBSNAME == "rapidity4l"):
+    obs_reco = "abs(rapidity4l)"
+    obs_gen = "abs(GENrapidity4l)"
+
+print "obs_reco is :  ", obs_reco
+print "obs_gen is :  ", obs_gen
+
+
+'''
 if (opt.OBSNAME == "massZ1"):
     obs_reco = "massZ1"
     obs_gen = "GENmZ1"
@@ -287,7 +301,7 @@ if (opt.OBSNAME == "Phi"):
 if (opt.OBSNAME == "Phi1"):
     obs_reco = "abs(Phi1)"
     obs_gen = "abs(GENPhi1)"
-    
+'''    
 #obs_bins = {0:(opt.OBSBINS.split("|")[1:((len(opt.OBSBINS)-1)/2)]),1:['0','inf']}[opt.OBSNAME=='inclusive'] 
 obs_bins = opt.OBSBINS.split("|") 
 if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')): 

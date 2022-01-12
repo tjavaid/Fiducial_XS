@@ -46,7 +46,8 @@ nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105
 nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "4e" >& effs_mass4l_4e.log &
 nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "2e2mu" >& effs_mass4l_2e2mu.log &
 nohup python -u efficiencyFactors.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" -c "4l" >& effs_mass4l_4l.log &
-
+# for the various observables
+sh doAllEffs_channels.sh
 python collectInputs.py # currently only active for mass4l, calls be uncommented for the rest of variables
 ```
 
@@ -61,12 +62,16 @@ Running the plotter:
 
 ```
 python -u getUnc_Unc.py --obsName="mass4l" --obsBins="|105.0|140.0|" >& unc_mass4l.log &
+# for the various observables
+sh doAllUnc.sh
 ```
 
 ### 2.3 Running the background template maker
 
 ```
 python -u runHZZFiducialXS.py --dir="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/" --obsName="mass4l" --obsBins="|105.0|140.0|" --redoTemplates --templatesOnly 
+# for the various observables
+sh doAllTemplates.sh
 ```
 
 ### 2.4 Runing the final measurement and plotters
@@ -86,4 +91,6 @@ The command to run the measurement and the plotters is:
 
 ```
 nohup python -u runHZZFiducialXS.py --obsName="mass4l" --obsBins="|105.0|140.0|"  --calcSys --asimovMass 125.0  >& log_mass4l_Run2Fid.txt &
+# for the various observables
+sh doAllObs.sh
 ```
