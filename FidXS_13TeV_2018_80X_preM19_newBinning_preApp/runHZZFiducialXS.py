@@ -194,11 +194,15 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel):
     print '[Producing workspace/datacards for obsName '+obsName+', bins '+str(observableBins)+']'
     fStates = ['2e2mu','4mu','4e']
     nBins = len(observableBins)
+    actBins = nBins-1
     for fState in fStates:
         if (not obsName.startswith("mass4l")):
             for obsBin in range(nBins-1):
                 # first bool = cfactor second bool = add fake H               #
                 ndata = createXSworkspace(obsName,fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel)
+		print "actual no. of bins! ", actBins
+                os.system("cp xs_125.0_"+str(actBins)+"bins/hzz4l_"+fState+"S_13TeV_xs_bin"+str(obsBin)+".txt xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
+                '''
                 if ((nBins-1)==7):
                     os.system("cp xs_125.0_7bins/hzz4l_"+fState+"S_13TeV_xs_bin"+str(obsBin)+".txt xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
                 if ((nBins-1)==6):
@@ -209,6 +213,7 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel):
 
                 if ((nBins-1)==4):
                     os.system("cp xs_125.0_4bins/hzz4l_"+fState+"S_13TeV_xs_bin"+str(obsBin)+".txt xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")    
+                '''
                 os.system("sed -i 's~observation [0-9]*~observation "+str(ndata)+"~g' xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
                 os.system("sed -i 's~_xs.Databin"+str(obsBin)+"~_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+"~g' xs_125.0/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
                 if ("jet" in obsName):
@@ -761,7 +766,30 @@ def runFiducialXS():
             #test VM
 	    print(cmd) 
             output = processCmd(cmd)
+        if (obsName=="mass4l"):
+            cmd = './doLScan_mass4l.sh'
+            output = processCmd(cmd)
+	else:
+    	    for obsBin in range(0,len(observableBins)-1):
+                cmd = "combine -n "+obsName+"_SigmaBin"+str(obsBin)+" -M MultiDimFit -d SM_125_all_13TeV_xs_"+obsName+"_bin_"+physicalModel+"_exp.root -m 125.09 -D toy_asimov --setParameters MH=125.09 -P SigmaBin"+str(obsBin)+" --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.09,125.09:SigmaBin"+str(obsBin)+"=0.0,3.0 --redefineSignalPOIs SigmaBin"+str(obsBin)+" --algo=grid --points=50 --autoRange 4 "
+                if (opt.UNBLIND): cmd = cmd.replace("-D toy_asimov","-D data_obs")
+#                if (obsName=='pt_leadingjet_pt30_eta2p5' and str(obsBin)=='1'): cmd = cmd.replace('0.0,3.0','0.0,1.5')
+#                if (obsName=='pt_leadingjet_pt30_eta2p5' and str(obsBin)=='2'): cmd = cmd.replace('0.0,3.0','0.0,0.7')
+                if (obsName=='mass4l' and str(obsBin)=='0'): cmd = cmd.replace('0.0,3.0','0.0,5.0')
+                if (obsName=='pT4l' and str(obsBin)=='7'): cmd = cmd.replace('0.0,3.0','0.0,2.0')
+                if (obsName=='njets_pt30_eta2p5' or obsName=='pt_leadingjet_pt30_eta2p5' and str(obsBin)=='0'): cmd = cmd.replace('0.0,3.0','0.0,4.0')
+                if (obsName=='njets_pt30_eta2p5' or obsName=='pt_leadingjet_pt30_eta2p5' and str(obsBin)=='2'): cmd = cmd.replace('0.0,3.0','0.0,1.0')
+                if (obsName=='njets_pt30_eta2p5' or obsName=='pt_leadingjet_pt30_eta2p5' and str(obsBin)=='3'): cmd = cmd.replace('0.0,3.0','0.0,1.0')
+                if (obsName=='njets_pt30_eta2p5' or obsName=='pt_leadingjet_pt30_eta2p5' and str(obsBin)=='4'): cmd = cmd.replace('0.0,3.0','0.0,1.0')
 
+                print cmd 
+                output = processCmd(cmd)
+
+                cmd = "combine -n "+obsName+"_SigmaBin"+str(obsBin)+"_NoSys -M MultiDimFit -d SM_125_all_13TeV_xs_"+obsName+"_bin_"+physicalModel+"_result.root -w w --snapshotName \"MultiDimFit\" -m 125.09 -D toy_asimov --setParameters MH=125.09 -P SigmaBin"+str(obsBin)+" --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.09,125.09:SigmaBin"+str(obsBin)+"=0.0,3.0 --redefineSignalPOI SigmaBin"+str(obsBin)+" --algo=grid --points=50 --autoRange 4 --freezeParameters allConstrainedNuisances "
+                print cmd 
+                output = processCmd(cmd)
+
+	'''
         if (obsName=="mass4l"):
             cmd = './doLScan_mass4l.sh'
         if (obsName=="pT4l"):
@@ -782,7 +810,7 @@ def runFiducialXS():
             cmd = './doLScan_massZ2.sh'
         if (obsName=="massZ1"):
             cmd = './doLScan_massZ1.sh'
-        output = processCmd(cmd)
+	'''
         
         cmd = 'python plotLHScans.py -l -q -b --obsName='+obsName
         output = processCmd(cmd)
