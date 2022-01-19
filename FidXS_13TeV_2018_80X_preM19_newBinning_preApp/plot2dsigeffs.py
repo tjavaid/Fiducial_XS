@@ -66,15 +66,15 @@ if (obsName=='absrapidity_leadingjet_pt30_eta4p7'):
 if (obsName=='rapidity4l'):
     label = "|y(H)|" 
 if (obsName=='cosThetaStar'):
-    label = "|cos(#theta*)|"
+    label = "cos(#theta*)"
 if (obsName=='cosTheta1'):
-    label = "|cos(#theta_{1})|"
+    label = "cos(#theta_{1})"
 if (obsName=='cosTheta2'):
-    label = "|cos(#theta_{2})|"
+    label = "cos(#theta_{2})"
 if (obsName=='Phi'):
-    label = "|#Phi|"
+    label = "#Phi"
 if (obsName=='Phi1'):
-    label = "|#Phi_{1}|"
+    label = "#Phi_{1}"
 
 obs_bins = opt.OBSBINS.split("|")
 if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')):
