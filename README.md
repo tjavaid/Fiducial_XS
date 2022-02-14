@@ -95,7 +95,6 @@ nohup python -u interpolate_differential_pred.py --obsName="mass4l" --obsBins="|
 sh interpolate_differential_pred_all_2018.sh
 
 ```
-
 ### 2.4 Running the background template maker
 
 ```
@@ -109,14 +108,18 @@ sh doAllTemplates_Full.sh
 
 ### 2.5 Runing the final measurement and plotters
 
+```
+
 # for individual year:
 nohup python -u runHZZFiducialXS.py --obsName="mass4l" --obsBins="|105.0|140.0|"  --calcSys --era="2018"  >& log_mass4l_2018.txt &
 
 # for full Run 2:
 
 nohup python -u runHZZFiducialXS.py --obsName="mass4l" --obsBins="|105.0|140.0|"  --calcSys --era="Full"  >& log_mass4l_Full.txt & 
+
 #full Run2 and various observables
 sh doAllObs_Full.sh
+
 # output of this step are likelihood scan, asimov fits, differential yield and differential measurement plots. 
 
 
