@@ -3,6 +3,9 @@ from array import array
 from math import *
 from decimal import *
 from sample_shortnames import *
+#from sample_shortnames_2016 import *
+#from sample_shortnames_2017 import *
+#from sample_shortnames_2018 import *
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -27,7 +30,8 @@ def parseOptions():
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
-                       
+    parser.add_option('',   '--year',  dest='YEAR',  type='string',default='2018',   help='Year to analyze, e.g. 2016, 2017 or 2018 ')
+                      
     # store options and arguments as global variables
     global opt, args
     (opt, args) = parser.parse_args()
@@ -37,16 +41,15 @@ global opt, args, runAllSteps
 parseOptions()
 sys.argv = grootargs
 
-doFit = opt.DOFIT
-doPlots = opt.DOPLOTS
-
-if (not os.path.exists("plots") and doPlots):
-    os.system("mkdir plots")
+year = opt.YEAR
+print "year being processed: ",year
 
 from ROOT import *
 #from LoadData_Unc import *
-from LoadData import *
-
+#from LoadData import *
+if year=="2018": from LoadData_2018 import *;
+elif year=="2017": from LoadData_2017 import *;
+else : from LoadData_2016 import *;
 RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)    
 
 if (opt.DOPLOTS and os.path.isfile('tdrStyle.py')):
@@ -116,9 +119,14 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
             if (channel == "2e2mu"):
                 cutchan_gen_out  = "((GENZ_MomId[0]==25 && (GENZ_DaughtersId[0]==11 || GENZ_DaughtersId[0]==13) && GENZ_MomId[1]==25 && (GENZ_DaughtersId[1]==11 || GENZ_DaughtersId[1]==13) && GENZ_DaughtersId[0]!=GENZ_DaughtersId[1]) || (GENZ_MomId[0]==25 && (GENZ_DaughtersId[0]==11 || GENZ_DaughtersId[0]==13) && GENZ_MomId[2]==25 && (GENZ_DaughtersId[2]==11 || GENZ_DaughtersId[2]==13) && GENZ_DaughtersId[0]!=GENZ_DaughtersId[2]) || (GENZ_MomId[1]==25 && (GENZ_DaughtersId[1]==11 || GENZ_DaughtersId[1]==13) && GENZ_MomId[2]==25 && (GENZ_DaughtersId[2]==11 || GENZ_DaughtersId[2]==13) && GENZ_DaughtersId[1]!=GENZ_DaughtersId[2]))"
  
-        shortname = sample_shortnames[Sample]
+        #shortname = sample_shortnames[Sample]
+        if year =="2018": shortname = sample_shortnames_2018[Sample]
+        elif year =="2017": shortname = sample_shortnames_2017[Sample]
+        else: 
+	    shortname = sample_shortnames_2016[Sample]
+	#print "shortname is .......". shortname
         processBin = shortname+'_'+channel+'_'+opt.OBSNAME+'_genbin'+str(genbin)
-	print "processBin is  : ", processBin
+	print "processBin is ", processBin
         #if ("NNNLOPS" in processBin):
         #    cutchan_gen = "("+cutchan_gen+" && Sum$(abs(nnloWeights[]/qcdWeights[0])>100.0)==0 )"
         #    cutchan_gen_out = "("+cutchan_gen_out+" && Sum$(abs(nnloWeights[]/qcdWeights[0])>100.0)==0 )"
@@ -131,6 +139,7 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
         else:
             Tree[Sample].Draw("GENmass4l >> "+processBin+"fs","(qcdWeights[0])*("+cutchan_gen_out+")","goff")
         
+        #if ("NNLOPS" in processBin):
         if ("NNLOPS" in processBin):
             #for i in range(9,36):
             for i in range(0,27):
@@ -248,15 +257,22 @@ obs_gen_high = 140.0
 obs_reco = opt.OBSNAME 
 obs_gen = "GEN"+opt.OBSNAME 
 
+if (obs_reco.startswith("Tau")):
+    obs_gen = "GEN_"+opt.OBSNAME
+
 # variables measured in absolute values
 
 if (opt.OBSNAME == "rapidity4l"):
     obs_reco = "abs(rapidity4l)"
     obs_gen = "abs(GENrapidity4l)"
 
+
+if (opt.OBSNAME == "dEtaj1j2"):
+    obs_reco = "abs(dEtaj1j2)"
+    obs_gen = "abs(GENdEtaj1j2)"
+
 print "obs_reco is :  ", obs_reco
 print "obs_gen is :  ", obs_gen
-
 
 '''
 if (opt.OBSNAME == "massZ1"):
@@ -310,10 +326,17 @@ obs_bins.pop()
 obs_bins.pop(0) 
 
 List = []
-for long, short in sample_shortnames.iteritems():
+
+if year=="2018": temp_list = sample_shortnames_2018.iteritems()
+elif year=="2017": temp_list = sample_shortnames_2017.iteritems()
+else : temp_list = sample_shortnames_2016.iteritems()
+print "temp_list is  ", temp_list
+#for long, short in sample_shortnames.iteritems():
+for long, short in temp_list:
+    #print "short is :     ", short
     if (not "ggH" in short): continue
     List.append(long)
-
+    print "the list is .....   ", List
 if (obs_reco=="mass4l"):
     chans = ['4e','4mu','2e2mu','4l']
 else:
@@ -328,7 +351,12 @@ if (obs_reco.startswith("njets")):
     for chan in chans:
         for genbin in range(len(obs_bins)-2): # last bin is >=3
             for Sample in List:
-                shortname = sample_shortnames[Sample]
+                #shortname = sample_shortnames[Sample]
+ 	        if year =="2018": shortname = sample_shortnames_2018[Sample]
+      	        elif year =="2017": shortname = sample_shortnames_2017[Sample]
+                else: 
+            	    shortname = sample_shortnames_2016[Sample]
+
                 processBin = shortname+'_'+chan+'_'+obs_reco+'_genbin'+str(genbin)
                 processBinPlus1 = shortname+'_'+chan+'_'+obs_reco+'_genbin'+str(genbin+1)
                 acceptance[processBin] = acceptance[processBin]-acceptance[processBinPlus1]
@@ -336,7 +364,8 @@ if (obs_reco.startswith("njets")):
                 qcdUncert[processBin]['uncerDn'] = sqrt(qcdUncert[processBin]['uncerDn']*qcdUncert[processBin]['uncerDn']+qcdUncert[processBinPlus1]['uncerDn']*qcdUncert[processBinPlus1]['uncerDn'])
 
 #os.system('cp accUnc_'+opt.OBSNAME+'.py accUnc_'+opt.OBSNAME+'_ORIG.py')
-with open('accUnc_'+opt.OBSNAME+'.py', 'w') as f:
+#with open('accUnc_'+opt.OBSNAME+'.py', 'w') as f:
+with open('accUnc_'+opt.OBSNAME+'_'+year+'.py', 'w') as f:
     f.write('acc = '+str(acceptance)+' \n')
     f.write('qcdUncert = '+str(qcdUncert)+' \n')
     f.write('pdfUncert = '+str(pdfUncert)+' \n')

@@ -2,6 +2,7 @@ import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
 from array import array
 from math import *
 from decimal import *
+#from sample_shortnames_Unc import *
 from sample_shortnames import *
 
 grootargs = []
@@ -22,6 +23,7 @@ def parseOptions():
     parser.add_option('',   '--modelName',dest='MODELNAME',type='string',default='SM', help='Name of the Higgs production or spin-parity model, default is "SM", supported: "SM", "ggH", "VBF", "WH", "ZH", "ttH", "exotic","all"')
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "mass4l", "pT4l", "massZ2", "rapidity4l", "cosThetaStar", "nets_reco_pt30_eta4p7"')
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
+    parser.add_option('',   '--year',  dest='YEAR',  type='string',default='2018',   help='Year to analyze, e.g. 2016, 2017 or 2018 ')
     parser.add_option('-f', '--doFit', action="store_true", dest='DOFIT', default=False, help='doFit, default false')
     parser.add_option('-p', '--doPlots', action="store_true", dest='DOPLOTS', default=False, help='doPlots, default false')
     parser.add_option("-l",action="callback",callback=callback_rootargs)
@@ -36,7 +38,8 @@ def parseOptions():
 global opt, args, runAllSteps
 parseOptions()
 sys.argv = grootargs
-
+year = opt.YEAR
+print "year being processed: ",year
 doFit = opt.DOFIT
 doPlots = opt.DOPLOTS
 
@@ -44,7 +47,13 @@ if (not os.path.exists("plots") and doPlots):
     os.system("mkdir plots")
 
 from ROOT import *
-from LoadData import *
+
+if year=="2018": from LoadData_2018 import *;
+elif year=="2017": from LoadData_2017 import *;
+else : from LoadData_2016 import *;
+
+
+#from LoadData_Unc import *
 
 RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)    
 
@@ -112,7 +121,12 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
             if (channel == "2e2mu"):
                 cutchan_gen_out  = "((GENZ_MomId[0]==25 && (GENZ_DaughtersId[0]==11 || GENZ_DaughtersId[0]==13) && GENZ_MomId[1]==25 && (GENZ_DaughtersId[1]==11 || GENZ_DaughtersId[1]==13) && GENZ_DaughtersId[0]!=GENZ_DaughtersId[1]) || (GENZ_MomId[0]==25 && (GENZ_DaughtersId[0]==11 || GENZ_DaughtersId[0]==13) && GENZ_MomId[2]==25 && (GENZ_DaughtersId[2]==11 || GENZ_DaughtersId[2]==13) && GENZ_DaughtersId[0]!=GENZ_DaughtersId[2]) || (GENZ_MomId[1]==25 && (GENZ_DaughtersId[1]==11 || GENZ_DaughtersId[1]==13) && GENZ_MomId[2]==25 && (GENZ_DaughtersId[2]==11 || GENZ_DaughtersId[2]==13) && GENZ_DaughtersId[1]!=GENZ_DaughtersId[2]))"
  
-        shortname = sample_shortnames[Sample]
+ #       shortname = sample_shortnames[Sample]
+        if year =="2018": shortname = sample_shortnames_2018[Sample]
+        elif year =="2017": shortname = sample_shortnames_2017[Sample]
+        else:
+            shortname = sample_shortnames_2016[Sample]
+
         processBin = shortname+'_'+channel+'_'+opt.OBSNAME+'_genbin'+str(genbin)
 
         # GEN level        
@@ -198,6 +212,31 @@ obs_reco_high = 140.0
 obs_gen_low = 105.0
 obs_gen_high = 140.0
 
+obs_reco = opt.OBSNAME 
+obs_gen = "GEN"+opt.OBSNAME 
+
+if (obs_reco.startswith("Tau")):
+    obs_gen = "GEN_"+opt.OBSNAME
+
+# variables measured in absolute values
+
+if (opt.OBSNAME == "rapidity4l"):
+    obs_reco = "abs(rapidity4l)"
+    obs_gen = "abs(GENrapidity4l)"
+
+
+if (opt.OBSNAME == "dEtaj1j2"):
+    obs_reco = "abs(dEtaj1j2)"
+    obs_gen = "abs(GENdEtaj1j2)"
+
+print "obs_reco is :  ", obs_reco
+print "obs_gen is :  ", obs_gen
+
+print "obs_reco is :  ", obs_reco
+print "obs_gen is :  ", obs_gen
+
+
+'''
 if (opt.OBSNAME == "massZ1"):
     obs_reco = "massZ1"
     obs_gen = "GENmZ1"
@@ -240,7 +279,7 @@ if (opt.OBSNAME == "Phi"):
 if (opt.OBSNAME == "Phi1"):
     obs_reco = "abs(Phi1)"
     obs_gen = "abs(GENPhi1)"
-    
+'''    
 #obs_bins = {0:(opt.OBSBINS.split("|")[1:((len(opt.OBSBINS)-1)/2)]),1:['0','inf']}[opt.OBSNAME=='inclusive'] 
 obs_bins = opt.OBSBINS.split("|") 
 if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')): 
@@ -249,7 +288,14 @@ obs_bins.pop()
 obs_bins.pop(0) 
 
 List = []
-for long, short in sample_shortnames.iteritems():
+
+if year=="2018": temp_list = sample_shortnames_2018.iteritems()
+elif year=="2017": temp_list = sample_shortnames_2017.iteritems()
+else : temp_list = sample_shortnames_2016.iteritems()
+print "temp_list is  ", temp_list
+
+#for long, short in sample_shortnames.iteritems():
+for long, short in temp_list:
     if (not "ggH" in short): continue
     #if ("NNLOPS" in short): continue
     List.append(long)
@@ -268,7 +314,11 @@ if (obs_reco.startswith("njets")):
     for chan in chans:
         for genbin in range(len(obs_bins)-1):
             for Sample in List:
-                shortname = sample_shortnames[Sample]
+	        if year =="2018": shortname = sample_shortnames_2018[Sample]
+                elif year =="2017": shortname = sample_shortnames_2017[Sample]
+                else:
+                    shortname = sample_shortnames_2016[Sample]
+                #shortname = sample_shortnames[Sample]
                 processBin = shortname+'_'+chan+'_'+obs_reco+'_genbin'+str(genbin)
                 processBinPlus1 = shortname+'_'+chan+'_'+obs_reco+'_genbin'+str(genbin+1)
                 
@@ -282,8 +332,12 @@ if (obs_reco.startswith("njets")):
                 
                 #print Sample,processBin,qcdUncert[processBin]['uncerUp'],qcdUncert[processBin]['uncerDn']
                     
-os.system('cp accUnc_'+opt.OBSNAME+'.py accUnc_'+opt.OBSNAME+'_ORIG.py')
-with open('accUnc_'+opt.OBSNAME+'.py', 'w') as f:
+#os.system('cp accUnc_'+opt.OBSNAME+'.py accUnc_'+opt.OBSNAME+'_ORIG.py')
+#with open('accUnc_'+opt.OBSNAME+'.py', 'w') as f:
+os.system('cp /afs/cern.ch/user/t/tjavaid/workspace/UL_Ana/CMSSW_10_2_13/src/FidXS_13TeV_combination_UL/accUnc_'+opt.OBSNAME+'.py /afs/cern.ch/user/t/tjavaid/workspace/UL_Ana/CMSSW_10_2_13/src/FidXS_13TeV_combination_UL/accUnc_'+opt.OBSNAME+'_ORIG.py')
+#with open('accUnc_'+opt.OBSNAME+'.py', 'w') as f:
+with open('/afs/cern.ch/user/t/tjavaid/workspace/UL_Ana/CMSSW_10_2_13/src/FidXS_13TeV_combination_UL/accUnc_'+opt.OBSNAME+'_'+year+'.py', 'w') as f:
+
     f.write('acc = '+str(acceptance)+' \n')
     f.write('qcdUncert = '+str(qcdUncert)+' \n')
     f.write('pdfUncert = '+str(pdfUncert)+' \n')

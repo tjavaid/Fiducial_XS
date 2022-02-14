@@ -1,0 +1,34 @@
+imax 1
+jmax *
+kmax *
+------------
+shapes * * hzz4l_4muS_13TeV_xs.Databin3.root w:$PROCESS 
+------------
+bin a1_recobin3
+observation 6
+------------
+## mass window [105.0,140.0] 
+bin a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3 a1_recobin3
+process trueH4muBin0 trueH4muBin1 trueH4muBin2 trueH4muBin3 trueH4muBin4 trueH4muBin5 trueH4muBin6 trueH4muBin7 trueH4muBin8 out_trueH fakeH bkg_qqzz bkg_ggzz bkg_zjets 
+process -1 -2 -3 -4 -5 -6 -7 -8 -9 1 2 3 4 5
+rate 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 38.3954190784 3.87789530711 16.03
+------------
+norm_fakeH lnU - - - - - - - - - - 10.0 - - -   # [/10, *10]
+lumi_13TeV_2018_uncorrelated lnN 1.015 1.015 1.015 1.015 1.015 1.015 1.015 1.015 1.015 1.015 1.015 1.015 1.015 -
+lumi_13TeV_correlated_16_17_18 lnN 1.02 1.02 1.02 1.02 1.02 1.02 1.02 1.02 1.02 1.02 1.02 1.02 1.02 -
+lumi_13TeV_correlated_17_18 lnN 1.002 1.002 1.002 1.002 1.002 1.002 1.002 1.002 1.002 1.002 1.002 1.002 1.002 -
+CMS_eff_m lnN 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 0.981/1.01 -
+#CMS_eff_e lnN 0.96/1.039 0.96/1.039 0.96/1.039 0.96/1.039 0.96/1.039 0.96/1.039 0.96/1.039 0.96/1.039 0.96/1.039 0.96/1.039 0.96/1.039 0.96/1.039 -
+CMS_hzz4mu_Zjets_2018 lnN - - - - - - - - - - - - - 1.152/0.868
+CMS_zz4l_mean_m_sig_2018 param 0.0 1.0
+CMS_zz4l_mean_e_sig_2018 param 0.0 1.0
+CMS_zz4l_sigma_m_sig_2018 param 0.0 0.2
+CMS_zz4l_sigma_e_sig_2018 param 0.0 0.2
+CMS_zz4l_n_sig_1_2018 param 0.0 0.05
+QCDscale_ggVV lnN - - - - - - - - - - - - 1.039/0.961 -
+QCDscale_VV lnN - - - - - - - - - - - 1.0325/0.958 - -
+pdf_gg lnN - - - - - - - - - - - - 1.032/0.968 -
+pdf_qqbar lnN - - - - - - - - - - - 1.031/0.966 - -
+kfactor_ggzz lnN - - - - - - - - - - - - 1.1 -
+#JES param 0.0 1.0
+#CMS_zjets_bkgdcompo lnN - - - - - - - - - - - - - 1.34

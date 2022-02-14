@@ -8,4 +8,4 @@ nohup python -u plot2dsigeffs.py -l -q -b --obsName="cosTheta1" --obsBins="|-1.0
 nohup python -u plot2dsigeffs.py -l -q -b --obsName="cosTheta2" --obsBins="|-1.0|-0.75|-0.5|-0.25|0.0|0.25|0.5|0.75|1.0|" >& sigeffs_cosTheta2.log &
 nohup python -u plot2dsigeffs.py -l -q -b --obsName="Phi" --obsBins="|-3.14159|-2.35619|-1.570795|-0.7853975|0.0|0.7853975|1.570795|2.35619|3.14159|" >& sigeffs_Phi.log &
 nohup python -u plot2dsigeffs.py -l -q -b --obsName="Phi1" --obsBins="|-3.14159|-2.35619|-1.570795|-0.7853975|0.0|0.7853975|1.570795|2.35619|3.14159|" >& sigeffs_Phi1.log &
-nohup python -u plot2dsigeffs.py -l -q -b --obsName="cosThetaStar" --obsBins="|-3.14159|-2.35619|-1.570795|-0.7853975|0.0|0.7853975|1.570795|2.35619|3.14159|" >& sigeffs_cosThetaStar.log &
+nohup python -u plot2dsigeffs.py -l -q -b --obsName="cosThetaStar" --obsBins="|-1.0|-0.75|-0.5|-0.25|0.0|0.25|0.5|0.75|1.0|" >& sigeffs_cosThetaStar.log &

@@ -2,8 +2,11 @@ import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
 from array import array
 from math import *
 from decimal import *
-from sample_shortnames import *
-
+from datetime import datetime
+now = datetime.now() # current date and time
+#date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+date = now.strftime("%d%m%Y")
+print "date is..................", date
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
     grootargs.append(opt)
@@ -30,6 +33,8 @@ def parseOptions():
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
+    parser.add_option('',   '--era',  dest='ERA',  type='string',default='2018',   help='Era to analyze, e.g. 2016, 2017, 2018 or Full ')
+
                         
     # store options and arguments as global variables
     global opt, args
@@ -39,9 +44,14 @@ def parseOptions():
 global opt, args, runAllSteps
 parseOptions()
 sys.argv = grootargs
-
-if (not os.path.exists("plots")):
-    os.system("mkdir plots")
+era=opt.ERA
+#if (not os.path.exists("plots")):
+#    os.system("mkdir plots")
+#if (not os.path.exists("plots_"+date)):
+if (not os.path.exists("plots_"+era+"/"+opt.OBSNAME)):
+    os.system("mkdir -p plots_"+era+"/"+opt.OBSNAME)
+if (not os.path.exists("table")):
+    os.system("mkdir table")
 
 from ROOT import *
 
@@ -50,7 +60,9 @@ setTDRStyle()
         
 datamodel = opt.UNFOLD
 
-sys.path.append('./datacardInputs')
+#sys.path.append('./datacardInputs')
+#sys.path.append('./datacardInputs_2016')
+sys.path.append('./datacardInputs_2018')
 #sys.path.append('./hres_histat_newbaseline_bugfix3')
 #sys.path.append('./lhscan_may18')
 
@@ -88,7 +100,11 @@ def plotXS(obsName, obs_bins):
     acc_ggH_powheg = {}
     pdfunc_ggH_powheg = {}
     qcdunc_ggH_powheg = {}
-    _temp = __import__('accUnc_'+obsName, globals(), locals(), ['acc','pdfUncert','qcdUncert'], -1)
+    _temp = __import__('accUnc_'+obsName+'_2018', globals(), locals(), ['acc','pdfUncert','qcdUncert'], -1) # can use for either year, or Full Run2
+    '''
+    if (opt.ERA=='Full'): _temp = __import__('accUnc_'+obsName+'_2018', globals(), locals(), ['acc','pdfUncert','qcdUncert'], -1)
+    else: _temp = __import__('accUnc_'+obsName+'_'+opt.ERA, globals(), locals(), ['acc','pdfUncert','qcdUncert'], -1)
+    '''
     acc_ggH_powheg = _temp.acc
     pdfunc_ggH_powheg = _temp.pdfUncert
     qcdunc_ggH_powheg = _temp.qcdUncert
@@ -97,12 +113,12 @@ def plotXS(obsName, obs_bins):
     ggH_powheg = []
     ggH_powheg_unc_hi = []
     ggH_powheg_unc_lo = []
+    ggH_mad = [] 
+    ggH_mad_unc_hi = [] 
+    ggH_mad_unc_lo = []
     ggH_minloHJ = []
     ggH_minloHJ_unc_hi = []
     ggH_minloHJ_unc_lo = []
-    ggH_mad = []
-    ggH_mad_unc_hi = []
-    ggH_mad_unc_lo = []
     ggH_HRes = []
     ggH_HRes_unc_hi = []
     ggH_HRes_unc_lo = []
@@ -111,17 +127,24 @@ def plotXS(obsName, obs_bins):
     ggH_powheg_NNLOunc_lo = []
     ggH_minloHJ_NNLOunc_hi = []
     ggH_minloHJ_NNLOunc_lo = []
-    ggH_mad_NNLOunc_hi = []
+    ggH_mad_NNLOunc_hi = [] 
     ggH_mad_NNLOunc_lo = []
     ggH_HRes_NNLOunc_hi = []
     ggH_HRes_NNLOunc_lo = []
     # NLO theory unc
     ggH_powheg_NLOunc_hi = []
     ggH_powheg_NLOunc_lo = []
-    ggH_minloHJ_NLOunc_hi = []
+
+    ggH_minloHJ_NLOunc_hi = [] 
     ggH_minloHJ_NLOunc_lo = []
-    ggH_mad_NLOunc_hi = []
+    ggH_mad_NLOunc_hi = [] 
     ggH_mad_NLOunc_lo = []
+##  TJ
+    ggH_powheg_NLOunc_channel_hi = []
+    ggH_powheg_NLOunc_channel_lo = []
+    ggH_minloHJ_NLOunc_channel_hi = []
+    ggH_minloHJ_NLOunc_channel_lo = []
+######################
     # XH unc
     XH = []
     XH_unc = []
@@ -210,6 +233,10 @@ def plotXS(obsName, obs_bins):
         # NLO theory unc
         ggH_powheg_NLOunc_hi.append(0.0)
         ggH_powheg_NLOunc_lo.append(0.0)
+## mass4l channel treatment  # TJ
+#	ggH_powheg_NLOunc_channel_lo.append(0.0)
+#	ggH_powheg_NLOunc_channel_hi.append(0.0)
+#########################################
         ggH_minloHJ_NLOunc_hi.append(0.0)
         ggH_minloHJ_NLOunc_lo.append(0.0)
         ggH_mad_NLOunc_hi.append(0.0)
@@ -236,7 +263,13 @@ def plotXS(obsName, obs_bins):
         stat_hi.append(0.0)
         stat_lo.append(0.0)
 
-        for channel in ['4e','4mu','2e2mu']:
+        #for channel in ['4e','4mu','2e2mu']:
+        for channel in ['2e2mu','4mu','4e']:
+	    ##TJ channel unc treatment, mass4l
+            if(channel=='4e'): index=0	
+            elif(channel=='4mu'): index=1	
+            else: index=2
+	    print "channel: ",channel, "index:   ", index	
             XH_fs = higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
             XH_fs += higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
             XH_fs += higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
@@ -277,23 +310,23 @@ def plotXS(obsName, obs_bins):
             #print "ggH_xsBR",ggH_xsBR
             #print "ggH_xsBR_emutau",higgs_xs['ggH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_emutau']
 
-            ggH_powheg[obsBin]+=ggH_xsBR*acc['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-            #ggH_minloHJ[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-            ggH_minloHJ[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-            
+            #ggH_powheg[obsBin]+=ggH_xsBR*acc['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            ggH_powheg[obsBin]+=ggH_xsBR*acc['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            #ggH_minloHJ[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            ggH_minloHJ[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
             ###try madgraph samples
             ggH_mad[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
 
             # for total uncertainty, correlate br and acc uncertainties across all channels (XH+ggH)
-            total_NNLOunc_fs_powheg_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_powheg_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_powheg_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_powheg_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_powheg_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_powheg_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_powheg_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_powheg_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
 
-            total_NNLOunc_fs_minloHJ_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_minloHJ_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_minloHJ_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_minloHJ_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_minloHJ_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_minloHJ_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_minloHJ_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_minloHJ_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
 
             total_NNLOunc_fs_mad_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
             total_NNLOunc_fs_mad_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
@@ -308,35 +341,34 @@ def plotXS(obsName, obs_bins):
             
             total_NLOunc_fs_minloHJ_hi = total_NNLOunc_fs_minloHJ_hi
             total_NLOunc_fs_minloHJ_lo = total_NNLOunc_fs_minloHJ_lo
-
+            
             total_NLOunc_fs_mad_hi = total_NNLOunc_fs_mad_hi
             total_NLOunc_fs_mad_lo = total_NNLOunc_fs_mad_lo
-            
 
             # add ggH qcd uncertainties (uncorrelated with anything else)            
             #NNLO
 
             total_NNLOunc_fs_powheg_hi += XH_qcdunc_fs
             total_NNLOunc_fs_powheg_lo += XH_qcdunc_fs
-            total_NNLOunc_fs_powheg_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NNLOunc_fs_powheg_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             total_NNLOunc_fs_minloHJ_hi += XH_qcdunc_fs
             total_NNLOunc_fs_minloHJ_lo += XH_qcdunc_fs
             if (obsName=="mass4l"):                
                 total_NNLOunc_fs_minloHJ_hi += (unc_qcd_ggH_hi
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
                 total_NNLOunc_fs_minloHJ_lo += (unc_qcd_ggH_lo
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
             else:
-                total_NNLOunc_fs_minloHJ_hi += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-                total_NNLOunc_fs_minloHJ_lo += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            
+                total_NNLOunc_fs_minloHJ_hi += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                total_NNLOunc_fs_minloHJ_lo += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+
             total_NNLOunc_fs_mad_hi += XH_qcdunc_fs
             total_NNLOunc_fs_mad_lo += XH_qcdunc_fs
-            if (obsName=="mass4l"):                
+            if (obsName=="mass4l"):
                 total_NNLOunc_fs_mad_hi += (unc_qcd_ggH_hi
                                                 *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
                 total_NNLOunc_fs_mad_lo += (unc_qcd_ggH_lo
@@ -346,27 +378,24 @@ def plotXS(obsName, obs_bins):
                                                 *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
                 total_NNLOunc_fs_mad_lo += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
                                                 *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            ##total_NNLOunc_fs_mad_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            ##total_NNLOunc_fs_mad_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-
-
+            
             #NLO
             total_NLOunc_fs_powheg_hi += XH_qcdunc_fs
             total_NLOunc_fs_powheg_lo += XH_qcdunc_fs
-            total_NLOunc_fs_powheg_hi += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NLOunc_fs_powheg_lo += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NLOunc_fs_powheg_hi += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NLOunc_fs_powheg_lo += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             print channel,total_NLOunc_fs_powheg_hi
 
             total_NLOunc_fs_minloHJ_hi += XH_qcdunc_fs
             total_NLOunc_fs_minloHJ_lo += XH_qcdunc_fs
-            total_NLOunc_fs_minloHJ_hi += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                           *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NLOunc_fs_minloHJ_lo += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                           *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            
+            total_NLOunc_fs_minloHJ_hi += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                           *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NLOunc_fs_minloHJ_lo += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                           *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+
             total_NLOunc_fs_mad_hi += XH_qcdunc_fs
             total_NLOunc_fs_mad_lo += XH_qcdunc_fs
             total_NLOunc_fs_mad_hi += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
@@ -380,24 +409,23 @@ def plotXS(obsName, obs_bins):
                 obsUnc_pdf_ggH_hi = unc_pdf_ggH_hi
                 obsUnc_pdf_ggH_lo = unc_pdf_ggH_lo
             else:
-                obsUnc_pdf_ggH_hi = pdfunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                obsUnc_pdf_ggH_lo = pdfunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                obsUnc_pdf_ggH_hi = pdfunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                obsUnc_pdf_ggH_lo = pdfunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
 
             total_NNLOunc_fs_powheg_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_powheg_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_powheg_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NNLOunc_fs_powheg_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_powheg_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NNLOunc_fs_powheg_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             
             total_NNLOunc_fs_minloHJ_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_minloHJ_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_minloHJ_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NNLOunc_fs_minloHJ_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_minloHJ_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NNLOunc_fs_minloHJ_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-
 
             total_NNLOunc_fs_mad_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_mad_lo += XH_qqpdfunc_fs
@@ -405,38 +433,35 @@ def plotXS(obsName, obs_bins):
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
             total_NNLOunc_fs_mad_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-
-            #NLO
-
             #NLO
             total_NLOunc_fs_powheg_hi += XH_qqpdfunc_fs
             total_NLOunc_fs_powheg_lo += XH_qqpdfunc_fs            
-            total_NLOunc_fs_powheg_hi += (pdfunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NLOunc_fs_powheg_hi += (pdfunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NLOunc_fs_powheg_lo += (pdfunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NLOunc_fs_powheg_lo += (pdfunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             total_NLOunc_fs_minloHJ_hi += XH_qqpdfunc_fs
             total_NLOunc_fs_minloHJ_lo += XH_qqpdfunc_fs            
-            total_NLOunc_fs_minloHJ_hi += (pdfunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NLOunc_fs_minloHJ_hi += (pdfunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NLOunc_fs_minloHJ_lo += (pdfunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NLOunc_fs_minloHJ_lo += (pdfunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-
-
+            
             total_NLOunc_fs_mad_hi += XH_qqpdfunc_fs
-            total_NLOunc_fs_mad_lo += XH_qqpdfunc_fs            
+            total_NLOunc_fs_mad_lo += XH_qqpdfunc_fs
             total_NLOunc_fs_mad_hi += (pdfunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
                                           *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
             total_NLOunc_fs_mad_lo += (pdfunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
                                           *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            
+
+
             # finally total uncertainty (different final states are correlated)
             # NNLO
             ggH_powheg_NNLOunc_hi[obsBin]+=sqrt(total_NNLOunc_fs_powheg_hi)
@@ -444,15 +469,32 @@ def plotXS(obsName, obs_bins):
             ggH_minloHJ_NNLOunc_hi[obsBin]+=sqrt(total_NNLOunc_fs_minloHJ_hi)
             ggH_minloHJ_NNLOunc_lo[obsBin]+=sqrt(total_NNLOunc_fs_minloHJ_lo) 
             ggH_mad_NNLOunc_hi[obsBin]+=sqrt(total_NNLOunc_fs_mad_hi)
-            ggH_mad_NNLOunc_lo[obsBin]+=sqrt(total_NNLOunc_fs_mad_lo) 
+            ggH_mad_NNLOunc_lo[obsBin]+=sqrt(total_NNLOunc_fs_mad_lo)
             # NLO
             ggH_powheg_NLOunc_hi[obsBin]+=sqrt(total_NLOunc_fs_powheg_hi)
             ggH_powheg_NLOunc_lo[obsBin]+=sqrt(total_NLOunc_fs_powheg_lo) 
+
+	    print "obs bin is: " , obsBin, "channel", channel, "individual total_NLOunc_fs_powheg_hi:  ",total_NLOunc_fs_powheg_hi
+	    print "obs bin is: " , obsBin, "channel", channel, "individual total_NLOunc_fs_powheg_lo:  ",total_NLOunc_fs_powheg_lo
+	    ## mass4l channel treatment    TJst
+	    if (obsName=='mass4l'): 
+		print "with mass4l index is : ", index
+    	        ggH_powheg_NLOunc_channel_hi.append(total_NLOunc_fs_powheg_hi)
+    	        ggH_powheg_NLOunc_channel_lo.append(total_NLOunc_fs_powheg_lo)
+    	        ggH_minloHJ_NLOunc_channel_hi.append(total_NLOunc_fs_minloHJ_hi)
+    	        ggH_minloHJ_NLOunc_channel_lo.append(total_NLOunc_fs_minloHJ_lo)
+		# FIXME mad MG5
             ggH_minloHJ_NLOunc_hi[obsBin]+=sqrt(total_NLOunc_fs_minloHJ_hi)
             ggH_minloHJ_NLOunc_lo[obsBin]+=sqrt(total_NLOunc_fs_minloHJ_lo) 
             ggH_mad_NLOunc_hi[obsBin]+=sqrt(total_NLOunc_fs_mad_hi)
-            ggH_mad_NLOunc_lo[obsBin]+=sqrt(total_NLOunc_fs_mad_lo) 
-                       
+            ggH_mad_NLOunc_lo[obsBin]+=sqrt(total_NLOunc_fs_mad_lo)
+            print "obs bin is: " , obsBin, "channel", channel, "ggH_powheg_NLOunc_hi    : ",ggH_powheg_NLOunc_hi          
+            print "obs bin is: " , obsBin, "channel", channel, "ggH_powheg_NLOunc_lo    : ",ggH_powheg_NLOunc_lo          
+	    print "obs bin is: " , obsBin, "channel", channel, "ggH_powheg_NLOunc_channel_hi  :",ggH_powheg_NLOunc_channel_hi 
+	    print "obs bin is: " , obsBin, "channel", channel, "ggH_powheg_NLOunc_channel_lo  :",ggH_powheg_NLOunc_channel_lo 
+	    print "obs bin is: " , obsBin, "channel", channel, "ggH_minloHJ_NLOunc_channel_hi  :",ggH_minloHJ_NLOunc_channel_hi 
+	    print "obs bin is: " , obsBin, "channel", channel, "ggH_minloHJ_NLOunc_channel_lo  :",ggH_minloHJ_NLOunc_channel_lo 
+		
         ggH_powheg[obsBin]+=XH[obsBin]
         ggH_minloHJ[obsBin]+=XH[obsBin]
         ggH_mad[obsBin]+=XH[obsBin]
@@ -473,8 +515,9 @@ def plotXS(obsName, obs_bins):
             modeldep_lo[obsBin] = -1.0*modelIndUncert["SM_125_"+obsName+"_genbin"+str(obsBin)]["uncerDn"] 
             systematics_hi[obsBin] = sqrt(max(0.0,resultsXS["SM_125_"+obsName+"_genbin"+str(obsBin)]["uncerUp"]**2-resultsXS["SM_125_"+obsName+"_genbin"+str(obsBin)+'_statOnly']["uncerUp"]**2))
             systematics_lo[obsBin] = sqrt(max(0.0,resultsXS["SM_125_"+obsName+"_genbin"+str(obsBin)]["uncerDn"]**2-resultsXS["SM_125_"+obsName+"_genbin"+str(obsBin)+'_statOnly']["uncerDn"]**2))
-            #systematics_hi[obsBin] = sqrt(max(0.0,resultsXS_LHScan["SM_125_"+obsName+"_genbin"+str(obsBin)]["uncerUp"]**2-resultsXS_LHScan["SM_125_"+obsName+"_genbin"+str(obsBin)+'_statOnly']["uncerUp"]**2))
-            #systematics_lo[obsBin] = sqrt(max(0.0,resultsXS_LHScan["SM_125_"+obsName+"_genbin"+str(obsBin)]["uncerDn"]**2-resultsXS_LHScan["SM_125_"+obsName+"_genbin"+str(obsBin)+'_statOnly']["uncerDn"]**2))
+            stat_hi[obsBin] = resultsXS["SM_125_"+obsName+"_genbin"+str(obsBin)+'_statOnly']["uncerUp"]
+            stat_lo[obsBin] = resultsXS["SM_125_"+obsName+"_genbin"+str(obsBin)+'_statOnly']["uncerDn"]
+
         else:
             modeldep_hi[obsBin] = modelIndUncert["AsimovData_"+obsName+"_genbin"+str(obsBin)]["uncerUp"]
             modeldep_lo[obsBin] = -1.0*modelIndUncert["AsimovData_"+obsName+"_genbin"+str(obsBin)]["uncerDn"] 
@@ -499,6 +542,7 @@ def plotXS(obsName, obs_bins):
             ggH_mad.append(0.0)
             ggH_mad_unc_hi.append(0.0)
             ggH_mad_unc_lo.append(0.0)
+
             #ggH_HRes.append(0.0)
             #ggH_HRes_unc_hi.append(0.0)
             #ggH_HRes_unc_lo.append(0.0)
@@ -512,8 +556,15 @@ def plotXS(obsName, obs_bins):
             #ggH_HRes_NNLOunc_hi.append(0.0)
             #ggH_HRes_NNLOunc_lo.append(0.0)
             # NLO theory unc
-            ggH_powheg_NLOunc_hi.append(0.0)
-            ggH_powheg_NLOunc_lo.append(0.0)
+
+# removing pre-existing 2 lines
+#            ggH_powheg_NLOunc_hi.append(0.0)
+#            ggH_powheg_NLOunc_lo.append(0.0)
+## test
+#	    ggH_powheg_NLOunc_channel_hi.append(0.0)
+#	    ggH_powheg_NLOunc_channel_lo.append(0.0)
+## test
+
             ggH_minloHJ_NLOunc_hi.append(0.0)
             ggH_minloHJ_NLOunc_lo.append(0.0)
             ggH_mad_NLOunc_hi.append(0.0)
@@ -579,20 +630,20 @@ def plotXS(obsName, obs_bins):
             # ggH cross sections
             ggH_xsBR = higgs_xs['ggH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]
 
-            ggH_powheg[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-            ggH_minloHJ[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]            
-            ggH_mad[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]            
+            ggH_powheg[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            ggH_minloHJ[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]            
+            ggH_mad[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
 
              # for total uncertainty, correlate br and acc uncertainties across all channels (XH+ggH)
-            total_NNLOunc_fs_powheg_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_powheg_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_powheg_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_powheg_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_powheg_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_powheg_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_powheg_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_powheg_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
 
-            total_NNLOunc_fs_minloHJ_hi = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_minloHJ_lo = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_minloHJ_hi += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_minloHJ_lo += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_minloHJ_hi = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_minloHJ_lo = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_minloHJ_hi += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_minloHJ_lo += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
 
             total_NNLOunc_fs_mad_hi = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin0']))**2
             total_NNLOunc_fs_mad_lo = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin0']))**2
@@ -603,13 +654,13 @@ def plotXS(obsName, obs_bins):
             #NNLO
             total_NNLOunc_fs_powheg_hi += XH_qcdunc_fs
             total_NNLOunc_fs_powheg_lo += XH_qcdunc_fs
-            total_NNLOunc_fs_powheg_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NNLOunc_fs_powheg_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             total_NNLOunc_fs_minloHJ_hi += XH_qcdunc_fs
             total_NNLOunc_fs_minloHJ_lo += XH_qcdunc_fs
-            total_NNLOunc_fs_minloHJ_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NNLOunc_fs_minloHJ_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_minloHJ_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_minloHJ_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             total_NNLOunc_fs_mad_hi += XH_qcdunc_fs
             total_NNLOunc_fs_mad_lo += XH_qcdunc_fs
@@ -620,17 +671,18 @@ def plotXS(obsName, obs_bins):
             #NNLO
             total_NNLOunc_fs_powheg_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_powheg_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_powheg_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NNLOunc_fs_powheg_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_powheg_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NNLOunc_fs_powheg_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             total_NNLOunc_fs_minloHJ_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_minloHJ_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_minloHJ_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NNLOunc_fs_minloHJ_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_minloHJ_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            total_NNLOunc_fs_minloHJ_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+
 
             total_NNLOunc_fs_mad_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_mad_lo += XH_qqpdfunc_fs
@@ -639,7 +691,6 @@ def plotXS(obsName, obs_bins):
             total_NNLOunc_fs_mad_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
                                            -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
-            # finally total uncertainty (different final states are correlated)
 
             # finally total uncertainty (different final states are correlated)
             # NNLO
@@ -648,7 +699,7 @@ def plotXS(obsName, obs_bins):
             ggH_minloHJ_NNLOunc_hi[bin]+=sqrt(total_NNLOunc_fs_minloHJ_hi)
             ggH_minloHJ_NNLOunc_lo[bin]+=sqrt(total_NNLOunc_fs_minloHJ_lo) 
             ggH_mad_NNLOunc_hi[bin]+=sqrt(total_NNLOunc_fs_mad_hi)
-            ggH_mad_NNLOunc_lo[bin]+=sqrt(total_NNLOunc_fs_mad_lo) 
+            ggH_mad_NNLOunc_lo[bin]+=sqrt(total_NNLOunc_fs_mad_lo)
 
             ggH_powheg[bin]+=XH[bin]
             ggH_minloHJ[bin]+=XH[bin]
@@ -683,13 +734,20 @@ def plotXS(obsName, obs_bins):
 
             data_hi_allunc[bin] = sqrt(data_hi[bin]**2+modeldep_hi[bin]**2)
             data_lo_allunc[bin] = sqrt(data_lo[bin]**2+modeldep_lo[bin]**2)
-            
-
+	    print "testing: bin is     ", bin            
+	    print "data_hi_allunc[bin]:    ", data_hi_allunc
+	    print "data_lo_allunc[bin]:    ", data_lo_allunc
         
     print 'data',data
     sumdata = 0.0
     for i in range(len(data)):
         sumdata+=data[i]
+#TJ, extending ggH_powheg_NLOunc_hi with channels
+    for k in range(len(ggH_powheg_NLOunc_channel_hi)):        
+        ggH_powheg_NLOunc_hi.append(ggH_powheg_NLOunc_channel_hi[k])
+        ggH_powheg_NLOunc_lo.append(ggH_powheg_NLOunc_channel_lo[k])
+
+
     print obsName,'sum data',sumdata
     print 'data_hi',data_hi
     print 'data_lo',data_lo
@@ -699,13 +757,14 @@ def plotXS(obsName, obs_bins):
     print 'ggH_powheg',ggH_powheg
     print 'NLO ggH_powheg_hi',ggH_powheg_NLOunc_hi
     print 'NLO ggH_powheg_lo',ggH_powheg_NLOunc_lo
+    print 'ggH_powheg_NLOunc_channel_hi', ggH_powheg_NLOunc_channel_hi
+    print 'ggH_powheg_NLOunc_channel_lo', ggH_powheg_NLOunc_channel_lo
+
     print 'NNLO ggH_powheg_hi',ggH_powheg_NNLOunc_hi
     print 'NNLO ggH_powheg_lo',ggH_powheg_NNLOunc_lo
     print 'OLD ggH_powheg_hi',ggH_powheg_unc_hi
     print 'OLD ggH_powheg_lo',ggH_powheg_unc_lo
     print 'ggH_minloHJ',ggH_minloHJ
-    print 'ggH_minloHJ_NLOunc_hi',ggH_minloHJ_NLOunc_hi
-    print 'ggH_minloHJ_NLOunc_lo',ggH_minloHJ_NLOunc_lo
     print 'ggH_minloHJ_NNLOunc_hi',ggH_minloHJ_NNLOunc_hi
     print 'ggH_minloHJ_NNLOunc_lo',ggH_minloHJ_NNLOunc_lo
     print 'ggH_mad',ggH_mad
@@ -763,6 +822,8 @@ def plotXS(obsName, obs_bins):
         print 'a_ggH_minloHJ',a_ggH_minloHJ
         print 'a_ggH_minloHJ_hi',a_ggH_minloHJ_unc_hi
         print 'a_ggH_minloHJ_lo',a_ggH_minloHJ_unc_lo
+	print 'a_ggH_powheg_unc_hi : ',a_ggH_powheg_unc_hi
+	print 'a_ggH_powheg_unc_lo : ',a_ggH_powheg_unc_lo
 
         a_ggH_mad = array('d',[ggH_mad[i] for i in range(len(ggH_mad))])
         v_ggH_mad = TVectorD(len(a_ggH_mad),a_ggH_mad)
@@ -774,7 +835,6 @@ def plotXS(obsName, obs_bins):
         print 'a_ggH_mad',a_ggH_mad
         print 'a_ggH_mad_hi',a_ggH_mad_unc_hi
         print 'a_ggH_mad_lo',a_ggH_mad_unc_lo
-
         '''
         a_ggH_HRes = array('d',[ggH_HRes[i] for i in range(len(ggH_HRes))])
         v_ggH_HRes = TVectorD(len(a_ggH_HRes),a_ggH_HRes)
@@ -820,6 +880,7 @@ def plotXS(obsName, obs_bins):
     else:
         
         if (obsName=="pT4l"): offset=20.0
+        elif (obsName=="rapidity4l"): offset=0.4
         elif (obsName=="pt_leadingjet_pt30_eta2p5"): offset=30.0
         elif (obsName=="njets_pt30_eta2p5"): offset=999.0
         else: offset = 0.0
@@ -983,25 +1044,24 @@ def plotXS(obsName, obs_bins):
     h_ggH_minloHJ.SetLineColor(ROOT.kOrange+2)
     h_ggH_minloHJ.SetLineWidth(2)
 
-
     g_ggH_mad = TGraphAsymmErrors(v_observable_2,v_ggH_mad,v_dobservable_2,v_dobservable_2,v_ggH_mad_unc_lo,v_ggH_mad_unc_hi)
     g_ggH_mad.SetFillStyle(3395);
-    g_ggH_mad.SetFillColor(ROOT.kGreen+2)
-    g_ggH_mad.SetLineColor(ROOT.kGreen+2)
+    g_ggH_mad.SetFillColor(ROOT.kPink-9)
+    g_ggH_mad.SetLineColor(ROOT.kPink-9)
     g_ggH_mad.SetLineWidth(2)
-    g_ggH_mad.SetMarkerColor(ROOT.kGreen+2)
+    g_ggH_mad.SetMarkerColor(ROOT.kPink-9)
 
     g_ggH_madBorder = TGraphAsymmErrors(v_observable_2,v_ggH_mad,v_dobservable_2,v_dobservable_2,v_ggH_mad_unc_lo,v_ggH_mad_unc_hi)
     g_ggH_madBorder.SetFillStyle(0)
-    g_ggH_madBorder.SetFillColor(ROOT.kGreen+2)
-    g_ggH_madBorder.SetLineColor(ROOT.kGreen+2)
-    g_ggH_madBorder.SetMarkerColor(ROOT.kGreen+2)
+    g_ggH_madBorder.SetFillColor(ROOT.kPink-9)
+    g_ggH_madBorder.SetLineColor(ROOT.kPink-9)
+    g_ggH_madBorder.SetMarkerColor(ROOT.kPink-9)
 
     g_ggH_made0 = TGraphAsymmErrors(v_observable,v_ggH_mad,v_dobservable,v_dobservable,v_zeros,v_zeros)
     g_ggH_made0.SetFillStyle(3395);
-    g_ggH_made0.SetFillColor(ROOT.kGreen+2)
-    g_ggH_made0.SetLineColor(ROOT.kGreen+2)
-    g_ggH_made0.SetMarkerColor(ROOT.kGreen+2) 
+    g_ggH_made0.SetFillColor(ROOT.kPink-9)
+    g_ggH_made0.SetLineColor(ROOT.kPink-9)
+    g_ggH_made0.SetMarkerColor(ROOT.kPink-9)
 
     if (obsName=="mass4l"):
         h_ggH_mad = TH1D("h_ggH_mad","h_ggH_mad",4, 0, 4)
@@ -1017,7 +1077,7 @@ def plotXS(obsName, obs_bins):
             for i in range(nBins-1):
                 h_ggH_mad.SetBinContent(i+1,v_ggH_mad[i])
 
-    h_ggH_mad.SetLineColor(ROOT.kGreen+2)
+    h_ggH_mad.SetLineColor(ROOT.kPink-9)
     h_ggH_mad.SetLineWidth(2)
    
     '''
@@ -1058,11 +1118,11 @@ def plotXS(obsName, obs_bins):
     v_ratio_minloHJ = TVectorD(len(ggH_minloHJ), array('d',[ggH_minloHJ[i]/ggH_minloHJ[i] for i in range(len(ggH_minloHJ))]))
     v_ratio_minloHJ_hi = TVectorD(len(ggH_minloHJ), array('d',[ggH_minloHJ_NNLOunc_hi[i]/ggH_minloHJ[i] for i in range(len(ggH_minloHJ))]))
     v_ratio_minloHJ_lo = TVectorD(len(ggH_minloHJ), array('d',[ggH_minloHJ_NNLOunc_lo[i]/ggH_minloHJ[i] for i in range(len(ggH_minloHJ))]))
-    
+
     v_ratio_mad = TVectorD(len(ggH_mad), array('d',[ggH_mad[i]/ggH_mad[i] for i in range(len(ggH_mad))]))
     v_ratio_mad_hi = TVectorD(len(ggH_mad), array('d',[ggH_mad_NNLOunc_hi[i]/ggH_mad[i] for i in range(len(ggH_mad))]))
     v_ratio_mad_lo = TVectorD(len(ggH_mad), array('d',[ggH_mad_NNLOunc_lo[i]/ggH_mad[i] for i in range(len(ggH_mad))]))
-
+    
     v_ratio_powheg = TVectorD(len(ggH_powheg), array('d',[ggH_powheg[i]/ggH_minloHJ[i] for i in range(len(ggH_powheg))]))
     v_ratio_powheg_hi = TVectorD(len(ggH_powheg), array('d',[ggH_powheg_NLOunc_hi[i]/ggH_minloHJ[i] for i in range(len(ggH_powheg))]))
     v_ratio_powheg_lo = TVectorD(len(ggH_powheg), array('d',[ggH_powheg_NLOunc_lo[i]/ggH_minloHJ[i] for i in range(len(ggH_powheg))]))
@@ -1160,26 +1220,26 @@ def plotXS(obsName, obs_bins):
 
     h_ratio_minloHJ.SetLineColor(ROOT.kOrange+2)
     h_ratio_minloHJ.SetLineWidth(2)
-    
+
     g_ratio_mad = TGraphAsymmErrors(v_observable_2,v_ratio_mad,v_dobservable_2,v_dobservable_2,v_ratio_mad_lo,v_ratio_mad_hi)
     g_ratio_mad.SetFillStyle(3395);
-    g_ratio_mad.SetFillColor(ROOT.kGreen+2)
-    g_ratio_mad.SetLineColor(ROOT.kGreen+2)
+    g_ratio_mad.SetFillColor(ROOT.kPink-9)
+    g_ratio_mad.SetLineColor(ROOT.kPink-9)
     g_ratio_mad.SetLineWidth(2)
-    g_ratio_mad.SetMarkerColor(ROOT.kGreen+2)
+    g_ratio_mad.SetMarkerColor(ROOT.kPink-9)
 
     g_ratio_madBorder = TGraphAsymmErrors(v_observable_2,v_ratio_mad,v_dobservable_2,v_dobservable_2,v_ratio_mad_lo,v_ratio_mad_hi)
     g_ratio_madBorder.SetFillStyle(0);
-    g_ratio_madBorder.SetFillColor(ROOT.kGreen+2)
-    g_ratio_madBorder.SetLineColor(ROOT.kGreen+2)
-    g_ratio_madBorder.SetMarkerColor(ROOT.kGreen+2)
+    g_ratio_madBorder.SetFillColor(ROOT.kPink-9)
+    g_ratio_madBorder.SetLineColor(ROOT.kPink-9)
+    g_ratio_madBorder.SetMarkerColor(ROOT.kPink-9)
 
     g_ratio_made0 = TGraphAsymmErrors(v_observable,v_ratio_mad,v_dobservable,v_dobservable,v_zeros,v_zeros)
     g_ratio_made0.SetFillStyle(3395);
-    g_ratio_made0.SetFillColor(ROOT.kGreen+2)
-    g_ratio_made0.SetLineColor(ROOT.kGreen+2)
+    g_ratio_made0.SetFillColor(ROOT.kPink-9)
+    g_ratio_made0.SetLineColor(ROOT.kPink-9)
     g_ratio_made0.SetLineWidth(2)
-    g_ratio_made0.SetMarkerColor(ROOT.kGreen+2)
+    g_ratio_made0.SetMarkerColor(ROOT.kPink-9)
 
     if (obsName=="mass4l"):
         h_ratio_mad = TH1D("h_ratio_mad","h_ratio_mad",4, 0, 4)
@@ -1195,7 +1255,7 @@ def plotXS(obsName, obs_bins):
             for i in range(nBins-1):
                 h_ratio_mad.SetBinContent(i+1,v_ratio_mad[i])
 
-    h_ratio_mad.SetLineColor(ROOT.kGreen+2)
+    h_ratio_mad.SetLineColor(ROOT.kPink-9)
     h_ratio_mad.SetLineWidth(2)
 
     g_modeldep = TGraphAsymmErrors(v_observable,v_data,v_twos,v_twos,v_modeldep_lo,v_modeldep_hi)
@@ -1220,7 +1280,8 @@ def plotXS(obsName, obs_bins):
     g_data_allunc.SetMarkerSize(1.2)
     
     if (obsName=="pT4l"):
-        label="p_{T}(H)"
+        #label="p_{T}(H)"
+        label="p^{H}_{T}"
         unit="GeV"
     elif (obsName=="massZ2"):
         label = "m(Z_{2})"
@@ -1232,13 +1293,16 @@ def plotXS(obsName, obs_bins):
         label = "N(jets)"
         unit = ""
     elif (obsName=="njets_pt30_eta2p5"):
-        label = "N(jets)"
+        #label = "N(jets)"
+        label = "N^{ j}"
         unit = ""
     elif (obsName=="pt_leadingjet_pt30_eta4p7"):
-        label = "p_{T}(jet)"
+        #label = "p_{T}(jet)"
+        label = "p^{ j}_{T}"
         unit = "GeV"
     elif (obsName=="pt_leadingjet_pt30_eta2p5"):
-        label = "p_{T}(jet)"
+        label = "p^{ j}_{T}"
+        #label = "p_{T}(jet)"
         unit = "GeV"
     elif (obsName=="absrapidity_leadingjet_pt30_eta4p7"):
         label = "|y(jet)|"
@@ -1253,7 +1317,8 @@ def plotXS(obsName, obs_bins):
         label = "|y(H)-y(jet)| |#eta|<2.5"
         unit = ""
     elif (obsName=="rapidity4l"):
-        label = "|y(H)|"
+        #label = "|y(H)|"
+        label = "|y^{H}|"
         unit = ""
     elif (obsName=="cosThetaStar"):
         label = "cos#theta*"
@@ -1279,7 +1344,8 @@ def plotXS(obsName, obs_bins):
     
     c = TCanvas("c",obsName, 1400, 1400)
     if(opt.SETLOG): c.SetLogy()
-    if (not obsName=="mass4l"): c.SetBottomMargin(0.35)
+    #if (not obsName=="mass4l"): c.SetBottomMargin(0.35)  # TJ
+    c.SetBottomMargin(0.35)
     c.SetRightMargin(0.04)
     c.SetTopMargin(0.07)
     c.SetLeftMargin(0.18)
@@ -1318,7 +1384,8 @@ def plotXS(obsName, obs_bins):
         else: dummy.SetMaximum(1.5*(max(max(a_ggH_powheg),(max(a_data)+max(a_data_hi)))))
     if (opt.SETLOG): 
         dummy.SetMinimum(0.0601*max(min(a_data),(min(a_ggH_powheg))))
-        if (obsName.startswith("pt_leading")): dummy.SetMinimum(0.0801*max(min(a_data),(min(a_ggH_powheg))))
+        #if (obsName.startswith("pt_leading")): dummy.SetMinimum(0.0801*max(min(a_data),(min(a_ggH_powheg)))) # ORIG 
+        if (obsName.startswith("pt_leading")): dummy.SetMinimum(0.0501*max(min(a_data),(min(a_ggH_powheg))))
     else: dummy.SetMinimum(0.0001)
     dummy.SetLineColor(0)
     dummy.SetMarkerColor(0)
@@ -1339,7 +1406,9 @@ def plotXS(obsName, obs_bins):
         dummy.GetXaxis().SetBinLabel(3,'')
         dummy.GetXaxis().SetBinLabel(4,'')
     if (obsName=="mass4l"):
-        dummy.GetXaxis().SetLabelSize(0.08)
+
+        #dummy.GetXaxis().SetLabelSize(0.08)
+        dummy.GetXaxis().SetLabelSize(0.00)
         dummy.GetXaxis().SetBinLabel(1,'4l')
         dummy.GetXaxis().SetBinLabel(2,'2e2#mu')
         dummy.GetXaxis().SetBinLabel(3,'4#mu')
@@ -1368,17 +1437,27 @@ def plotXS(obsName, obs_bins):
     #legend . SetTextSize(0.026)
     #legend . SetTextSize(0.029) # less info for XH
     legend . SetTextSize(0.025) # shrink margins
-    if (opt.UNBLIND): legend . AddEntry(g_data , "Data (stat. #oplus sys. unc.)", "ep")
+    #if (opt.UNBLIND): legend . AddEntry(g_data , "Data (stat. #oplus sys. unc.)", "ep")
+    #if (opt.UNBLIND): legend . AddEntry(g_data , "Data (stat #oplus sys)", "ep")
+    if (opt.UNBLIND): legend . AddEntry(g_data , "Data (stat #oplus syst)", "ep")
     #else: legend . AddEntry(g_data , "Asimov Data (stat.#oplussys. unc.)", "ep")
-    else: legend . AddEntry(g_data , "Toy Data (stat. #oplus sys. unc.)", "ep")    
+    #else: legend . AddEntry(g_data , "Toy Data (stat #oplus sys)", "ep")    
+    else: legend . AddEntry(g_data , "Toy Data (stat #oplus syst)", "ep")    
     legend . AddEntry(g_systematics,"Systematic uncertainty","l") 
+    legend . AddEntry(g_ggH_mad , "gg#rightarrowH (amcatnloFXFX) + XH", "lf")
     #legend . AddEntry(g_modeldep,"Model dependence","f") 
-    legend . AddEntry(g_ggH_mad , "gg#rightarrowH (amcatnloFXFX) + XH", "lf") 
-    legend . AddEntry(g_ggH_minloHJ , "gg#rightarrowH (NNLOPS) + XH", "lf") 
-    legend . AddEntry(g_ggH_powheg , "gg#rightarrowH (POWHEG) + XH", "lf") 
+    if (obsName.startswith('njets')):
+        legend . AddEntry(g_ggH_minloHJ , "gg#rightarrowH (NNLOPS + Pythia) + XH", "lf") 
+        legend . AddEntry(g_ggH_powheg , "gg#rightarrowH (POWHEG + Pythia) + XH", "lf") 
+        legend . AddEntry(h_XH , "XH = VBF + VH + ttH (POWHEG + Pythia)", "f")
+    else:
+        legend . AddEntry(g_ggH_minloHJ , "gg#rightarrowH (NNLOPS) + XH", "lf") 
+        legend . AddEntry(g_ggH_powheg , "gg#rightarrowH (POWHEG) + XH", "lf") 
+        legend . AddEntry(h_XH , "XH = VBF + VH + ttH (POWHEG)", "f")
+
     #legend . AddEntry(g_XH , "XH = VBF + VH + ttH", "l")
-    legend . AddEntry(h_XH , "XH = VBF + VH + ttH (POWHEG)", "f")
-    legend . AddEntry(dummy, "(LHC HXSWG YR4, m_{H}=125.09 GeV)", "")
+    legend . AddEntry(dummy, "(LHC HXSWG YR4, m_{H}=125.38 GeV)", "")
+    #legend . AddEntry(dummy, "(LHC HXSWG YR4, m^{H}=125.38 GeV)", "")
 
     legend.SetShadowColor(0);
     legend.SetFillColor(0);
@@ -1397,8 +1476,6 @@ def plotXS(obsName, obs_bins):
     #g_ggH_minloHJe0.Draw("epsame")
     g_ggH_mad.Draw("5same")
     g_ggH_madBorder.Draw("5same")
-    #g_ggH_made0.Draw("epsame")
-
     #g_XH.Draw("2same")
     #g_XH.Draw("fsame")
     h_XH.Draw("histsame")
@@ -1415,10 +1492,15 @@ def plotXS(obsName, obs_bins):
     latex2.SetTextAlign(31) # align right
     print opt.LUMISCALE
     if (not opt.LUMISCALE=="1.0"):
-        lumi = round(59.7*float(opt.LUMISCALE),1)
+        if (opt.ERA=='2016') : lumi = round(35.9*float(opt.LUMISCALE),1)
+        elif (opt.ERA=='2017') : lumi = round(41.7*float(opt.LUMISCALE),1)
+        else  : lumi = round(58.5*float(opt.LUMISCALE),1)
         latex2.DrawLatex(0.94, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
     else:
-        latex2.DrawLatex(0.94, 0.94,"59.7 fb^{-1} (13 TeV)")
+        if (opt.ERA=='2016') : latex2.DrawLatex(0.94, 0.94,"35.9 fb^{-1} (13 TeV)")
+        elif (opt.ERA=='2017') : latex2.DrawLatex(0.94, 0.94,"41.7 fb^{-1} (13 TeV)")
+        elif (opt.ERA=='2018') : latex2.DrawLatex(0.94, 0.94,"58.8 fb^{-1} (13 TeV)")
+        else : latex2.DrawLatex(0.94, 0.94,"137 fb^{-1} (13 TeV)")
     latex2.SetTextSize(0.7*c.GetTopMargin())
     latex2.SetTextFont(62)
     latex2.SetTextAlign(11) # align right
@@ -1427,7 +1509,7 @@ def plotXS(obsName, obs_bins):
     latex2.SetTextFont(52)
     latex2.SetTextAlign(11)
     #latex2.DrawLatex(0.28, 0.945, "Unpublished")
-    #latex2.DrawLatex(0.30, 0.94, "Preliminary")
+    latex2.DrawLatex(0.30, 0.94, "Preliminary")
 
     latex2.SetTextSize(0.4*c.GetTopMargin())
     latex2.SetTextFont(42)
@@ -1438,7 +1520,11 @@ def plotXS(obsName, obs_bins):
         latex2.SetTextSize(0.4*c.GetTopMargin())
         latex2.SetTextFont(42)
         latex2.SetTextAlign(31) # align right
-        latex2.DrawLatex(0.92, 0.61,"p_{T}(jet) > 30 GeV, |#eta(jet)| < 2.5")
+        if ("njets" in obsName):
+            latex2.DrawLatex(0.92, 0.61,"p^{ j}_{T} > 30 GeV, |#eta^{ j}| < 2.5")
+        if ("pt_leading" in obsName):
+            latex2.DrawLatex(0.86, 0.61,"p^{ j}_{T} > 30 GeV, |#eta^{ j}| < 2.5")
+
     if ("4p7" in obsName):
         latex2.SetTextSize(0.4*c.GetTopMargin())
         latex2.SetTextFont(42)
@@ -1450,13 +1536,25 @@ def plotXS(obsName, obs_bins):
         latex2.SetTextFont(42)
         latex2.SetTextAlign(31) # align right
         latex2.SetTextAngle(90)
-        latex2.DrawLatex(0.92, 0.77,"#frac{1}{50} #sigma(p_{T}(H) > 200 GeV)")
+        #latex2.DrawLatex(0.92, 0.77,"#frac{1}{50} #sigma(p_{T}(H) > 200 GeV)")
+        latex2.DrawLatex(0.92, 0.77,"#frac{1}{50} #sigma(p^{H}_{T} > 200 GeV)")
+
+    if (obsName.startswith("pt_leadingjet")):
+        latex2.SetTextSize(0.35*c.GetTopMargin())
+        latex2.SetTextFont(42)
+        latex2.SetTextAlign(31) # align right
+        latex2.SetTextAngle(90)
+        #latex2.DrawLatex(0.92, 0.77,"#frac{1}{50} #sigma(p_{T}(jet) > 200 GeV)")
+        latex2.DrawLatex(0.92, 0.77,"#frac{1}{50} #sigma(p^{ j}_{T} > 200 GeV)")
 
 
 
     dummy.Draw("axissame")
 
-    if (not obsName=="mass4l"):
+## fixing here
+    testno=5;
+    #if (not obsName=="mass4l"):
+    if (testno==5):
         pad = TPad("pad", "pad", 0.0, 0.0, 1.0, 1.0)
         pad.SetTopMargin(0.65)
         pad.SetRightMargin(0.04)
@@ -1471,11 +1569,14 @@ def plotXS(obsName, obs_bins):
             dummy2 = TH1D("dummy2","dummy2", 4, 0, 4)
             for i in range(1,5):
                 dummy2.SetBinContent(i,1.02)
-            dummy2.GetXaxis().SetLabelSize(0.08)
+	    
+            #dummy2.GetXaxis().SetLabelSize(0.08)
+            dummy2.GetXaxis().SetLabelSize(0.15)
             dummy2.GetXaxis().SetBinLabel(1,'4l')
             dummy2.GetXaxis().SetBinLabel(2,'2e2#mu')
             dummy2.GetXaxis().SetBinLabel(3,'4#mu')
             dummy2.GetXaxis().SetBinLabel(4,'4e')        
+	    
         else:
             if ("jet" in obsName and (not obsName.startswith("njets"))):
                 dummy2 = TH1D("dummy2","dummy2", int(float(obs_bins[nBins-1])-float(obs_bins[1])), float(obs_bins[1]), float(obs_bins[nBins-1]))
@@ -1503,7 +1604,10 @@ def plotXS(obsName, obs_bins):
             dummy2.GetXaxis().SetBinLabel(4,' 3')
             dummy2.GetXaxis().SetBinLabel(5,'#geq 4')
         elif (label=="inclusive"):
-            dummy2.GetXaxis().SetTitle("")
+            #dummy2.GetXaxis().SetTitle("")
+            #dummy2.GetXaxis().SetTitle("Higgs decay final states")
+            dummy2.GetXaxis().SetTitle("Final states")
+            dummy2.GetXaxis().SetLabelSize(0.06)
         elif (unit==""):
             dummy2.GetXaxis().SetTitle(label)
         else:
@@ -1523,6 +1627,7 @@ def plotXS(obsName, obs_bins):
         dummy2.SetMinimum(0.0)
         dummy2.Draw("hist")
         dummy2.GetYaxis().CenterTitle()
+        if (label=="inclusive"): dummy2.GetXaxis().SetTitleSize(0.05)
         dummy2.GetYaxis().SetTitleSize(0.04)
         dummy2.GetYaxis().SetTitleOffset(1.5)
         dummy2.GetYaxis().SetTitleSize(0.03)
@@ -1553,6 +1658,13 @@ def plotXS(obsName, obs_bins):
         dummy2.Draw("axissame")
 
     if (obsName=="pT4l"):
+        box = TPaveText(240,-0.38,260,-0.09)
+        box.SetLineColor(0)
+        box.SetFillColor(0)
+        box.AddText("   ")
+        box.Draw("same")
+
+    if (obsName.startswith("pt_leadingjet")):
         box = TPaveText(240,-0.4,260,-0.1)
         box.SetLineColor(0)
         box.SetFillColor(0)
@@ -1567,10 +1679,20 @@ def plotXS(obsName, obs_bins):
 
     if (not opt.UNBLIND): set_log = set_log + '_asimov'
  
-    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.pdf')
-    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.png')
-    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.root')
-    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.C')
+#    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.pdf')
+#    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.png')
+#    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.root')
+#    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.C')
+
+    c.SaveAs('plots_'+era+'/'+opt.OBSNAME+'/'+obsName+'_unfoldwith_'+datamodel+set_log+'.pdf')
+    c.SaveAs('plots_'+era+'/'+opt.OBSNAME+'/'+obsName+'_unfoldwith_'+datamodel+set_log+'.png')
+    c.SaveAs('plots_'+era+'/'+opt.OBSNAME+'/'+obsName+'_unfoldwith_'+datamodel+set_log+'.root')
+    c.SaveAs('plots_'+era+'/'+opt.OBSNAME+'/'+obsName+'_unfoldwith_'+datamodel+set_log+'.C')
+
+
+
+
+
     #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.pdf')
     #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.png')
     #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.root')

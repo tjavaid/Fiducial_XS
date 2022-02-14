@@ -3,6 +3,14 @@ from array import array
 from math import *
 from decimal import *
 from sample_shortnames import *
+#from sample_shortnames_2016 import *
+#from sample_shortnames_2017 import *
+#from sample_shortnames_2018 import *
+from datetime import datetime
+now = datetime.now() # current date and time
+#date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+date = now.strftime("%d%m%Y")
+print "date is..................", date
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -20,7 +28,7 @@ def parseOptions():
     # input options
     parser.add_option('-d', '--dir',    dest='SOURCEDIR',  type='string',default='./', help='run from the SOURCEDIR as working area, skip if SOURCEDIR is an empty string')
     parser.add_option('',   '--modelName',dest='MODELNAME',type='string',default='SM', help='Name of the Higgs production or spin-parity model, default is "SM", supported: "SM", "ggH", "VBF", "WH", "ZH", "ttH", "exotic","all"')
-    parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "mass4l", "pT4l", "massZ2", "rapidity4l", "cosThetaStar", "nets_reco_pt30_eta4p7"')
+    parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='mass4l',   help='Name of the observalbe, supported: "mass4l", "pT4l", "massZ2", "rapidity4l", "cosThetaStar", "nets_reco_pt30_eta4p7"')
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
     parser.add_option('-f', '--doFit', action="store_true", dest='DOFIT', default=False, help='doFit, default false')
     parser.add_option('-p', '--doPlots', action="store_true", dest='DOPLOTS', default=False, help='doPlots, default false')
@@ -28,7 +36,8 @@ def parseOptions():
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
-                       
+    parser.add_option('',   '--year',  dest='YEAR',  type='string',default='2018',   help='Year to analyze, e.g. 2016, 2017 or 2018 ')                       
+    parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
     # store options and arguments as global variables
     global opt, args
     (opt, args) = parser.parse_args()
@@ -38,14 +47,22 @@ global opt, args, runAllSteps
 parseOptions()
 sys.argv = grootargs
 
+year = opt.YEAR
+print "year being processed: ",year
+
 doFit = opt.DOFIT
 doPlots = opt.DOPLOTS
 
-if (not os.path.exists("plots") and doPlots):
-    os.system("mkdir plots")
+#if (not os.path.exists("plots_"+year+"_"+date)):
+#    os.system("mkdir plots_"+year+"_"+date)
+#if (not os.path.exists("Eff_plots_"+year+"/"+opt.OBSNAME)):
+#    os.system("mkdir -p Eff_plots_"+year+"/"+opt.OBSNAME)
+
+#if (not os.path.exists("plots") and doPlots):
+#    os.system("mkdir plots")
 
 from ROOT import *
-from LoadData import *
+#from LoadData import *
 #LoadData(opt.SOURCEDIR)
 save = ""
 
@@ -54,6 +71,9 @@ RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 if (opt.DOPLOTS and os.path.isfile('tdrStyle.py')):
     from tdrStyle import setTDRStyle
     setTDRStyle()
+    
+    if (not os.path.exists("Eff_plots_"+year+"/"+opt.OBSNAME)):
+        os.system("mkdir -p Eff_plots_"+year+"/"+opt.OBSNAME)
 
 Histos = {}
 wrongfrac = {}
@@ -93,6 +113,8 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
     gSystem.AddIncludePath("-I$CMSSW_BASE/src/ ")
     gSystem.Load("$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so")
     gSystem.AddIncludePath("-I$ROOFITSYS/include")
+
+    #recoweight = "genWeight*pileupWeight*dataMCWeight"
     
     if ("NNLOPS" in sample or "nnlops" in sample):
         print ("Will skip: "+ sample)
@@ -103,7 +125,7 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
     #recoweight = "genWeight"
     #recoweight = "totalWeight"
     #recoweight = "1.0"
-
+    
     obs_reco_low = obs_bins[recobin]
     obs_reco_high = obs_bins[recobin+1]
 
@@ -123,21 +145,30 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
     print List
 
     for Sample in List:
+	
         if ("NNLOPS" in Sample or "nnlops" in Sample):
             print ("Skipping: "+ sample)
             recoweight = "genWeight*pileupWeight*dataMCWeight"
             continue
         else:
             recoweight = "genWeight*pileupWeight*dataMCWeight"
-
+	
         if (not Sample in Tree): continue
         if (not Tree[Sample]): continue
         i_sample = i_sample+1
+	#if (Sample.startswith("VBF")):
+	#    recoweight = "(1.0)*pileupWeight*dataMCWeight"
 
-        shortname = sample_shortnames[Sample]
+#        shortname = sample_shortnames[Sample]
+	if year =="2018": shortname = sample_shortnames_2018[Sample]
+        elif year =="2017": shortname = sample_shortnames_2017[Sample]
+        else: shortname = sample_shortnames_2016[Sample]
+        print "short name is: ",shortname
+
         processBin = shortname+'_'+channel+'_'+opt.OBSNAME+'_genbin'+str(genbin)+'_recobin'+str(recobin)
 
-        if ((not "jet" in opt.OBSNAME) and abs(genbin-recobin)>1):
+#        if ((not "jet" in opt.OBSNAME) and abs(genbin-recobin)>1):
+	if (((not "jet" in opt.OBSNAME) or (not "Jet" in opt.OBSNAME) or (not "j1" in opt.OBSNAME) or (not "j2" in opt.OBSNAME) or (not "4lj" in opt.OBSNAME)) and abs(genbin-recobin)>1):
             acceptance[processBin] = 0.0
             dacceptance[processBin] = 0.0
             acceptance_4l[processBin] = 0.0
@@ -164,9 +195,11 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
 
         cutobs_reco = "("+obs_reco+">="+str(obs_reco_low)+" && "+obs_reco+"<"+str(obs_reco_high)+")"
         cutobs_gen = "("+obs_gen+">="+str(obs_gen_low)+" && "+obs_gen+"<"+str(obs_gen_high)+")"
-        if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME)):
-            cutobs_reco_jesup = "("+obs_reco+"_jesup"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesup"+"<"+str(obs_reco_high)+")"
-            cutobs_reco_jesdn = "("+obs_reco+"_jesdn"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesdn"+"<"+str(obs_reco_high)+")"
+        print "cutobs_gen : ", cutobs_gen
+#        if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME)):
+	if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME) or ("j1" in opt.OBSNAME)  or ("j2" in opt.OBSNAME) or ("4lj" in opt.OBSNAME)): 
+           cutobs_reco_jesup = "("+obs_reco+"_jesup"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesup"+"<"+str(obs_reco_high)+")"
+           cutobs_reco_jesdn = "("+obs_reco+"_jesdn"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesdn"+"<"+str(obs_reco_high)+")"
             
         cutobs_gen_otherfid = "(("+obs_gen+"<"+str(obs_gen_low)+" && "+obs_gen+">="+str(obs_gen_lowest)+") || ("+obs_gen+">="+str(obs_gen_high)+" && "+obs_gen+"<="+str(obs_gen_highest)+"))"
         cutm4l_gen     = "(GENmass4l>"+str(m4l_low)+" && GENmass4l<"+str(m4l_high)+")"
@@ -223,7 +256,8 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
         Histos[processBin+"reconoth4l"].Sumw2() 
         Histos[processBin+"reconoth4l_inc"] = TH1D(processBin+"reconoth4l_inc", processBin+"reconoth4l_inc", m4l_bins, m4l_low, m4l_high)
         Histos[processBin+"reconoth4l_inc"].Sumw2()                 
-        if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME)):
+        #if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME)):
+	if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME) or ("j1" in opt.OBSNAME)  or ("j2" in opt.OBSNAME) or ("4lj" in opt.OBSNAME)): 
             Histos[processBin+"recoh4l_jesup"] = TH1D(processBin+"recoh4l_jesup", processBin+"recoh4l_jesup", m4l_bins, m4l_low, m4l_high)
             Histos[processBin+"recoh4l_jesup"].Sumw2()
             Histos[processBin+"recoh4l_jesdn"] = TH1D(processBin+"recoh4l_jesdn", processBin+"recoh4l_jesdn", m4l_bins, m4l_low, m4l_high)
@@ -257,7 +291,8 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
         Tree[Sample].Draw("mass4l >> "+processBin+"reco","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1)","goff") 
         Tree[Sample].Draw("mass4l >> "+processBin+"reco_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1)","goff")
         Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+")","goff") 
-        if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME)):
+#        if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME)):
+	if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME) or ("j1" in opt.OBSNAME) or ("j2" in opt.OBSNAME) or ("4lj" in opt.OBSNAME)):
             Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l_jesup","("+recoweight+"*passedFullSelection)*(passedFullSelection==1 && "+cutm4l_reco+" && "+cutobs_reco_jesup+" && "+cuth4l_reco+")","goff")
             Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l_jesdn","("+recoweight+"*passedFullSelection)*( passedFullSelection==1 && "+cutm4l_reco+" && "+cutobs_reco_jesdn+" && "+cuth4l_reco+")","goff")
         Tree[Sample].Draw("mass4l >> "+processBin+"reconoth4l_inc","("+recoweight+")*(passedFullSelection==1 && "+cutm4l_reco+" &&  "+cutnoth4l_reco+")","goff") 
@@ -297,6 +332,7 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             print "error checking histos processBin_reconoth4l integral: ", Histos[processBin+"reconoth4l"].Integral()
             binfrac_wrongfrac[processBin] = Histos[processBin+"reconoth4l"].Integral()/Histos[processBin+"reconoth4l_inc"].Integral()
             print "error checking binfrac_wrongfrac: ", binfrac_wrongfrac[processBin]
+	   # dbinfrac_wrongfrac[processBin] = sqrt(binfrac_wrongfrac[processBin]*(1-binfrac_wrongfrac[processBin])/Histos[processBin+"reconoth4l_inc"].Integral())
             if (binfrac_wrongfrac[processBin]<0):    
                 binfrac_wrongfrac[processBin] = -1
                 dbinfrac_wrongfrac[processBin] = -1
@@ -326,6 +362,7 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             effrecotofid[processBin] = Histos[processBin+"recoh4lfid"].Integral()/Histos[processBin+"fid"].Integral()
 	    print "inside sqrt deff num", effrecotofid[processBin]*(1-effrecotofid[processBin]), "inside sqrt deff den", Histos[processBin+"fid"].Integral() 
 	    if (effrecotofid[processBin]*(1-effrecotofid[processBin])/Histos[processBin+"fid"].Integral()>0):
+	    #if (effrecotofid[processBin]*(1-effrecotofid[processBin])/Histos[processBin+"fid"].Integral()>=0):
                 deffrecotofid[processBin] = sqrt(effrecotofid[processBin]*(1-effrecotofid[processBin])/Histos[processBin+"fid"].Integral())
 #	    print "effrecotofid     numerator========", Histos[processBin+"recoh4lfid"].Integral() 
 #	    print "effrecotofid     denominator========", Histos[processBin+"fid"].Integral()
@@ -353,8 +390,8 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             outinratio[processBin] = -1.0
             doutinratio[processBin] = -1.0
             
-        if (opt.OBSNAME == "nJets" or opt.OBSNAME.startswith("njets") or ("jet" in opt.OBSNAME)):
-            
+#        if (opt.OBSNAME == "nJets" or opt.OBSNAME.startswith("njets") or ("jet" in opt.OBSNAME)):
+	if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME) or ("j1" in opt.OBSNAME) or ("j2" in opt.OBSNAME) or ("4lj" in opt.OBSNAME)):
             if (Histos[processBin+"recoh4l"].Integral()>0):                
                 lambdajesup[processBin] = (Histos[processBin+"recoh4l_jesup"].Integral()-Histos[processBin+"recoh4l"].Integral())/Histos[processBin+"recoh4l"].Integral()
                 lambdajesdn[processBin] = (Histos[processBin+"recoh4l_jesdn"].Integral()-Histos[processBin+"recoh4l"].Integral())/Histos[processBin+"recoh4l"].Integral()
@@ -418,50 +455,99 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             CMS_zz4l_sigma_sig = RooRealVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig",0.0,-0.2,0.2);
             CMS_zz4l_mean_sig  = RooRealVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig",0.0,-0.02,0.02);
 
-	    if (channel=='2e2mu'):
-                #CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.771931539+(0.998407660986)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.260469656+(0.995095874123)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.42180192725+(0.0100469936221)*(@0-125))",RooArgList(MH))                                                          
-                CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.55330758963+(0.00797274642218)*(@0-125))",RooArgList(MH))                             
-                #CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.927601791812)+(0*@0)",RooArgList(MH))
-                CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.947414158515+(0)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(3.18098806656+(-0.0188855891779)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(3.33147279858+(-0.0438375854704)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.56743054428)+(0*@0)",RooArgList(MH))
-                CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.52497361611+(0)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(3.98349053402+(0.0517139624607)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(5.20522265056+(0)*(@0-125))",RooArgList(MH))
+            #if (channel=='2e2mu'):
+            if (channel=='2e2mu' or channel=='4l'):   # FIXME, temporary fix for 4l  (for mass4l obs. only)
+                if (year=='2018'): 
+                    #CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.771931539+(0.998407660986)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.260469656+(0.995095874123)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.42180192725+(0.0100469936221)*(@0-125))",RooArgList(MH))                                                          
+                    CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.55330758963+(0.00797274642218)*(@0-125))",RooArgList(MH))                                                          
+                    #CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.927601791812)+(0*@0)",RooArgList(MH))
+                    CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.947414158515+(0)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(3.18098806656+(-0.0188855891779)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(3.33147279858+(-0.0438375854704)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.56743054428)+(0*@0)",RooArgList(MH))
+                    CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.52497361611+(0)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(3.98349053402+(0.0517139624607)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(5.20522265056+(0)*(@0-125))",RooArgList(MH))
+                elif(year=='2017'):
+                    CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.524+(0.00248708+1)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.77228+(0.00526163)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.967963+(-0.0047248)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(3.69774+(0)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.51606+(-0.000272186)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(6.01048+(0)*(@0-125))",RooArgList(MH))                
+                else:  # 2016
+                    CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.539+(-0.00679774+1)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.64632+(0.016435)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.905389+(0.0029819)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(3.90164+(0)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.5737+(0.00776476)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(4.33416+(0)*(@0-125))",RooArgList(MH))
+
 
             if (channel=='4e'):
-                #CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.711610542+(0.994980862782)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(123.5844824+(0.985478630993)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.69738413126+(0.0100692479936)*(@0-125))",RooArgList(MH))                                                          
-                CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(2.06515102908+(0.0170917403402)*(@0-125))",RooArgList(MH))                              
-                #CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.744232722334)+(0*@0)",RooArgList(MH))
-                CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.948100247167+(0)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(5.54037295934+(-0.0686672890921)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(4.50639853892+(0)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.39075508491)+(0*@0)",RooArgList(MH))
-                CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.50095152675+(0)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(5.52294539756+(0.194030101663)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(8.41693578742+(0.219719825966)*(@0-125))",RooArgList(MH))
+                if (year=='2018'):
+                    #CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.711610542+(0.994980862782)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(123.5844824+(0.985478630993)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.69738413126+(0.0100692479936)*(@0-125))",RooArgList(MH))                                                          
+                    CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(2.06515102908+(0.0170917403402)*(@0-125))",RooArgList(MH))                                                          
+                    #CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.744232722334)+(0*@0)",RooArgList(MH))
+                    CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.948100247167+(0)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(5.54037295934+(-0.0686672890921)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(4.50639853892+(0)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.39075508491)+(0*@0)",RooArgList(MH))
+                    CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.50095152675+(0)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(5.52294539756+(0.194030101663)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(8.41693578742+(0.219719825966)*(@0-125))",RooArgList(MH))
+                elif (year=='2017'):
+                    CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.1+(-0.00262293+1)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(2.38283+(0.0155)*(@0-125))",RooArgList(MH))    
+                    CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.972669+(-0.00597402)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(5.05142+(0)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.62625+(0.0121146)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(6.30057+(0)*(@0-125))",RooArgList(MH))
+                else:   # 2016
+                    CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.194+(-0.0123934+1)",RooArgList(MH))
+                    CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(2.09076+(0.0153247)*(@0-125))",RooArgList(MH))    
+                    CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(0.778691+(-0.00177387)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(6.85936+(0)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.47389+(0.00503384)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(7.24158+(0)*(@0-125))",RooArgList(MH))
+
 
             if (channel=='4mu'):
-                 #CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.79931766+(0.997772599479)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.820536957+(0.999619883119)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.12879491843+(0.00905588096292)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.09001384743+(0.00899911411679)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(1.25651736389)+(0*@0)",RooArgList(MH))
-                CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(1.23329827124+(0)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(2.03705433186+(-0.00786186895228)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(2.04575884495+(0)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.94273283715)+(0*@0)",RooArgList(MH))
-                CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.84386824883+(0)*(@0-125))",RooArgList(MH))
-                #CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(2.57493609201+(0.00406135415709)*(@0-125))",RooArgList(MH))
-                CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(2.98483993137+(0)*(@0-125))",RooArgList(MH))
-            
-        
-            if (channel == "4l"): signal  = RooDoubleCB("signal","signal", mass4l, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
+                if (year=='2018'):
+                    #CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.79931766+(0.997772599479)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.820536957+(0.999619883119)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.12879491843+(0.00905588096292)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.09001384743+(0.00899911411679)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(1.25651736389)+(0*@0)",RooArgList(MH))
+                    CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(1.23329827124+(0)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(2.03705433186+(-0.00786186895228)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(2.04575884495+(0)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.94273283715)+(0*@0)",RooArgList(MH))
+                    CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.84386824883+(0)*(@0-125))",RooArgList(MH))
+                    #CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(2.57493609201+(0.00406135415709)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(2.98483993137+(0)*(@0-125))",RooArgList(MH))
+                elif (year=='2017'):
+                    CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.82+(-0.000560694+1)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.16647+(0.0124833)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(1.23329827124+(0)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(2.07185+(0)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.92338+(0.0109082)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(2.90336+(0)*(@0-125))",RooArgList(MH))        
+                else:  # 2016
+                    CMS_zz4l_mean = RooFormulaVar("CMS_zz4l_mean_sig","CMS_zz4l_mean_sig","(124.801+(-0.00230642+1)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_sigma = RooFormulaVar("CMS_zz4l_sigma_sig","CMS_zz4l_sigma_sig","(1.20385+(0.00862539)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha = RooFormulaVar("CMS_zz4l_alpha","CMS_zz4l_alpha","(1.29006+(-0.0040219)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n = RooFormulaVar("CMS_zz4l_n","CMS_zz4l_n","(2.1216+(0)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.90093+(-0.0017352)*(@0-125))",RooArgList(MH))
+                    CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(2.7194+(0)*(@0-125))",RooArgList(MH))
+
+
+
+            if (channel == "4l"): signal  = RooDoubleCB("signal","signal", mass4l, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)  # FIXME, parameter assignment issue, 
             if (channel == "4e"): signal  = RooDoubleCB("signal","signal", mass4e, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
             if (channel == "4mu"): signal  = RooDoubleCB("signal","signal", mass4mu, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
             if (channel == "2e2mu"): signal  = RooDoubleCB("signal","signal", mass2e2mu, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
@@ -582,14 +668,14 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
                 #print " "
                 #print " "   
                 
-            c = TCanvas("c","c",750,750)
+            #c = TCanvas("c","c",750,750)
+            c = TCanvas("c","c",750,800)
             SetOwnership(c,False)
             c.cd()
             #c.SetLogy()
  
             #hs.SetMaximum(1.15*hs.GetMaximum())
             hs.SetMaximum(2.2*hs.GetMaximum())
-            #hs.SetMaximum(3*hs.GetMaximum())
             hs.SetMinimum(0.1)
             hs.Draw("ehist")
             if (channel == "4l"): hs.GetXaxis().SetTitle("m_{4l} (GeV)")
@@ -618,6 +704,20 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             latex2.SetTextSize(0.35*c.GetTopMargin())
             latex2.SetTextFont(42)
             latex2.DrawLatex(xval, 0.68, str(obs_reco_low)+" < "+obs_reco+" < "+str(obs_reco_high) )
+            
+            print opt.LUMISCALE
+            if (not opt.LUMISCALE=="1.0"):
+                if (year=='2016') : lumi = round(35.9*float(opt.LUMISCALE),1)
+                elif (year=='2017') : lumi = round(41.7*float(opt.LUMISCALE),1)
+                else  : lumi = round(58.5*float(opt.LUMISCALE),1)
+                latex2.DrawLatex(0.80, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
+            else:
+                if (year=='2016') : latex2.DrawLatex(0.80, 0.94,"35.9 fb^{-1} (13 TeV)")
+                elif (year=='2017') : latex2.DrawLatex(0.80, 0.94,"41.7 fb^{-1} (13 TeV)")
+                elif (year=='2018') : latex2.DrawLatex(0.80, 0.94,"58.8 fb^{-1} (13 TeV)")
+                else : latex2.DrawLatex(0.80, 0.94,"137 fb^{-1} (13 TeV)")
+
+
             if (doFit):
                 latex2.DrawLatex(xval, 0.64, "eff. = %.3f #pm %.3f" % (effrecotofid[processBin],deffrecotofid[processBin]))
                 latex2.DrawLatex(xval, 0.60, "acc. = %.3f #pm %.3f" % (acceptance[processBin],dacceptance[processBin]))
@@ -637,8 +737,10 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
                 latex2.DrawLatex(xval, 0.52, "N_{wrong comb.}^{MC} = "+str(int(n_wrongsig)) )
                 latex2.DrawLatex(xval, 0.44, "eff^{MC} = %.3f #pm %.3f" % (effrecotofid[processBin],deffrecotofid[processBin]))
             
-            c.SaveAs("plots/"+processBin+"_effs_"+recoweight+".png")
-            c.SaveAs("plots/"+processBin+"_effs_"+recoweight+".pdf")
+#            c.SaveAs("plots/"+processBin+"_effs_"+recoweight+".png")
+            #c.SaveAs("plots_"+date+"/"+processBin+"_effs_"+recoweight+".png")
+            c.SaveAs("Eff_plots_"+year+"/"+opt.OBSNAME+"/"+processBin+"_effs_"+recoweight+".png")
+            c.SaveAs("Eff_plots_"+year+"/"+opt.OBSNAME+"/"+processBin+"_effs_"+recoweight+".pdf")
 
 
 m4l_bins = 35
@@ -653,14 +755,22 @@ obs_reco_high = 140.0
 obs_gen_low = 105.0
 obs_gen_high = 140.0
 
+#test 
 obs_reco = opt.OBSNAME 
 obs_gen = "GEN"+opt.OBSNAME 
 
+if (obs_reco.startswith("Tau")):
+    obs_gen = "GEN_"+opt.OBSNAME
 # variables measured in absolute values
 
 if (opt.OBSNAME == "rapidity4l"):
     obs_reco = "abs(rapidity4l)"
     obs_gen = "abs(GENrapidity4l)"
+
+
+if (opt.OBSNAME == "dEtaj1j2"):
+    obs_reco = "abs(dEtaj1j2)"
+    obs_gen = "abs(GENdEtaj1j2)"
 
 print "obs_reco is :  ", obs_reco
 print "obs_gen is :  ", obs_gen
@@ -710,7 +820,21 @@ if (opt.OBSNAME == "Phi"):
 if (opt.OBSNAME == "Phi1"):
     obs_reco = "abs(Phi1)"
     obs_gen = "abs(GENPhi1)"
-'''    
+# new obs.
+if (opt.OBSNAME == "pT4lj"):
+    obs_reco = "pT4lj"
+    obs_gen = "GENpT4lj"
+if (opt.OBSNAME == "pTj2"):
+    obs_reco = "pTj2"
+    obs_gen = "GENpTj2"
+if (opt.OBSNAME == "mass4lj"):
+    obs_reco = "mass4lj"
+    obs_gen = "GENmass4lj"
+if (opt.OBSNAME == "mj1j2"):
+    obs_reco = "mj1j2"
+    obs_gen = "GENmj1j2"
+'''
+    
 #obs_bins = {0:(opt.OBSBINS.split("|")[1:((len(opt.OBSBINS)-1)/2)]),1:['0','inf']}[opt.OBSNAME=='inclusive'] 
 obs_bins = opt.OBSBINS.split("|") 
 if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')): 
@@ -719,7 +843,17 @@ obs_bins.pop()
 obs_bins.pop(0) 
 
 List = []
-for long, short in sample_shortnames.iteritems():
+if year=="2018": from LoadData_2018 import *;
+elif year=="2017": from LoadData_2017 import *;
+else : from LoadData_2016 import *;
+
+if year=="2018": temp_list = sample_shortnames_2018.iteritems()
+elif year=="2017": temp_list = sample_shortnames_2017.iteritems()
+else : temp_list = sample_shortnames_2016.iteritems()
+print "temp_list is  ", temp_list
+
+#for long, short in sample_shortnames.iteritems():
+for long, short in temp_list:
     #if (not ("WH" in short) or ("ttH" in short) or ("ZH" in short)): continue
     #if (not ("ggH" in short)): continue
     #if (not "VBF" in short): continue
@@ -742,7 +876,9 @@ ext=''
 if (not opt.CHAN==''):
     ext='_'+opt.CHAN
 
-with open('datacardInputs/inputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
+#with open('datacardInputs/inputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
+#with open('datacardInputs_'+year+'/inputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
+with open('datacardInputs_'+year+'/inputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
     f.write('acc = '+str(acceptance)+' \n')
     f.write('dacc = '+str(dacceptance)+' \n')
     f.write('acc_4l = '+str(acceptance_4l)+' \n')
@@ -759,7 +895,9 @@ with open('datacardInputs/inputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
     f.write('lambdajesup = '+str(lambdajesup)+' \n')
     f.write('lambdajesdn = '+str(lambdajesdn)+' \n')
 
-with open('datacardInputs/moreinputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
+#with open('datacardInputs/moreinputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
+#with open('datacardInputs_'+year+'/moreinputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
+with open('datacardInputs_'+year+'/moreinputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
     f.write('CB_mean = '+str(CB_mean_post)+' \n')
     #f.write('CB_dmean = '+str(CB_dmean_post)+' \n')
     f.write('CB_sigma = '+str(CB_sigma_post)+' \n')
