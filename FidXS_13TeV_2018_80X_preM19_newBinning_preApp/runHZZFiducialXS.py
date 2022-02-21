@@ -73,11 +73,13 @@ def parseOptions():
         parser.error('Bin boundaries not specified for differential measurement. Exiting...')
         sys.exit()
 
-    dirToExist = ['xs_125.0_2016','xs_125.0_2017','xs_125.0_2018']
+#    dirToExist = ['xs_125.0_2016','xs_125.0_2017','xs_125.0_2018']
+    dirToExist = ['xs_125.0_2016','xs_125.0_2017','xs_125.0_2018','datacardInputs_2016','datacardInputs_2017','datacardInputs_2018']
     for dir in dirToExist:
         if not os.path.isdir(os.getcwd()+'/'+dir+'/'):
-            parser.error(os.getcwd()+'/'+dir+'/ is not a directory. Exiting...')
-            sys.exit()
+            cmd = 'mkdir '+dir; processCmd(cmd,1)
+#            parser.error(os.getcwd()+'/'+dir+'/ is not a directory. Exiting...')
+#            sys.exit()
 
 ### Define function for processing of os command
 def processCmd(cmd, quiet = 0):
