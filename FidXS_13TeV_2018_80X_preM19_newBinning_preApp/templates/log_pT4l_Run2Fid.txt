@@ -1,5 +1,0 @@
-nohup: ignoring input
-[?1034hTraceback (most recent call last):
-  File "runHZZFiducialXS.py", line 17, in <module>
-    from sample_shortnames_bkg import *
-ImportError: No module named sample_shortnames_bkg

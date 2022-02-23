@@ -32,8 +32,41 @@ voms-proxy-init -voms cms
 Final step is to clone the correct verison of the code. At the moment the working version can be found on the ```CMSSW_10_X``` branch, which can be cloned via the following command:
 ```
 cd $CMSSW_BASE/src/
-git clone -b CMSSW_10_X git@github.com:vukasinmilosevic/Fiducial_XS.git
+#git clone -b CMSSW_10_X git@github.com:vukasinmilosevic/Fiducial_XS.git
+git clone -b CMSSW_10_X_Dev2 git@github.com:ram1123/Fiducial_XS.git
+cd Fiducial_XS
 ```
+
+Now, all steps can be run using script `RunEverything.py`. All available options are:
+
+```
+usage: RunEverything.py [-h] [-s {1,2,3,4,5}] [-c CHANNELS [CHANNELS ...]]
+                        [-p NTUPLEDIR] [-m HIGGSMASS] [-r {0,1}]
+
+Input arguments
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s {1,2,3,4,5}        Which step to run
+  -c CHANNELS [CHANNELS ...]
+                        list of channels
+  -p NTUPLEDIR          Path of ntuples
+  -m HIGGSMASS          Higgs mass
+  -r {0,1}              if 1 then it will run the commands else it will just
+                        print the commands
+```
+
+Command to run:
+
+```bash
+python RunEverything.py -r 1 -s 1 # step-1
+python RunEverything.py -r 1 -s 2 # step-2
+python RunEverything.py -r 1 -s 3 # step-3
+python RunEverything.py -r 1 -s 4 # step-4
+python RunEverything.py -r 1 -s 5 # step-5
+```
+
+# Detailed instructions
 
 ## 2. Running the measurement
 
@@ -53,7 +86,7 @@ python collectInputs.py # currently only active for mass4l, calls be uncommented
 Running the plotter:
 
 ```
-#skipping for mass4l 
+#skipping for mass4l
 #python -u plot2dsigeffs.py -l -q -b --obsName="pT4l" --obsBins="|0|10|20|30|45|80|120|200|13000|"
 ```
 
@@ -66,7 +99,7 @@ python -u getUnc_Unc.py --obsName="mass4l" --obsBins="|105.0|140.0|" >& unc_mass
 ### 2.3 Running the background template maker
 
 ```
-python -u runHZZFiducialXS.py --dir="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/" --obsName="mass4l" --obsBins="|105.0|140.0|" --redoTemplates --templatesOnly 
+python -u runHZZFiducialXS.py --dir="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/" --obsName="mass4l" --obsBins="|105.0|140.0|" --redoTemplates --templatesOnly
 ```
 
 ### 2.4 Runing the final measurement and plotters
@@ -87,3 +120,12 @@ The command to run the measurement and the plotters is:
 ```
 nohup python -u runHZZFiducialXS.py --obsName="mass4l" --obsBins="|105.0|140.0|"  --calcSys --asimovMass 125.0  >& log_mass4l_Run2Fid.txt &
 ```
+
+# Things to fix
+
+## Specific
+1. Hardcoded paths in [LoadData.py](python/LoadData.py#8)
+
+## General
+
+1. Add the `choices` for argparser whereever its possible. So, that code won't run if we provide wrong arguments.
