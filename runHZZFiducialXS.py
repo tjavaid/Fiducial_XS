@@ -228,7 +228,9 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel):
     fStates = ['2e2mu','4mu','4e']
     nBins = len(observableBins)
     for fState in fStates:
+        print ("INFO::: VM Creating datacards for nBins = {}".format(nBins))
         if (not obsName.startswith("mass4l")):
+            os.system("python python/datacard_maker.py -c {} -b {}".format(fState, nBins))
             for obsBin in range(nBins-1):
                 # first bool = cfactor second bool = add fake H               #
                 ndata = createXSworkspace(obsName,fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel)
@@ -244,6 +246,7 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel):
 
 
         else:
+            os.system("python python/datacard_maker.py -c {} -b {}".format(fState, 1))
             print('[INFO] Variables:\n\tobsName: {obsName}\n\tfState: {fState}\n\tnBins: {nBins}\n\tobservableBins: {observableBins}\n\tmodelName: {modelName}\n\tphysicalModel: {physicalModel}'.format(
                 obsName = obsName , fState = fState , nBins = nBins , observableBins = observableBins , modelName = modelName , physicalModel = physicalModel
             ))
