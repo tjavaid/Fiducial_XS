@@ -5,6 +5,10 @@
 *.png
 *.pdf
 
+# ignore docs build folder
+
+docs/_build/
+
 # ignore temp files or executable files
 *.pyc
 *.log
