@@ -52,12 +52,17 @@ def DataCardMaker(process_names, process_rate, nbins, current_bin, channel, obse
             bin_name = "a2"
         if channel == "2e2mu":
             bin_name = "a3"
+
+        datacard_name = '/hzz4l_{}S_13TeV_xs_bin{}.txt'.format(channel, current_bin)
+        if nbins == 1:
+            datacard_name = '/hzz4l_{}S_13TeV_xs_inclusive_bin{}.txt'.format(channel, current_bin)
             
-        with open( path_dir+'/hzz4l_{}S_13TeV_xs_inclusive_bin{}.txt'.format(channel, current_bin), 'w') as f:
+        with open( path_dir+datacard_name, 'w') as f:
         #print beginning of the datacard
 
-            f.write("imax "+str(nbins)+"\n")
-            f.write("jmax *"+"\n")
+            # f.write("imax "+str(nbins)+"\n") # For multibinned datacards
+            f.write("imax 1\n")
+	    f.write("jmax *"+"\n")
             f.write("kmax *"+"\n")
 
 
@@ -80,7 +85,7 @@ def DataCardMaker(process_names, process_rate, nbins, current_bin, channel, obse
 
             for i in range(nbins):
                 tmp_line = tmp_line + process_names[0]+str(i)+ " "
-                tmp_line2 = tmp_line2 + "-" + str(nbins - i) + " "
+                tmp_line2 = tmp_line2 + "-" + str(i + 1) + " "
                 tmp_line3 = tmp_line3 + str(process_rate[0]) + " "
 
 
@@ -151,10 +156,15 @@ nuisances_type = Inputs[4]
 nuisances_value = Inputs[5]
 
 path_dir = args.path
+
+folder_name = 'xs_125.0_{}bins'.format(nbins)
+if nbins == 1:
+    folder_name = 'xs_125.0_{}bin'.format(nbins)
+
 if not (path_dir == ''):
-    path_dir = path_dir + '/xs_125.0_{}bin'.format(nbins)
+    path_dir = path_diri + "/" + folder_name
 else:
-    path_dir = 'xs_125.0_{}bin'.format(nbins)
+    path_dir = folder_name
 
 if not os.path.exists(path_dir):
     os.mkdir(path_dir)

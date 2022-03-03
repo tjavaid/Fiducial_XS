@@ -261,8 +261,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         trueH_shape[genbin].SetName("trueH"+channel+"Bin"+str(genbin))
         if (usecfactor): fideff[genbin] = cfactor[modelName+"_"+channel+"_"+obsName+"_genbin"+str(genbin)+"_"+recobin]
         else: fideff[genbin] = eff[modelName+"_"+channel+"_"+obsName+"_genbin"+str(genbin)+"_"+recobin]
-        print("fideff[genbin]", fideff[genbin])
-        print("model name is ", modelName)
+        print("fideff[genbin]: {}".format(fideff[genbin]))
+        print("model name is   {}".format(modelName))
         fideff_var[genbin] = RooRealVar("effBin"+str(genbin)+"_"+recobin+"_"+channel,"effBin"+str(genbin)+"_"+recobin+"_"+channel, fideff[genbin]);
 
         if( not (obsName=='nJets' or ("jet" in obsName)) or (not doJES)) :
@@ -332,7 +332,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2", RooArgList(rBin_channel[str(genbin)], fideff_var[genbin],lumi))
 
     outin = outinratio[modelName+"_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    print("outin",obsBin,outin)
+    print("outin: obsBin: {:3}\t outin: {}".format(obsBin,outin))
     outin_var = RooRealVar("outfracBin_"+recobin+"_"+channel,"outfracBin_"+recobin+"_"+channel, outin);
     outin_var.setConstant(True)
     out_trueH_norm_args = RooArgList(outin_var)
@@ -358,11 +358,13 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     frac_ggzz = fractionsBackground[bkg_sample_tags['ggzz'][channel]+'_'+channel+'_'+obsName+'_'+recobin]
     frac_ggzz_var = RooRealVar("frac_ggzz_"+recobin+"_"+channel,"frac_ggzz_"+recobin+"_"+channel, frac_ggzz);
 
-    print (fractionsBackground)
+    print ("fractionsBackground:\n\t{}".format(fractionsBackground))
     frac_zjets = fractionsBackground[bkg_sample_tags['zjets'][channel]+"_AllChans_"+obsName+'_'+recobin]
     frac_zjets_var = RooRealVar("frac_zjet_"+recobin+"_"+channel,"frac_zjet_"+recobin+"_"+channel, frac_zjets);
 
-    print (obsBin,"frac_qqzz",frac_qqzz,"frac_ggzz",frac_ggzz,"frac_zjets",frac_zjets)
+    print ("obsBin: {obsBin:2}, frac_qqzz: {frac_qqzz:9}, frac_ggzz: {frac_ggzz:9}, frac_zjets: {frac_zjets:9}".format(
+        obsBin = obsBin, frac_qqzz = frac_qqzz, frac_ggzz = frac_ggzz, frac_zjets = frac_zjets
+    ))
 
     if (obsName=="nJets" or ("jet" in obsName)):
         #######

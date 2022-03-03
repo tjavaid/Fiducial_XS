@@ -7,7 +7,7 @@ from sample_shortnames import *
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
     grootargs.append(opt)
-    
+
 ### Define function for parsing options
 def parseOptions():
 
@@ -16,14 +16,14 @@ def parseOptions():
     usage = ('usage: %prog [options]\n'
              + '%prog -h for help')
     parser = optparse.OptionParser(usage)
-    
+
     # input options
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "mass4l", "pT4l", "massZ2", "rapidity4l", "cosThetaStar", "nets_reco_pt30_eta4p7"')
     parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
-                       
+
     # store options and arguments as global variables
     global opt, args
     (opt, args) = parser.parse_args()
@@ -59,40 +59,40 @@ for obsName in observables:
 
         limit = f.Get("limit")
         npoints = limit.GetEntries()
-        
+
         sigma = []
         deltanll = []
         bestfit = 9999.0
-        
+
         for point in range(0,npoints):
             limit.GetEntry(point)
             if (obsbin=="SigmaBin0"):
                 if (point==0): bestfit=limit.SigmaBin0
-                if (point>0): 
+                if (point>0):
                     if (limit.deltaNLL<2.5):
                         sigma.append(limit.SigmaBin0)
                         deltanll.append(2.0*limit.deltaNLL)
             if (obsbin=="SigmaBin1"):
                 if (point==0): bestfit=limit.SigmaBin1
-                if (point>0): 
+                if (point>0):
                     if (limit.deltaNLL<2.5):
                         sigma.append(limit.SigmaBin1)
                         deltanll.append(2.0*limit.deltaNLL)
             if (obsbin=="SigmaBin2"):
                 if (point==0): bestfit=limit.SigmaBin2
-                if (point>0): 
+                if (point>0):
                     if (limit.deltaNLL<2.5):
                         sigma.append(limit.SigmaBin2)
                         deltanll.append(2.0*limit.deltaNLL)
             if (obsbin=="SigmaBin3"):
                 if (point==0): bestfit=limit.SigmaBin3
-                if (point>0): 
+                if (point>0):
                     if (limit.deltaNLL<2.5):
                         sigma.append(limit.SigmaBin3)
                         deltanll.append(2.0*limit.deltaNLL)
             if (obsbin=="SigmaBin4"):
                 if (point==0): bestfit=limit.SigmaBin4
-                if (point>0): 
+                if (point>0):
                     if (limit.deltaNLL<2.5):
                         sigma.append(limit.SigmaBin4)
                         deltanll.append(2.0*limit.deltaNLL)
@@ -122,19 +122,19 @@ for obsName in observables:
                         deltanll.append(2.0*limit.deltaNLL)
             if (obsbin=="r2e2muBin0"):
                 if (point==0): bestfit=limit.r2e2muBin0
-                if (point>0): 
+                if (point>0):
                     if (limit.deltaNLL<2.5):
                         sigma.append(limit.r2e2muBin0)
                         deltanll.append(2.0*limit.deltaNLL)
             if (obsbin=="r4muBin0"):
                 if (point==0): bestfit=limit.r4muBin0
-                if (point>0): 
+                if (point>0):
                     if (limit.deltaNLL<2.5):
                         sigma.append(limit.r4muBin0)
                         deltanll.append(2.0*limit.deltaNLL)
             if (obsbin=="r4eBin0"):
                 if (point==0): bestfit=limit.r4eBin0
-                if (point>0): 
+                if (point>0):
                     if (limit.deltaNLL<2.5):
                         sigma.append(limit.r4eBin0)
                         deltanll.append(2.0*limit.deltaNLL)
@@ -147,40 +147,40 @@ for obsName in observables:
 
         limitstat = fstat.Get("limit")
         npointsstat = limitstat.GetEntries()
-        
+
         sigmastat = []
         deltanllstat = []
         bestfitstat = 9999.0
-        
+
         for point in range(0,npointsstat):
             limitstat.GetEntry(point)
             if (obsbin=="SigmaBin0"):
                 if (point==0): bestfit=limitstat.SigmaBin0
-                if (point>0): 
+                if (point>0):
                     if (limitstat.deltaNLL<2.5):
                         sigmastat.append(limitstat.SigmaBin0)
                         deltanllstat.append(2.0*limitstat.deltaNLL)
             if (obsbin=="SigmaBin1"):
                 if (point==0): bestfit=limitstat.SigmaBin1
-                if (point>0): 
+                if (point>0):
                     if (limitstat.deltaNLL<2.5):
                         sigmastat.append(limitstat.SigmaBin1)
                         deltanllstat.append(2.0*limitstat.deltaNLL)
             if (obsbin=="SigmaBin2"):
                 if (point==0): bestfit=limitstat.SigmaBin2
-                if (point>0): 
+                if (point>0):
                     if (limitstat.deltaNLL<2.5):
                         sigmastat.append(limitstat.SigmaBin2)
                         deltanllstat.append(2.0*limitstat.deltaNLL)
             if (obsbin=="SigmaBin3"):
                 if (point==0): bestfit=limitstat.SigmaBin3
-                if (point>0): 
+                if (point>0):
                     if (limitstat.deltaNLL<2.5):
                         sigmastat.append(limitstat.SigmaBin3)
                         deltanllstat.append(2.0*limitstat.deltaNLL)
             if (obsbin=="SigmaBin4"):
                 if (point==0): bestfit=limitstat.SigmaBin4
-                if (point>0): 
+                if (point>0):
                     if (limitstat.deltaNLL<2.5):
                         sigmastat.append(limitstat.SigmaBin4)
                         deltanllstat.append(2.0*limitstat.deltaNLL)
@@ -210,19 +210,19 @@ for obsName in observables:
                         deltanllstat.append(2.0*limitstat.deltaNLL)
             if (obsbin=="r2e2muBin0"):
                 if (point==0): bestfit=limitstat.r2e2muBin0
-                if (point>0): 
+                if (point>0):
                     if (limitstat.deltaNLL<2.5):
                         sigmastat.append(limitstat.r2e2muBin0)
                         deltanllstat.append(2.0*limitstat.deltaNLL)
             if (obsbin=="r4muBin0"):
                 if (point==0): bestfit=limitstat.r4muBin0
-                if (point>0): 
+                if (point>0):
                     if (limitstat.deltaNLL<2.5):
                         sigmastat.append(limitstat.r4muBin0)
                         deltanllstat.append(2.0*limitstat.deltaNLL)
             if (obsbin=="r4eBin0"):
                 if (point==0): bestfit=limitstat.r4eBin0
-                if (point>0): 
+                if (point>0):
                     if (limitstat.deltaNLL<2.5):
                         sigmastat.append(limitstat.r4eBin0)
                         deltanllstat.append(2.0*limitstat.deltaNLL)
@@ -341,7 +341,7 @@ for obsName in observables:
         latex2.SetNDC()
         latex2.SetTextSize(0.5*c.GetTopMargin())
         latex2.SetTextFont(42)
-        latex2.SetTextAlign(31) # align right                                                                     
+        latex2.SetTextAlign(31) # align right
         print opt.LUMISCALE
         if (not opt.LUMISCALE=="1.0"):
             lumi = round(59.7*float(opt.LUMISCALE),1)
@@ -350,7 +350,7 @@ for obsName in observables:
             latex2.DrawLatex(0.87, 0.95,"59.7 fb^{-1} (13 TeV)")
         latex2.SetTextSize(0.8*c.GetTopMargin())
         latex2.SetTextFont(62)
-        latex2.SetTextAlign(11) # align right                                                                     
+        latex2.SetTextAlign(11) # align right
         latex2.DrawLatex(0.19, 0.95, "CMS")
         latex2.SetTextSize(0.6*c.GetTopMargin())
         latex2.SetTextFont(52)
@@ -466,14 +466,16 @@ for obsName in observables:
         c.SaveAs("plots/lhscan_"+obsName+"_"+obsbin+".pdf")
         c.SaveAs("plots/lhscan_"+obsName+"_"+obsbin+".png")
 
-
+        # FIXME: currently its sending the modules to the python directory.
+        #        we should fix this. Instead of sending this to python send
+        #        to some other temp directory then import at appropriate place
         if (obsName=="mass4l"):
             if (obsbin=="SigmaBin0"):
-                with open('resultsXS_LHScan_mass4l_v3.py', 'w') as f:
+                with open('python/resultsXS_LHScan_mass4l_v3.py', 'w') as f:
                     f.write('resultsXS = '+str(resultsXS)+' \n')
             else:
-                with open('resultsXS_LHScan_mass4l_v2.py', 'w') as f:
+                with open('python/resultsXS_LHScan_mass4l_v2.py', 'w') as f:
                     f.write('resultsXS = '+str(resultsXS)+' \n')
         else:
-            with open('resultsXS_LHScan_'+obsName+'_v3.py', 'w') as f:
+            with open('python/resultsXS_LHScan_'+obsName+'_v3.py', 'w') as f:
                 f.write('resultsXS = '+str(resultsXS)+' \n')
