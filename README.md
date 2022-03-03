@@ -117,10 +117,28 @@ nohup python -u runHZZFiducialXS.py --obsName="mass4l" --obsBins="|105.0|140.0|"
 
 nohup python -u runHZZFiducialXS.py --obsName="mass4l" --obsBins="|105.0|140.0|"  --calcSys --era="Full"  >& log_mass4l_Full.txt & 
 
+# channel wise XS plotter for all three years
+
+nohup python -u producePlots_mass4l_comb.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" --unfoldModel="SM_125" --theoryMass="125.38"  --era="Full" >&  final_plots_only_mass4l_combine.log &
+nohup python -u producePlots_mass4l_comb.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" --unfoldModel="SM_125" --theoryMass="125.38"  --era="Full" --setLog >&  final_plots_only_mass4l_combine_log.log &
+
+
+
 #full Run2 and various observables
+
 sh doAllObs_Full.sh
 
 # output of this step are likelihood scan, asimov fits, differential yield and differential measurement plots. 
+
+# channel wise inclusive XS plotter 
+
+nohup python -u producePlots_mass4l_comb.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" --unfoldModel="SM_125" --theoryMass="125.38"  >&  final_plots_only_mass4l_combine.log &
+nohup python -u producePlots_mass4l_comb.py -l -q -b --obsName="mass4l" --obsBins="|105.0|140.0|" --unfoldModel="SM_125" --theoryMass="125.38"  --setLog >&  final_plots_only_mass4l_combine_log.log &
+
+
+# plotting the observed cross section as function of Center of mass energies (only for observed cross section)
+
+python plot_XS_vs_sqrts_Paper.py
 
 
 ```
