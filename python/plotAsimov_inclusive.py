@@ -1,12 +1,14 @@
-import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
-from array import array
-from math import *
+import optparse
+import os
+import sys
 from decimal import *
-from ROOT import *
+from math import *
 
+
+# INFO: Following items are imported from either python directory or Inputs
 from sample_shortnames import *
-from tdrStyle import *
-setTDRStyle()
+from Input_Info import *
+
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -44,6 +46,11 @@ global opt, args, runAllSteps
 parseOptions()
 sys.argv = grootargs
 
+# Don't move the root import before `sys.argv = grootargs`. Reference: https://root-forum.cern.ch/t/python-options-and-root-options/4641/3
+from ROOT import *
+from tdrStyle import *
+setTDRStyle()
+
 if (not os.path.exists("plots")):
     os.system("mkdir plots")
 
@@ -67,8 +74,6 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     ROOT.gSystem.AddIncludePath("-Iinclude/")
 
     RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
-
-    combineOutputs = "combineOutputs"
 
     print('[INFO] Filename: {}'.format(asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ'))
     f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
@@ -125,7 +130,7 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
         n_qqzz_asimov["4l"] += qqzz_asimov[fState].getVal()
         n_zz_asimov["4l"] += n_ggzz_asimov[fState]+n_qqzz_asimov[fState]
 
-    f_modelfit = TFile(modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root','READ')
+    f_modelfit = TFile(combineOutputs+'/'+modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root','READ')
     w_modelfit = f_modelfit.Get("w")
     sim = w_modelfit.pdf("model_s")
     #sim.Print("v")

@@ -1,12 +1,41 @@
 # this script is called once for each reco bin (obsBin)
 # in each reco bin there are (nBins) signals (one for each gen bin)
 
+# FIXME: Commented RooFit.Silence() and RooFit.RecycleConflictNodes()
+# RooFit.RecycleConflictNodes(): https://root.cern.ch/doc/master/classRooWorkspace.html
+#           If any of the function objects to be imported already exist in the name space,
+#           connect the imported expression to the already existing nodes.
+#           Attention:
+#           Use with care! If function definitions do not match,
+#           this alters the definition of your function upon import
+
+# For Silence issue we should shift to ROOT 6.18
+#       Reference: https://root-forum.cern.ch/t/rooworkspace-import-roofit-silence-does-not-work-when-importing-datasets/32591/2
+
+import sys
+import os
+
 from ROOT import *
 
-import os,sys
-sys.path.append('./datacardInputs')
+# INFO: Following items are imported from either python directory or Inputs
+from Input_Info import *
+
+sys.path.append('./'+datacardInputs)
 
 def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel):
+    """Create workspace
+
+    Args:
+        obsName (str): Name of observable
+        channel (str): Name of channel. For example 4e, 4mu, 2e2mu
+        nBins (int): Number of bins
+        obsBin (int): _description_
+        observableBins (array): Array having all bin boundaries
+        usecfactor (bool): _description_
+        addfakeH (bool): _description_
+        modelName (str): Name of model. For example "SM_125"
+        physicalModel (str): physical model. For example: "v2"
+    """
 
     obsBin_low = observableBins[obsBin]
     obsBin_high = observableBins[obsBin+1]
@@ -48,10 +77,10 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     fractionsBackground = _temp.fractionsBackground
 
     # Load the legacy f
-    #workspace_in = TFile("125.0/hzz4l_"+channel+"S_8TeV.input.root","READ")
+    # FIXME: We should move this to inputs directory. With better name "Workspace_Template_From8TeV_Analysis.root"
     f_in = TFile("125.0/hzz4l_"+channel+"S_8TeV.input.root","READ")
     w = f_in.Get("w")
-    #w.Print()
+    # w.Print()
 
     # import h4l xs br
     _temp = __import__('higgs_xsbr_13TeV', globals(), locals(), ['higgs_xs','higgs4l_br'], -1)
@@ -77,12 +106,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         observable.Print()
 
     # luminosity
-    #lumi = RooRealVar("lumi_13","lumi_13", 10.0)
-    #lumi = RooRealVar("lumi_13","lumi_13", 12.9)
-##    lumi = RooRealVar("lumi_13","lumi_13", 35.9)
-#    lumi = RooRealVar("lumi_13","lumi_13", 41.4)
-#    lumi = RooRealVar("lumi_13","lumi_13", 58.8)
     lumi = RooRealVar("lumi_13","lumi_13", 59.7) # FIXME: Lumi value is hardcoded
+
     # SM values of signal expectations (inclusive, reco level)
     ggH_norm = w.function("ggH_norm")
     qqH_norm = w.function("qqH_norm")
@@ -91,7 +116,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     ttH_norm = w.function("ttH_norm")
 
     n_allH = (ggH_norm.getVal()+qqH_norm.getVal()+WH_norm.getVal()+ZH_norm.getVal()+ttH_norm.getVal())
-    print("[INFO] allH norm: {}".format(n_allH))
+    print("\n[INFO] allH norm: {}".format(n_allH))
 
     # true signal shape
     trueH = w.pdf("ggH")
@@ -261,8 +286,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         trueH_shape[genbin].SetName("trueH"+channel+"Bin"+str(genbin))
         if (usecfactor): fideff[genbin] = cfactor[modelName+"_"+channel+"_"+obsName+"_genbin"+str(genbin)+"_"+recobin]
         else: fideff[genbin] = eff[modelName+"_"+channel+"_"+obsName+"_genbin"+str(genbin)+"_"+recobin]
-        print("fideff[genbin]: {}".format(fideff[genbin]))
-        print("model name is   {}".format(modelName))
+        print("[INFO] fideff[genbin]: {}".format(fideff[genbin]))
+        print("[INFO] model name is   {}".format(modelName))
         fideff_var[genbin] = RooRealVar("effBin"+str(genbin)+"_"+recobin+"_"+channel,"effBin"+str(genbin)+"_"+recobin+"_"+channel, fideff[genbin]);
 
         if( not (obsName=='nJets' or ("jet" in obsName)) or (not doJES)) :
@@ -401,11 +426,11 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     qqzzTempFile = TFile(template_qqzzName,"READ")
     qqzzTemplate = qqzzTempFile.Get("m4l_"+obsName+"_"+obsBin_low+"_"+obsBin_high)
-    print('[INFO] qqZZ bins: {}, {}, {}'.format(qqzzTemplate.GetNbinsX(),qqzzTemplate.GetBinLowEdge(1),qqzzTemplate.GetBinLowEdge(qqzzTemplate.GetNbinsX()+1)))
+    print('[INFO] qqZZ bins : {}, {}, {}'.format(qqzzTemplate.GetNbinsX(),qqzzTemplate.GetBinLowEdge(1),qqzzTemplate.GetBinLowEdge(qqzzTemplate.GetNbinsX()+1)))
 
     ggzzTempFile = TFile(template_ggzzName,"READ")
     ggzzTemplate = ggzzTempFile.Get("m4l_"+obsName+"_"+obsBin_low+"_"+obsBin_high)
-    print('[INFO] ggZZ bins: {}, {}, {}'.format(ggzzTemplate.GetNbinsX(),ggzzTemplate.GetBinLowEdge(1),ggzzTemplate.GetBinLowEdge(ggzzTemplate.GetNbinsX()+1)))
+    print('[INFO] ggZZ bins : {}, {}, {}'.format(ggzzTemplate.GetNbinsX(),ggzzTemplate.GetBinLowEdge(1),ggzzTemplate.GetBinLowEdge(ggzzTemplate.GetNbinsX()+1)))
 
     zjetsTempFile = TFile(template_zjetsName,"READ")
     zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+obsBin_low+"_"+obsBin_high)
@@ -464,8 +489,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     else:  data_obs_file = TFile('Inputs/data_13TeV.root') #FIXME: Want to keep this in Input directory or at the same place where all ntuples are stored
     data_obs_tree = data_obs_file.Get('passedEvents')
 
-
-    print (obsName,obsBin_low,obsBin_high)
+    print ("[INFO] Obs name: {:11}  Bin (low, high) edge: ({}, {})".format(obsName,obsBin_low,obsBin_high))
     if (obsName == "nJets"): obsName = "njets_reco_pt30_eta4p7"
     if (channel=='4mu'):
         if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu),"(mass4mu>105.0 && mass4mu<140.0)")
@@ -524,46 +548,46 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     for genbin in range(nBins-1):
         # For Silence issue we should shift to ROOT 6.18
         # Reference: https://root-forum.cern.ch/t/rooworkspace-import-roofit-silence-does-not-work-when-importing-datasets/32591/2
-        getattr(wout,'import')(trueH_shape[genbin],RooFit.RecycleConflictNodes(),RooFit.Silence())
-        getattr(wout,'import')(trueH_norm[genbin],RooFit.RecycleConflictNodes(),RooFit.Silence())
+        getattr(wout,'import')(trueH_shape[genbin],RooFit.RecycleConflictNodes()) # RooFit.Silence()
+        getattr(wout,'import')(trueH_norm[genbin],RooFit.RecycleConflictNodes()) # RooFit.Silence()
 
     if (not usecfactor):
         out_trueH.SetName("out_trueH")
-        getattr(wout,'import')(out_trueH,RooFit.RecycleConflictNodes(),RooFit.Silence())
-        getattr(wout,'import')(out_trueH_norm,RooFit.RecycleConflictNodes(),RooFit.Silence())
+        getattr(wout,'import')(out_trueH,RooFit.RecycleConflictNodes()) # RooFit.Silence()
+        getattr(wout,'import')(out_trueH_norm,RooFit.RecycleConflictNodes()) # RooFit.Silence()
 
-    getattr(wout,'import')(fakeH,RooFit.Silence())
-    getattr(wout,'import')(fakeH_norm,RooFit.Silence())
+    getattr(wout,'import')(fakeH) # RooFit.Silence()
+    getattr(wout,'import')(fakeH_norm) # RooFit.Silence()
 
     #print "trueH norm: ",n_trueH,"fakeH norm:",n_fakeH
     qqzzTemplatePdf.SetName("bkg_qqzz")
     qqzzTemplatePdf.Print("v")
-    getattr(wout,'import')(qqzzTemplatePdf,RooFit.RecycleConflictNodes(), RooFit.Silence())
-    getattr(wout,'import')(qqzz_norm,RooFit.Silence())
+    getattr(wout,'import')(qqzzTemplatePdf,RooFit.RecycleConflictNodes()) # RooFit.Silence()
+    getattr(wout,'import')(qqzz_norm) # RooFit.Silence()
 
     ggzzTemplatePdf.SetName("bkg_ggzz")
     ggzzTemplatePdf.Print("v")
     getattr(wout,'import')(ggzzTemplatePdf,RooFit.RecycleConflictNodes())
-    getattr(wout,'import')(ggzz_norm,RooFit.Silence())
+    getattr(wout,'import')(ggzz_norm) # RooFit.Silence()
 
     zjetsTemplatePdf.SetName("bkg_zjets")
     zjetsTemplatePdf.Print("v")
-    getattr(wout,'import')(zjetsTemplatePdf, RooFit.RecycleConflictNodes(), RooFit.Silence())
-    getattr(wout,'import')(zjets_norm,RooFit.Silence())
+    getattr(wout,'import')(zjetsTemplatePdf, RooFit.RecycleConflictNodes()) # RooFit.Silence()
+    getattr(wout,'import')(zjets_norm) # RooFit.Silence()
 
     ## data
-    getattr(wout,'import')(data_obs.reduce(RooArgSet(m)),RooFit.Silence())
+    getattr(wout,'import')(data_obs.reduce(RooArgSet(m))) # RooFit.Silence()
 
     if (addfakeH):
         if (usecfactor):
-            fout = TFile("xs_125.0/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".Cfactor.root","RECREATE")
+            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".Cfactor.root","RECREATE")
         else:
-            fout = TFile("xs_125.0/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".root","RECREATE")
+            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".root","RECREATE")
     else:
         if (usecfactor):
-            fout = TFile("xs_125.0/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".Cfactor.NoFakeH.root","RECREATE")
+            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".Cfactor.NoFakeH.root","RECREATE")
         else:
-            fout = TFile("xs_125.0/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".NoFakeH.root","RECREATE")
+            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".NoFakeH.root","RECREATE")
 
     print ("write ws to fout")
     fout.WriteTObject(wout)

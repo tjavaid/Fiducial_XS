@@ -1,7 +1,12 @@
-import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
+import optparse
+import os
+import sys
 from array import array
-from math import *
 from decimal import *
+from math import *
+
+# INFO: Following items are imported from either python directory or Inputs
+from Input_Info import *
 from sample_shortnames import *
 
 grootargs = []
@@ -46,14 +51,12 @@ if (not os.path.exists("plots")):
 from ROOT import *
 
 from tdrStyle import *
+
 setTDRStyle()
 
 datamodel = opt.UNFOLD
 
-sys.path.append('./datacardInputs')
-#sys.path.append('./hres_histat_newbaseline_bugfix3')
-#sys.path.append('./lhscan_may18')
-
+sys.path.append('./'+datacardInputs)
 
 def plotXS(obsName, obs_bins):
 
@@ -358,7 +361,7 @@ def plotXS(obsName, obs_bins):
             total_NLOunc_fs_powheg_lo += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
                                           *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
-            print channel,total_NLOunc_fs_powheg_hi
+            print(channel,total_NLOunc_fs_powheg_hi)
 
             total_NLOunc_fs_minloHJ_hi += XH_qcdunc_fs
             total_NLOunc_fs_minloHJ_lo += XH_qcdunc_fs
@@ -539,7 +542,7 @@ def plotXS(obsName, obs_bins):
 
             obsBin=0
 
-            print obsBin,acc
+            print(obsBin,acc)
             XH_fs = higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
             XH_fs += higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
             XH_fs += higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
@@ -686,41 +689,41 @@ def plotXS(obsName, obs_bins):
 
 
 
-    print 'data',data
+    print('data',data)
     sumdata = 0.0
     for i in range(len(data)):
         sumdata+=data[i]
-    print obsName,'sum data',sumdata
-    print 'data_hi',data_hi
-    print 'data_lo',data_lo
+    print(obsName,'sum data',sumdata)
+    print('data_hi',data_hi)
+    print('data_lo',data_lo)
     #print 'ggH HRes + XH',ggH_HRes
     #print 'NNLO ggH HRes + XH',ggH_HRes_NNLOunc_hi
     #print 'NNLO ggH HRes + XH',ggH_HRes_NNLOunc_lo
-    print 'ggH_powheg',ggH_powheg
-    print 'NLO ggH_powheg_hi',ggH_powheg_NLOunc_hi
-    print 'NLO ggH_powheg_lo',ggH_powheg_NLOunc_lo
-    print 'NNLO ggH_powheg_hi',ggH_powheg_NNLOunc_hi
-    print 'NNLO ggH_powheg_lo',ggH_powheg_NNLOunc_lo
-    print 'OLD ggH_powheg_hi',ggH_powheg_unc_hi
-    print 'OLD ggH_powheg_lo',ggH_powheg_unc_lo
-    print 'ggH_minloHJ',ggH_minloHJ
-    print 'ggH_minloHJ_NLOunc_hi',ggH_minloHJ_NLOunc_hi
-    print 'ggH_minloHJ_NLOunc_lo',ggH_minloHJ_NLOunc_lo
-    print 'ggH_minloHJ_NNLOunc_hi',ggH_minloHJ_NNLOunc_hi
-    print 'ggH_minloHJ_NNLOunc_lo',ggH_minloHJ_NNLOunc_lo
-    print 'ggH_mad',ggH_mad
-    print 'ggH_mad_NLOunc_hi',ggH_mad_NLOunc_hi
-    print 'ggH_mad_NLOunc_lo',ggH_mad_NLOunc_lo
-    print 'ggH_mad_NNLOunc_hi',ggH_mad_NNLOunc_hi
-    print 'ggH_mad_NNLOunc_lo',ggH_mad_NNLOunc_lo
-    print 'XH',XH
-    print 'XH_unc',XH_unc
-    print 'modedlep_hi',modeldep_hi
-    print 'modeldep_lo',modeldep_lo
-    print 'systematics_hi',systematics_hi
-    print 'systematics_lo',systematics_lo
-    print 'stat_hi',stat_hi
-    print 'stat_lo',stat_lo
+    print('ggH_powheg',ggH_powheg)
+    print('NLO ggH_powheg_hi',ggH_powheg_NLOunc_hi)
+    print('NLO ggH_powheg_lo',ggH_powheg_NLOunc_lo)
+    print('NNLO ggH_powheg_hi',ggH_powheg_NNLOunc_hi)
+    print('NNLO ggH_powheg_lo',ggH_powheg_NNLOunc_lo)
+    print('OLD ggH_powheg_hi',ggH_powheg_unc_hi)
+    print('OLD ggH_powheg_lo',ggH_powheg_unc_lo)
+    print('ggH_minloHJ',ggH_minloHJ)
+    print('ggH_minloHJ_NLOunc_hi',ggH_minloHJ_NLOunc_hi)
+    print('ggH_minloHJ_NLOunc_lo',ggH_minloHJ_NLOunc_lo)
+    print('ggH_minloHJ_NNLOunc_hi',ggH_minloHJ_NNLOunc_hi)
+    print('ggH_minloHJ_NNLOunc_lo',ggH_minloHJ_NNLOunc_lo)
+    print('ggH_mad',ggH_mad)
+    print('ggH_mad_NLOunc_hi',ggH_mad_NLOunc_hi)
+    print('ggH_mad_NLOunc_lo',ggH_mad_NLOunc_lo)
+    print('ggH_mad_NNLOunc_hi',ggH_mad_NNLOunc_hi)
+    print('ggH_mad_NNLOunc_lo',ggH_mad_NNLOunc_lo)
+    print('XH',XH)
+    print('XH_unc',XH_unc)
+    print('modedlep_hi',modeldep_hi)
+    print('modeldep_lo',modeldep_lo)
+    print('systematics_hi',systematics_hi)
+    print('systematics_lo',systematics_lo)
+    print('stat_hi',stat_hi)
+    print('stat_lo',stat_lo)
     if (obsName=="mass4l"):
 
         a_observable  = array('d',[0.5+i for i in range(0,4)])
@@ -750,8 +753,8 @@ def plotXS(obsName, obs_bins):
         v_ggH_powheg_unc_hi = TVectorD(len(a_ggH_powheg_unc_hi),a_ggH_powheg_unc_hi)
         v_ggH_powheg_unc_lo = TVectorD(len(a_ggH_powheg_unc_lo),a_ggH_powheg_unc_lo)
 
-        print 'a_ggH_powheg_hi',a_ggH_powheg_unc_hi
-        print 'a_ggH_powheg_lo',a_ggH_powheg_unc_lo
+        print('a_ggH_powheg_hi',a_ggH_powheg_unc_hi)
+        print('a_ggH_powheg_lo',a_ggH_powheg_unc_lo)
 
         a_ggH_minloHJ = array('d',[ggH_minloHJ[i] for i in range(len(ggH_minloHJ))])
         v_ggH_minloHJ = TVectorD(len(a_ggH_minloHJ),a_ggH_minloHJ)
@@ -760,9 +763,9 @@ def plotXS(obsName, obs_bins):
         v_ggH_minloHJ_unc_hi = TVectorD(len(a_ggH_minloHJ_unc_hi),a_ggH_minloHJ_unc_hi)
         v_ggH_minloHJ_unc_lo = TVectorD(len(a_ggH_minloHJ_unc_lo),a_ggH_minloHJ_unc_lo)
 
-        print 'a_ggH_minloHJ',a_ggH_minloHJ
-        print 'a_ggH_minloHJ_hi',a_ggH_minloHJ_unc_hi
-        print 'a_ggH_minloHJ_lo',a_ggH_minloHJ_unc_lo
+        print('a_ggH_minloHJ',a_ggH_minloHJ)
+        print('a_ggH_minloHJ_hi',a_ggH_minloHJ_unc_hi)
+        print('a_ggH_minloHJ_lo',a_ggH_minloHJ_unc_lo)
 
         a_ggH_mad = array('d',[ggH_mad[i] for i in range(len(ggH_mad))])
         v_ggH_mad = TVectorD(len(a_ggH_mad),a_ggH_mad)
@@ -771,9 +774,9 @@ def plotXS(obsName, obs_bins):
         v_ggH_mad_unc_hi = TVectorD(len(a_ggH_mad_unc_hi),a_ggH_mad_unc_hi)
         v_ggH_mad_unc_lo = TVectorD(len(a_ggH_mad_unc_lo),a_ggH_mad_unc_lo)
 
-        print 'a_ggH_mad',a_ggH_mad
-        print 'a_ggH_mad_hi',a_ggH_mad_unc_hi
-        print 'a_ggH_mad_lo',a_ggH_mad_unc_lo
+        print('a_ggH_mad',a_ggH_mad)
+        print('a_ggH_mad_hi',a_ggH_mad_unc_hi)
+        print('a_ggH_mad_lo',a_ggH_mad_unc_lo)
 
         '''
         a_ggH_HRes = array('d',[ggH_HRes[i] for i in range(len(ggH_HRes))])
@@ -1289,7 +1292,7 @@ def plotXS(obsName, obs_bins):
         for i in range(1,5):
             dummy.SetBinContent(i,2.5*max(a_ggH_powheg))
         h_XH = TH1D("h_XH","h_XH",4, 0, 4)
-        print "mass4l",a_XH
+        print("mass4l",a_XH)
         for i in range(4):
             h_XH.SetBinContent(i+1,a_XH[i])
     else:
@@ -1413,7 +1416,7 @@ def plotXS(obsName, obs_bins):
     latex2.SetTextSize(0.5*c.GetTopMargin())
     latex2.SetTextFont(42)
     latex2.SetTextAlign(31) # align right
-    print opt.LUMISCALE
+    print(opt.LUMISCALE)
     if (not opt.LUMISCALE=="1.0"):
         lumi = round(59.7*float(opt.LUMISCALE),1)
         latex2.DrawLatex(0.94, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
@@ -1612,7 +1615,7 @@ def plotXS(obsName, obs_bins):
          f.write('\\end{document} \n')
 obs_bins = opt.OBSBINS.split("|")
 if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')):
-    print 'BINS OPTION MUST START AND END WITH A |'
+    print('BINS OPTION MUST START AND END WITH A |')
 obs_bins.pop()
 obs_bins.pop(0)
 if float(obs_bins[len(obs_bins)-1])>300.0:

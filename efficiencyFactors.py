@@ -1,12 +1,19 @@
-import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
-from array import array
-from math import *
+import ast
+import logging
+import optparse
+import os
+import sys
 from decimal import *
-from ROOT import *
+from math import *
+from random import sample
 
-from python.sample_shortnames import *
-from python.LoadData import *
-#LoadData(opt.SOURCEDIR)
+# INFO: Following items are imported from either python directory or Inputs
+from Input_Info import *
+from LoadData import *
+from sample_shortnames import *
+from Utils import *
+
+if not os.path.isdir(datacardInputs): os.mkdir(datacardInputs)
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -47,6 +54,9 @@ global opt, args, runAllSteps
 parseOptions()
 sys.argv = grootargs
 
+# Don't move the root import before `sys.argv = grootargs`. Reference: https://root-forum.cern.ch/t/python-options-and-root-options/4641/3
+from ROOT import *
+
 doFit = opt.DOFIT
 doPlots = opt.DOPLOTS
 
@@ -57,12 +67,12 @@ save = ""
 
 RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 
-if (opt.DOPLOTS and os.path.isfile('tdrStyle.py')):
+if (opt.DOPLOTS and os.path.isfile('python/tdrStyle.py')):
     from tdrStyle import setTDRStyle
     setTDRStyle()
 
-Histos = {}
-wrongfrac = {}
+Histos = {} #
+wrongfrac = {}  # wrong fraction
 dwrongfrac = {}
 binfrac_wrongfrac = {}
 dbinfrac_wrongfrac = {}
@@ -95,11 +105,12 @@ deffanyreco = {}
 folding = {}
 dfolding = {}
 
-def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, genbin):
+def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, genbin):
     gSystem.AddIncludePath("-I$CMSSW_BASE/src/ ")
     gSystem.Load("$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so")
     gSystem.AddIncludePath("-I$ROOFITSYS/include")
 
+    logging.info(sample)
     if ("NNLOPS" in sample or "nnlops" in sample):
         print ("Will skip: "+ sample)
     recoweight = "genWeight*pileupWeight*dataMCWeight"
@@ -120,9 +131,10 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
 
     i_sample = -1
 
-    print("Sample list: {}".format(List))
+    print("Sample list: {}".format(SampleList))
 
-    for Sample in List:
+    for Sample in SampleList:
+        border_msg("Sample: "+Sample+"\t Observable: "+str(obs_reco)+"\trecobin: "+str(recobin)+"\tgenbin: "+str(genbin))
         if ("NNLOPS" in Sample or "nnlops" in Sample):
             print ("Skipping: "+ sample)
             recoweight = "genWeight*pileupWeight*dataMCWeight"
@@ -250,9 +262,10 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
 
         # GEN level
         Tree[Sample].Draw("GENmass4l >> "+processBin+"fid","("+genweight+")*(passedFiducialSelection==1 && "+cutm4l_gen+" && "+cutobs_gen+" && "+cutchan_gen+"  && "+cuth4l_gen+")","goff")
-        print "cutm4l_gen is....", cutm4l_gen
-        print "cutobs_gen is....", cutobs_gen
-        print "cutchan_gen is....", cutchan_gen
+        print("cutm4l_gen  is....", cutm4l_gen)
+        print("cutobs_gen  is....", cutobs_gen)
+        print("cutchan_gen is....", cutchan_gen)
+
         Tree[Sample].Draw("GENmass4l >> "+processBin+"fs","("+genweight+")*("+cutchan_gen_out+")","goff")
         # RECO level
         Tree[Sample].Draw("mass4l >> "+processBin+"reco","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1)","goff")
@@ -275,8 +288,8 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
         if (Histos[processBin+"fs"].Integral()>0):
 
             acceptance[processBin] = Histos[processBin+"fid"].Integral()/Histos[processBin+"fs"].Integral()
-            print "acceptance    numerator========", Histos[processBin+"fid"].Integral()
-            print "acceptance     denominator========", Histos[processBin+"fs"].Integral()
+            print("acceptance    numerator   = ", Histos[processBin+"fid"].Integral())
+            print("acceptance    denominator = ", Histos[processBin+"fs"].Integral())
             dacceptance[processBin] = sqrt(acceptance[processBin]*(1.0-acceptance[processBin])/Histos[processBin+"fs"].Integral())
             acceptance_4l[processBin] = Histos[processBin+"fid"].Integral()/nEvents[Sample]
             dacceptance_4l[processBin] = sqrt(acceptance_4l[processBin]*(1.0-acceptance_4l[processBin])/nEvents[Sample])
@@ -294,10 +307,10 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             dwrongfrac[processBin] = -1.0
 
         if (Histos[processBin+"reconoth4l_inc"].Integral()>0):
-            print "error checking processBin: ", processBin
-            print "error checking histos processBin_reconoth4l integral: ", Histos[processBin+"reconoth4l"].Integral()
+            print("error checking processBin: ", processBin)
+            print("error checking histos processBin_reconoth4l integral: ", Histos[processBin+"reconoth4l"].Integral())
             binfrac_wrongfrac[processBin] = Histos[processBin+"reconoth4l"].Integral()/Histos[processBin+"reconoth4l_inc"].Integral()
-            print "error checking binfrac_wrongfrac: ", binfrac_wrongfrac[processBin]
+            print("error checking binfrac_wrongfrac: ", binfrac_wrongfrac[processBin])
             if (binfrac_wrongfrac[processBin]<0):
                 binfrac_wrongfrac[processBin] = -1
                 dbinfrac_wrongfrac[processBin] = -1
@@ -325,15 +338,15 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             # print "effrecotofid     numerator========", Histos[processBin+"recoh4lfid"].Integral()
             # print "effrecotofid     denominator========", Histos[processBin+"fid"].Integral()
             effrecotofid[processBin] = Histos[processBin+"recoh4lfid"].Integral()/Histos[processBin+"fid"].Integral()
-            print "inside sqrt deff num", effrecotofid[processBin]*(1-effrecotofid[processBin]), "inside sqrt deff den", Histos[processBin+"fid"].Integral()
+            print("inside sqrt deff num", effrecotofid[processBin]*(1-effrecotofid[processBin]), "inside sqrt deff den", Histos[processBin+"fid"].Integral())
         if (effrecotofid[processBin]*(1-effrecotofid[processBin])/Histos[processBin+"fid"].Integral()>0):
             deffrecotofid[processBin] = sqrt(effrecotofid[processBin]*(1-effrecotofid[processBin])/Histos[processBin+"fid"].Integral())
-            print "effrecotofid     numerator========", Histos[processBin+"recoh4lfid"].Integral()
-            print "effrecotofid     denominator========", Histos[processBin+"fid"].Integral()
+            print("effrecotofid     numerator========", Histos[processBin+"recoh4lfid"].Integral())
+            print("effrecotofid     denominator========", Histos[processBin+"fid"].Integral())
             cfactor[processBin] = Histos[processBin+"recoh4l"].Integral()/Histos[processBin+"fid"].Integral()
 
         else:
-            print "the fid integral is====", Histos[processBin+"fid"].Integral()
+            print("the fid integral is====", Histos[processBin+"fid"].Integral())
             effrecotofid[processBin] = -1.0
             deffrecotofid[processBin] = -1.0
             cfactor[processBin] = Histos[processBin+"recoh4l"].Integral()/1.0 # if N(fid) for a gen bin is 0.0, change it to 1.0
@@ -374,7 +387,21 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
 
 
         #print Sample,'nEvents total:',nEvents[Sample],channel,'pass Gen:',Histos[processBin+"fid"].Integral(),'pass Reco:',Histos[processBin+'recoh4lfid'].Integral()
-        print processBin,"acc",round(acceptance[processBin],3),"eff",round(effrecotofid[processBin],3),"fout",round(outinratio[processBin],3),"wrongfrac",round(wrongfrac[processBin],3)
+        # print processBin,"acc",round(acceptance[processBin],3),"eff",round(effrecotofid[processBin],3),"fout",round(outinratio[processBin],3),"wrongfrac",round(wrongfrac[processBin],3)
+
+        print("""
+        processBin  = {processBin},
+        acc         = {acc},
+        eff         = {eff},
+        fout        = {fout},
+        wrongfrac   = {wrongfrac}
+        """.format(
+            processBin = processBin,
+            acc = round(acceptance[processBin],3),
+            eff = round(effrecotofid[processBin],3),
+            fout = round(outinratio[processBin],3),
+            wrongfrac = round(wrongfrac[processBin],3)
+        ))
 
         if (doFit):
 
@@ -411,7 +438,7 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             mass = ""
             for i in range(len(mh)):
                 if mh[i].startswith("1"): mass = mh[i]
-            if (mass=="125p6"): mass="125.6"
+            if (mass=="125p6"): mass="125.6" # FIXME: hardcoded higgs mass
 
             massHiggs = ast.literal_eval(mass)
 
@@ -499,7 +526,7 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             CB_sigma_post[processBin] = CMS_zz4l_sigma.getVal()
             #CB_dsigma_post[processBin] = rfv_sigma_CB.getVal()
 
-            print Sample,channel,"post fit Landau mean:",a1.getVal()," sigma: ",a2.getVal()
+            print(Sample,channel,"post fit Landau mean:",a1.getVal()," sigma: ",a2.getVal())
             Landau_mean_post[processBin] = a1.getVal()
             Landau_sigma_post[processBin] = a2.getVal()
 
@@ -619,96 +646,66 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             c.SaveAs("plots/"+processBin+"_effs_"+recoweight+".png")
             c.SaveAs("plots/"+processBin+"_effs_"+recoweight+".pdf")
 
-
+border_msg("Start of 'efficiencyFactors.py' program...")
 m4l_bins = 35
 m4l_low = 105.0
 m4l_high = 140.0
 
-# Default to inclusive cross section
-obs_reco = 'mass4l'
-obs_gen = 'GENmass4l'
-obs_reco_low = 105.0
-obs_reco_high = 140.0
-obs_gen_low = 105.0
-obs_gen_high = 140.0
+# INFO: Get reco and gen observable names
+obs_reco = opt.OBSNAME
+obs_gen = "GEN"+opt.OBSNAME
 
-if (opt.OBSNAME == "massZ1"):
-    obs_reco = "massZ1"
-#    obs_gen = "GENmZ1"
-    obs_gen = "GENmassZ1"
-if (opt.OBSNAME == "massZ2"):
-    obs_reco = "massZ2"
-#    obs_gen = "GENmZ2"
-    obs_gen = "GENmassZ2"
-if (opt.OBSNAME == "pT4l"):
-    obs_reco = "pT4l"
-    obs_gen = "GENpT4l"
-if (opt.OBSNAME == "eta4l"):
-    obs_reco = "eta4l"
-    obs_gen = "GENeta4l"
-if (opt.OBSNAME == "njets_pt30_eta4p7"):
-    obs_reco = "njets_pt30_eta4p7"
-    obs_gen = "GENnjets_pt30_eta4p7"
-if (opt.OBSNAME == "njets_pt30_eta2p5"):
-    obs_reco = "njets_pt30_eta2p5"
-    obs_gen = "GENnjets_pt30_eta2p5"
-if (opt.OBSNAME == "pt_leadingjet_pt30_eta4p7"):
-    obs_reco = "pt_leadingjet_pt30_eta4p7"
-    obs_gen = "GENpt_leadingjet_pt30_eta4p7"
-if (opt.OBSNAME == "pt_leadingjet_pt30_eta2p5"):
-    obs_reco = "pt_leadingjet_pt30_eta2p5"
-    obs_gen = "GENpt_leadingjet_pt30_eta2p5"
+# variables measured in absolute values
 if (opt.OBSNAME == "rapidity4l"):
     obs_reco = "abs(rapidity4l)"
     obs_gen = "abs(GENrapidity4l)"
-if (opt.OBSNAME == "cosThetaStar"):
-    obs_reco = "abs(cosThetaStar)"
-    obs_gen = "abs(GENcosThetaStar)"
-if (opt.OBSNAME == "cosTheta1"):
-    obs_reco = "abs(cosTheta1)"
-    obs_gen = "abs(GENcosTheta1)"
-if (opt.OBSNAME == "cosTheta2"):
-    obs_reco = "abs(cosTheta2)"
-    obs_gen = "abs(GENcosTheta2)"
-if (opt.OBSNAME == "Phi"):
-    obs_reco = "abs(Phi)"
-    obs_gen = "abs(GENPhi)"
-if (opt.OBSNAME == "Phi1"):
-    obs_reco = "abs(Phi1)"
-    obs_gen = "abs(GENPhi1)"
+
+print("[INFO] obs_reco is  : {}".format(obs_reco))
+print("[INFO] obs_gen  is  : {}".format(obs_gen))
 
 #obs_bins = {0:(opt.OBSBINS.split("|")[1:((len(opt.OBSBINS)-1)/2)]),1:['0','inf']}[opt.OBSNAME=='inclusive']
 obs_bins = opt.OBSBINS.split("|")
 if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')):
-    print 'BINS OPTION MUST START AND END WITH A |'
+    print('BINS OPTION MUST START AND END WITH A |')
+    sys.exit()
+
+# INFO: obs_bins will be something like: ['', '105.0', '140.0', '']
+#       so, remove first and last element from the list
+#       pop(): removes last element, pop(0): removes first element
 obs_bins.pop()
 obs_bins.pop(0)
+print("[INFO] obs_bins is  : {}".format(obs_bins))
 
-List = []
+SampleList = []
 for long, short in sample_shortnames.iteritems():
     #if (not ("WH" in short) or ("ttH" in short) or ("ZH" in short)): continue
     #if (not ("ggH" in short)): continue
     #if (not "VBF" in short): continue
-    List.append(long)
+    SampleList.append(long)
+print("[DEBUG] Input Sample list: {}".format(SampleList))
 
 if (obs_reco=="mass4l"):
     chans = ['4e','4mu','2e2mu','4l']
 else:
     chans = ['4e','4mu','2e2mu']
+print("[DEBUG] Channels: {}".format(chans))
 
 if (not opt.CHAN==''):
     chans = [opt.CHAN]
+print("[DEBUG] Channels: {}".format(chans))
 
 for chan in chans:
     for recobin in range(len(obs_bins)-1):
         for genbin in range(len(obs_bins)-1):
-            geteffs(chan,List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, genbin)
+            fixed_border_msg("[DEBUG] {:7} SampleList: {}, m4l_bins: {}, m4l_low: {}, m4l_high: {}, obs_reco: {}, obs_gen: {}, obs_bins: {}, recobin: {}, genbin: {}".format(
+                chan,SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, genbin))
+            geteffs(chan,SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, genbin)
 
 ext=''
 if (not opt.CHAN==''):
     ext='_'+opt.CHAN
 
-with open('datacardInputs/inputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
+with open(datacardInputs+'/inputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
     f.write('acc = '+str(acceptance)+' \n')
     f.write('dacc = '+str(dacceptance)+' \n')
     f.write('acc_4l = '+str(acceptance_4l)+' \n')
@@ -725,7 +722,7 @@ with open('datacardInputs/inputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
     f.write('lambdajesup = '+str(lambdajesup)+' \n')
     f.write('lambdajesdn = '+str(lambdajesdn)+' \n')
 
-with open('datacardInputs/moreinputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
+with open(datacardInputs+'/moreinputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
     f.write('CB_mean = '+str(CB_mean_post)+' \n')
     #f.write('CB_dmean = '+str(CB_dmean_post)+' \n')
     f.write('CB_sigma = '+str(CB_sigma_post)+' \n')
@@ -735,5 +732,3 @@ with open('datacardInputs/moreinputs_sig_'+opt.OBSNAME+ext+'.py', 'w') as f:
     #f.write('effanyreco = '+str(effanyreco)+' \n')
     #f.write('deffanyreco = '+str(deffanyreco)+' \n')
 print "All samples in all process bins compiled!"
-
-

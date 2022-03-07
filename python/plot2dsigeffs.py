@@ -1,12 +1,16 @@
-import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
+import optparse
+import os
+import sys
 from array import array
-from math import *
 from decimal import *
-from sample_shortnames import *
+from math import *
+import yaml
 
-from ROOT import *
-from tdrStyle import *
-setTDRStyle()
+
+# INFO: Following items are imported from either python directory or Inputs
+from Input_Info import *
+from sample_shortnames import *
+from Utils import *
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -24,6 +28,7 @@ def parseOptions():
     # input options
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "inclusive", "pT", "eta", "Njets"')
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
+    parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
@@ -37,6 +42,11 @@ global opt, args
 parseOptions()
 sys.argv = grootargs
 
+# Don't move the root import before `sys.argv = grootargs`. Reference: https://root-forum.cern.ch/t/python-options-and-root-options/4641/3
+from ROOT import *
+from tdrStyle import *
+setTDRStyle()
+
 if (not os.path.exists("plots")):
     os.system("mkdir plots")
 
@@ -44,43 +54,21 @@ ROOT.gStyle.SetPaintTextFormat("1.2f")
 #ROOT.gStyle.SetPalette(55)
 ROOT.gStyle.SetNumberContours(99)
 
-# FIXME: We can send obsname and its label at one place
-#        Its used in few macros. So to be consistent we can add it in some module and call here.
 obsName = opt.OBSNAME
-if (obsName=='pT4l'):
-    label = 'p_{T}(H)'
-if (obsName=='massZ2'):
-    label = 'm(Z_{2})'
-if (obsName=='massZ1'):
-    label = 'm(Z_{1})'
-if (obsName=='njets_pt30_eta4p7'):
-    label = "N(jets)"
-if (obsName=='pt_leadingjet_pt30_eta4p7'):
-    label = "p_{T}(jet)"
-if (obsName=='njets_pt30_eta2p5'):
-    label = "N(jets) |#eta|<2.5"
-if (obsName=='pt_leadingjet_pt30_eta2p5'):
-    label = "p_{T}(jet) |#eta|<2.5"
-if (obsName=='absdeltarapidity_hleadingjet_pt30_eta4p7'):
-    label = "|y(H)-y(jet)|"
-if (obsName=='absrapidity_leadingjet_pt30_eta4p7'):
-    label = "|y(jet)|"
-if (obsName=='rapidity4l'):
-    label = "|y(H)|"
-if (obsName=='cosThetaStar'):
-    label = "cos(#theta*)"
-if (obsName=='cosTheta1'):
-    label = "cos(#theta_{1})"
-if (obsName=='cosTheta2'):
-    label = "cos(#theta_{2})"
-if (obsName=='Phi'):
-    label = "#Phi"
-if (obsName=='Phi1'):
-    label = "#Phi_{1}"
+
+# Get label name from YAML file.
+with open(opt.inYAMLFile, 'r') as ymlfile:
+    cfg = yaml.load(ymlfile)
+    if ( ("Observables" not in cfg) or ("1D_Observables" not in cfg['Observables']) ) :
+        print('''No section named 'observable' or sub-section name '1D-Observable' found in file {}.
+                 Please check your YAML file format!!!'''.format(InputYAMLFile))
+
+    label = cfg['Observables']['1D_Observables'][obsName]['label']
+    border_msg("Label name: {}".format(label))
 
 obs_bins = opt.OBSBINS.split("|")
 if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')):
-    print 'BINS OPTION MUST START AND END WITH A |'
+    print('BINS OPTION MUST START AND END WITH A |')
 obs_bins.pop()
 obs_bins.pop(0)
 if float(obs_bins[len(obs_bins)-1])>199:
@@ -88,8 +76,8 @@ if float(obs_bins[len(obs_bins)-1])>199:
 if (opt.OBSNAME=="nJets" or opt.OBSNAME.startswith("njets")):
     obs_bins[len(obs_bins)-1]='4'
 
+sys.path.append('./'+datacardInputs)
 
-sys.path.append('./datacardInputs')
 _temp = __import__('inputs_sig_'+obsName, globals(), locals(), ['eff','deff'], -1)
 eff = _temp.eff
 deff = _temp.deff
@@ -109,7 +97,10 @@ modelNames = ['ggH_amcatnloFXFX_125','ggH_powheg_JHUgen_125','VBF_powheg_JHUgen_
 fStates = ['4e','4mu','2e2mu']
 
 a_bins = array('d',[float(obs_bins[i]) for i in range(len(obs_bins))])
-print a_bins
+print("a_bins : ",a_bins)
+
+c=TCanvas("c","c",1000,800)
+
 for model in modelNames:
     for fState in fStates:
         eff2d = TH2D("eff2d", label, len(obs_bins)-1, a_bins, len(obs_bins)-1, a_bins)
@@ -138,8 +129,7 @@ for model in modelNames:
                 # eff2d4l.SetBinContent(bin,effanyreco[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]*folding[model+'_4l_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])
                 # deff2d4l = sqrt((effanyreco[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]*dfolding[model+'_4l_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])**2+(folding[model+'_4l_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]*deffanyreco[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])**2)
                 # eff2d4l.SetBinError(bin,deff2d4l)
-        c=TCanvas("c","c",1000,800)
-        c.cd()
+        # c.cd()
         c.SetTopMargin(0.10)
         c.SetRightMargin(0.20)
         eff2d.GetXaxis().SetTitle(label+'(gen.)')
@@ -163,9 +153,11 @@ for model in modelNames:
         latex2.SetTextFont(42)
         latex2.SetTextSize(0.25*c.GetTopMargin())
         latex2.DrawLatex(0.45, 0.92, model.replace("_"," ")+" GeV (#sqrt{s} = 13 TeV)")
-        c.SaveAs("plots/eff2d_"+model+"_"+obsName+"_"+fState+".png")
-        c.SaveAs("plots/eff2d_"+model+"_"+obsName+"_"+fState+".pdf")
-        del c
+
+        if not os.path.isdir(SigEfficiencyPlots.format(obsName = obsName)): os.makedirs(SigEfficiencyPlots.format(obsName = obsName))
+        c.SaveAs(SigEfficiencyPlots.format(obsName = obsName)+"/eff2d_"+model+"_"+obsName+"_"+fState+".png")
+        c.SaveAs(SigEfficiencyPlots.format(obsName = obsName)+"/eff2d_"+model+"_"+obsName+"_"+fState+".pdf")
+        c.Clear()
         # c=TCanvas("c","c",1000,800)
         # c.cd()
         # c.SetTopMargin(0.10)

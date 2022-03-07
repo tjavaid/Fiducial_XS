@@ -1,0 +1,103 @@
+meta: >
+  This YAML file contains list of observables for which we should run the current framework.
+  Here, the section and sub-section name (i.e. "Observables" and "1D_Observables") is hardcoded
+  in the python file "RunEverything.py". So, one should not change these two names.
+
+
+Observables:
+
+  1D_Observables:
+
+    mass4l:
+     bins: "|105.0|140.0|"
+     label: "M_{4l}"
+     unit: "GeV"
+     gen: "GENmass4l"
+
+    pT4l:
+     bins: "|0|10|20|30|45|60|80|120|200|13000|"
+     label: "p_{T}(H)"
+     unit: "GeV"
+     gen: "GENpT4l"
+
+    rapidity4l:
+     bins: "|0.0|0.15|0.3|0.45|0.6|0.75|0.9|1.2|1.6|2.5|"
+     label: "|y(H)|"
+     unit: ""
+     gen: "GENrapidity4l"
+
+    cosTheta1:
+     bins: "|-1.0|-0.75|-0.5|-0.25|0.0|0.25|0.5|0.75|1.0|"
+     label: "cos(#theta_{1})"
+     unit: ""
+     gen: "GENcosTheta1"
+
+    cosTheta2:
+     bins: "|-1.0|-0.75|-0.5|-0.25|0.0|0.25|0.5|0.75|1.0|"
+     label: "cos(#theta_{2})"
+     unit: ""
+     gen: "GENcosTheta2"
+
+    Phi:
+     bins: "|-3.14159|-2.35619|-1.570795|-0.7853975|0.0|0.7853975|1.570795|2.35619|3.14159|"
+     label: "#Phi"
+     unit: ""
+     gen: "GENPhi"
+
+    Phi1:
+     bins: "|-3.14159|-2.35619|-1.570795|-0.7853975|0.0|0.7853975|1.570795|2.35619|3.14159|"
+     label: "#Phi_{1}"
+     unit: ""
+     gen: "GENPhi1"
+
+    # cosThetaStar:
+    #   bins: "|-3.14159|-2.35619|-1.570795|-0.7853975|0.0|0.7853975|1.570795|2.35619|3.14159|"
+    #   label: "cos(#theta*)"
+    #   unit: ""
+    #  gen: "GENcosThetaStar"
+
+    massZ1:
+     bins: "|40.0|65.0|73.0|80.0|85.0|90.0|120.0|"
+     label: "m(Z_{1})"
+     unit: "GeV"
+     gen: "GENmassZ1"
+
+    massZ2:
+     bins: "|12.0|22.0|25.0|28.0|30.0|32.0|35.0|40.0|50.0|65.0|"
+     label: "m(Z_{2})"
+     unit: "GeV"
+     gen: "GENmassZ2"
+
+    pt_leadingjet_pt30_eta2p5:
+     bins: "|-2.0|30.0|55.0|95.0|200.0|13000.0|"
+     label: "p_{T}(jet) |#eta|<2.5"
+     unit: "GeV"
+     gen: "GENpt_leadingjet_pt30_eta2p5"
+
+    njets_pt30_eta2p5:
+     bins: "|0.0|1.0|2.0|3.0|4.0|10.0|"
+     label: "N(jets) |#eta|<2.5"
+     unit: ""
+     gen: "GENnjets_pt30_eta2p5"
+
+
+  # Copied the 2D values from here: https://github.com/tjavaid/DDXS/blob/d3f9cadc5967d713e077fbbd8a89cb14f7e39fb0/doAllEffs_channels_DXS.sh
+  2D_Observables:
+
+    1:
+      massZ1:
+        bins: "|50.0|74.0|88.0|94.0|106.0|"
+      massZ2:
+        bins: "|12|24|"
+
+    2:
+      massZ1:
+        bins: "|50.0|74.0|88.0|94.0|106.0|"
+      massZ2:
+        bins: "|24|32|"
+
+    3:
+      massZ1:
+        bins: "|50.0|74.0|88.0|94.0|106.0|"
+      massZ2:
+        bins: "|32|65|"

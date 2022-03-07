@@ -1,7 +1,9 @@
-import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
+import optparse
+import sys
 from array import array
-from math import *
 from decimal import *
+from math import *
+
 from sample_shortnames import *
 
 grootargs = []
@@ -33,6 +35,7 @@ global opt, args, runAllSteps
 parseOptions()
 sys.argv = grootargs
 
+# Don't move the root import before `sys.argv = grootargs`. Reference: https://root-forum.cern.ch/t/python-options-and-root-options/4641/3
 from ROOT import *
 from tdrStyle import *
 setTDRStyle()
@@ -231,7 +234,7 @@ for obsName in observables:
                 if deltanllstat[len(deltanllstat)-1]>5.0 and sigmastat[len(sigmastat)-1]>bestfit: break
 
 
-        print obsName,obsbin
+        print("obsName: {}, obsbin: {}".format(obsName,obsbin))
         scan = TGraph(len(sigma),array('d',sigma),array('d',deltanll))
         scanstat = TGraph(len(sigmastat),array('d',sigmastat),array('d',deltanllstat))
 
@@ -311,7 +314,7 @@ for obsName in observables:
         if (cl68dn==0.0): cl68dn=round(bestfit,6)
         if (cl95dn==0.0): cl95dn=round(bestfit,6)
 
-        print obsName,obsbin,round(bestfit,6),"+",cl68up,"-",cl68dn,"(68%)","+",cl95up,"-",cl95dn,"(95%)"
+        print(obsName,obsbin,round(bestfit,6),"+",cl68up,"-",cl68dn,"(68%)","+",cl95up,"-",cl95dn,"(95%)")
 
         for i in range(0,100000):
             x = 0.+i/20000.
@@ -331,18 +334,18 @@ for obsName in observables:
         if (cl95dnstat==0.0): cl95dnstat=round(bestfit,6)
 
 
-        print obsName,obsbin,round(bestfit,6),"+",cl68upstat,"-",cl68dnstat,"(68%)","+",cl95upstat,"-",cl95dnstat,"(95%)"
+        print(obsName,obsbin,round(bestfit,6),"+",cl68upstat,"-",cl68dnstat,"(68%)","+",cl95upstat,"-",cl95dnstat,"(95%)")
 
         sysup = round(sqrt(max(0.0,cl68up**2-cl68upstat**2)),6)
         sysdn = round(sqrt(max(0.0,cl68dn**2-cl68dnstat**2)),6)
-        print obsName,obsbin,round(bestfit,6),"+",cl68upstat,"-",cl68dnstat,"(stat.)","+",sysup,"-",sysdn,"(sys.)"
+        print(obsName,obsbin,round(bestfit,6),"+",cl68upstat,"-",cl68dnstat,"(stat.)","+",sysup,"-",sysdn,"(sys.)")
 
         latex2 = TLatex()
         latex2.SetNDC()
         latex2.SetTextSize(0.5*c.GetTopMargin())
         latex2.SetTextFont(42)
         latex2.SetTextAlign(31) # align right
-        print opt.LUMISCALE
+        print(opt.LUMISCALE)
         if (not opt.LUMISCALE=="1.0"):
             lumi = round(59.7*float(opt.LUMISCALE),1)
             latex2.DrawLatex(0.87, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
@@ -363,6 +366,7 @@ for obsName in observables:
         latex2.DrawLatex(0.37,0.78, "#sigma_{fid.} = "+str(round(bestfit,3))+" ^{+"+str(cl68upstat)+"}_{-"+str(cl68dnstat)+"} (stat.) ^{+"+str(sysup)+"}_{-"+str(sysdn)+"} (sys.)")
 
 
+        # FIXME: We can generalize the following if/else by only one line for `resultsXS` and `resultsXS_statsOnly` based on SigmaBin0 last string #QUICKFIX
         if (obsName=="mass4l"):
             if (obsbin=="SigmaBin0"):
                 resultsXS['SM_125_mass4l_genbin0'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
@@ -460,8 +464,6 @@ for obsName in observables:
             if (obsbin=="SigmaBin4"):
                 resultsXS['SM_125_'+obsName+'_genbin4'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
                 resultsXS['SM_125_'+obsName+'_genbin4_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-
-
 
         c.SaveAs("plots/lhscan_"+obsName+"_"+obsbin+".pdf")
         c.SaveAs("plots/lhscan_"+obsName+"_"+obsbin+".png")

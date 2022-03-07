@@ -1,6 +1,10 @@
-import os, sys
+import sys
+import os
 
-sys.path.append('./datacardInputs')
+# INFO: Following items are imported from either python directory or Inputs
+from Input_Info import *
+
+sys.path.append('./'+datacardInputs)
 
 def collect(obsName):
 
@@ -27,7 +31,7 @@ def collect(obsName):
 		cfactor.update(_tmp.cfactor);
 		lambdajesup.update(_tmp.lambdajesup); lambdajesdn.update(_tmp.lambdajesdn);
 
-	with open('datacardInputs/inputs_sig_'+obsName+'.py', 'w') as f:
+	with open(datacardInputs+'/inputs_sig_'+obsName+'.py', 'w') as f:
 		f.write('acc = '+str(acc)+' \n')
 		f.write('dacc = '+str(dacc)+' \n')
 		f.write('acc_4l = '+str(acc_4l)+' \n')

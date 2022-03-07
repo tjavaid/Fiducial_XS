@@ -1,12 +1,15 @@
-import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
+import optparse
+import os
+import sys
 from array import array
-from math import *
 from decimal import *
-from sample_shortnames import *
+from math import *
 
-from ROOT import *
-from tdrStyle import *
-setTDRStyle()
+
+# INFO: Following items are imported from either python directory or Inputs
+from sample_shortnames import *
+from Input_Info import *
+from Utils import *
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -23,6 +26,7 @@ def parseOptions():
 
     # input options
     parser.add_option('-d', '--dir',    dest='SOURCEDIR',  type='string',default='./', help='run from the SOURCEDIR as working area, skip if SOURCEDIR is an empty string')
+    parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
     parser.add_option('',   '--asimovModel',dest='ASIMOV',type='string',default='ggH_powheg15_JHUgen_125', help='Name of the asimov data mode')
     parser.add_option('',   '--asimovMass',dest='ASIMOVMASS',type='string',default='125.0', help='Asimov MAss')
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observable, supported: "inclusive", "pT", "eta", "Njets"')
@@ -40,6 +44,11 @@ def parseOptions():
 global opt, args, runAllSteps
 parseOptions()
 sys.argv = grootargs
+
+# Don't move the root import before `sys.argv = grootargs`. Reference: https://root-forum.cern.ch/t/python-options-and-root-options/4641/3
+from ROOT import *
+from tdrStyle import *
+setTDRStyle()
 
 if (not os.path.exists("plots")):
     os.system("mkdir plots")
@@ -72,7 +81,7 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 
     # FIXME: Improve the directory naming/pointer of hardcoded directory
-    f_asimov = TFile("combineOutputs/"+asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
+    f_asimov = TFile(combineOutputs+"/"+asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
     if (not opt.UNBLIND):
         data = f_asimov.Get("toys/toy_asimov");
     #data.Print("v");
@@ -128,11 +137,11 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
                 # print "bin is==", bin
                 # print "recobin===", recobin
                 if (bin==recobin):
-		    n_trueH_asimov[fState+"recobin"+str(recobin)] = trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
-		    # print "trueH_asimov value is(if condition) ==", trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
+                    n_trueH_asimov[fState+"recobin"+str(recobin)] = trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
+                    # print "trueH_asimov value is(if condition) ==", trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
                 else:
-		    n_trueH_otherfid_asimov[fState+"recobin"+str(recobin)] += trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
-		    # print "trueH_asimov value is (else condition) ==", trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
+                    n_trueH_otherfid_asimov[fState+"recobin"+str(recobin)] += trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
+                    # print "trueH_asimov value is (else condition) ==", trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
             n_zjets_asimov[fState+"recobin"+str(recobin)] = zjets_asimov[fState+"recobin"+str(recobin)].getVal()
             n_ggzz_asimov[fState+"recobin"+str(recobin)] = ggzz_asimov[fState+"recobin"+str(recobin)].getVal()
             n_fakeH_asimov[fState+"recobin"+str(recobin)] = fakeH_asimov[fState+"recobin"+str(recobin)].getVal()
@@ -217,59 +226,70 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     c = TCanvas("c","c",1000,800)
     c.cd()
 
+    # Get label name from YAML file.
+    with open(opt.inYAMLFile, 'r') as ymlfile:
+        cfg = yaml.load(ymlfile)
+        if ( ("Observables" not in cfg) or ("1D_Observables" not in cfg['Observables']) ) :
+            print('''No section named 'observable' or sub-section name '1D-Observable' found in file {}.
+                    Please check your YAML file format!!!'''.format(InputYAMLFile))
 
-    # FIXME: Also, this part we can define at one central place, probably in yaml file
-    if (obsName=="pT4l"):
-        label="p_{T}^{H}"
-        unit="GeV"
-    elif (obsName=="massZ2"):
-        label = "m(Z_{2})"
-        unit = "GeV"
-    elif (obsName=="massZ1"):
-        label = "m(Z_{1})"
-        unit = "GeV"
-    elif (obsName=="nJets" or obsName=="njets_pt30_eta4p7"):
-        label = "N(jets) |#eta|<4.7"
-        unit = ""
-    elif (obsName=="njets_pt30_eta2p5"):
-        label = "N(jets) |#eta|<2.5"
-        unit = ""
-    elif (obsName=="pt_leadingjet_pt30_eta4p7"):
-        label = "p_{T}(jet)"
-        unit = "GeV"
-    elif (obsName=="pt_leadingjet_pt30_eta2p5"):
-        label = "p_{T}(jet) |#eta|<2.5"
-        unit = "GeV"
-    elif (obsName=="absrapidity_leadingjet_pt30_eta4p7"):
-        label = "|y(jet)|"
-        unit = ""
-    elif (obsName=="absrapidity_leadingjet_pt30_eta2p5"):
-        label = "|y(jet)| |#eta|<2.5"
-        unit = ""
-    elif (obsName=="absdeltarapidity_hleadingjet_pt30_eta4p7"):
-        label = "|y(H)-y(jet)|"
-        unit = ""
-    elif (obsName=="absdeltarapidity_hleadingjet_pt30_eta2p5"):
-        label = "|y(H)-y(jet)| |#eta|<2.5"
-        unit = ""
-    elif (obsName=="rapidity4l"):
-        label = "|y^{H}|"
-        unit = ""
-    elif (obsName=="cosThetaStar"):
-        label = "cos#theta*"
-        unit = ""
-    elif (obsName=="cosTheta1"):
-        label = "cos#theta_{1}"
-        unit = ""
-    elif (obsName=="cosTheta2"):
-        label = "cos#theta_{2}"
-        unit = ""
-    elif (obsName=="Phi"):
-        label = "#Phi"
-        unit = ""
-    elif (obsName=="Phi1"):
-        label = "#Phi_{1}"
-        unit = ""
+        label = cfg['Observables']['1D_Observables'][obsName]['label']
+        unit = cfg['Observables']['1D_Observables'][obsName]['unit']
+        border_msg("Label name: {}, Unit: {}".format(label, unit))
+
+
+    # # FIXME: Also, this part we can define at one central place, probably in yaml file
+    # if (obsName=="pT4l"):
+    #     label="p_{T}^{H}"
+    #     unit="GeV"
+    # elif (obsName=="massZ2"):
+    #     label = "m(Z_{2})"
+    #     unit = "GeV"
+    # elif (obsName=="massZ1"):
+    #     label = "m(Z_{1})"
+    #     unit = "GeV"
+    # elif (obsName=="nJets" or obsName=="njets_pt30_eta4p7"):
+    #     label = "N(jets) |#eta|<4.7"
+    #     unit = ""
+    # elif (obsName=="njets_pt30_eta2p5"):
+    #     label = "N(jets) |#eta|<2.5"
+    #     unit = ""
+    # elif (obsName=="pt_leadingjet_pt30_eta4p7"):
+    #     label = "p_{T}(jet)"
+    #     unit = "GeV"
+    # elif (obsName=="pt_leadingjet_pt30_eta2p5"):
+    #     label = "p_{T}(jet) |#eta|<2.5"
+    #     unit = "GeV"
+    # elif (obsName=="absrapidity_leadingjet_pt30_eta4p7"):
+    #     label = "|y(jet)|"
+    #     unit = ""
+    # elif (obsName=="absrapidity_leadingjet_pt30_eta2p5"):
+    #     label = "|y(jet)| |#eta|<2.5"
+    #     unit = ""
+    # elif (obsName=="absdeltarapidity_hleadingjet_pt30_eta4p7"):
+    #     label = "|y(H)-y(jet)|"
+    #     unit = ""
+    # elif (obsName=="absdeltarapidity_hleadingjet_pt30_eta2p5"):
+    #     label = "|y(H)-y(jet)| |#eta|<2.5"
+    #     unit = ""
+    # elif (obsName=="rapidity4l"):
+    #     label = "|y^{H}|"
+    #     unit = ""
+    # elif (obsName=="cosThetaStar"):
+    #     label = "cos#theta*"
+    #     unit = ""
+    # elif (obsName=="cosTheta1"):
+    #     label = "cos#theta_{1}"
+    #     unit = ""
+    # elif (obsName=="cosTheta2"):
+    #     label = "cos#theta_{2}"
+    #     unit = ""
+    # elif (obsName=="Phi"):
+    #     label = "#Phi"
+    #     unit = ""
+    # elif (obsName=="Phi1"):
+    #     label = "#Phi_{1}"
+    #     unit = ""
 
 
     if (obsName.startswith("njets")):

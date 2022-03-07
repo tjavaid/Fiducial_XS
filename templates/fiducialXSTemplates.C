@@ -177,8 +177,8 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     int njets_pt30_eta2p5=0, njets_pt30_eta2p5_jesdn=0, njets_pt30_eta2p5_jesup=0;
     int finalState;
     float eventWeight, genWeight, crossSection, dataMCWeight;
-    double etaElCut = CUT_ELETA;
-    double etaMuCut = CUT_MUETA;
+    // double etaElCut = CUT_ELETA;
+    // double etaMuCut = CUT_MUETA;
     long int Run, LumiSect, Event;
     bool passedFullSelection, passedZ4lSelection, passedZXCRSelection;
     int nZXCRFailedLeptons;

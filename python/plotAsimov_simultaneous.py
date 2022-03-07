@@ -1,7 +1,12 @@
-import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
-from array import array
-from math import *
+import optparse
+import os
+import sys
 from decimal import *
+from math import *
+
+
+# INFO: Following items are imported from either python directory or Inputs
+from Input_Info import *
 from sample_shortnames import *
 
 grootargs = []
@@ -39,13 +44,13 @@ global opt, args, runAllSteps
 parseOptions()
 sys.argv = grootargs
 
-if (not os.path.exists("plots")):
-    os.system("mkdir plots")
-
+# Don't move the root import before `sys.argv = grootargs`. Reference: https://root-forum.cern.ch/t/python-options-and-root-options/4641/3
 from ROOT import *
 from tdrStyle import *
 setTDRStyle()
 
+if (not os.path.exists("plots")):
+    os.system("mkdir plots")
 
 modelName = opt.UNFOLD
 physicalModel = 'v3'
@@ -72,8 +77,7 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
 
     print (asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root')
     # FIXME: Improve the directory naming/pointer of hardcoded directory
-    f_asimov = TFile("combineOutputs/"+asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
-    #f_asimov = TFile(asimovDataModel+'_all_13TeV_xs_'+obsName+'_bin_v3_exp.root','READ')
+    f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
 
     if (not opt.UNBLIND):
         data = f_asimov.Get("toys/toy_asimov");
@@ -142,7 +146,7 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
 
     print (modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root')
     # FIXME: Improve the directory naming/pointer of hardcoded directory
-    f_modelfit = TFile(modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root','READ')
+    f_modelfit = TFile(combineOutputs+"/"+modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root','READ')
     w_modelfit = f_modelfit.Get("w")
     sim = w_modelfit.pdf("model_s")
     #sim.Print("v")
