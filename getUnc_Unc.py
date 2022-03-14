@@ -8,6 +8,7 @@ from math import *
 from LoadData import *
 from sample_shortnames import *
 from Utils import *
+from read_bins import *
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -62,13 +63,49 @@ acceptance = {}
 qcdUncert = {}
 pdfUncert = {}
 
-def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, genbin):
+def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, genbin, obs_reco_2 = '', obse_gen2 = ''):
 
-    obs_gen_low = obs_bins[genbin]
-    obs_gen_high = obs_bins[genbin+1]
 
-    obs_gen_lowest = obs_bins[0]
-    obs_gen_highest = obs_bins[len(obs_bins)-1]
+    if (obs_reco2 == ''):
+        border_msg("The option of performing a 1D differential measurement has been selected.")
+
+        obs_gen_low = obs_bins[genbin]
+        obs_gen_high = obs_bins[genbin+1]
+
+        obs_gen_lowest = obs_bins[0]
+        obs_gen_highest = obs_bins[len(obs_bins)-1]
+
+        print("General information about the variable:")
+        print ("Chosen Gen Bin is: {}, Low geb bin value is: {}, High gen bin value is: {}, Lowest value is: {}, Highest value is: {}".format(genbin, obs_gen_low, obs_gen_high, obs_gen_lowest, obs_gen_highest))
+        
+    else:
+        border_msg("The option of performing a double differential measurement has been selected.")
+
+
+        obs_gen_low = obs_bins[genbin][0][0]
+        obs_gen_high = obs_bins[genbin][0][1]
+
+        obs1_boundaries = [boundary for bin in obs_bins for boundary in bin[0]]
+        obs1_boundaries_float = [float(i) for i in obs1_boundaries]
+
+        obs_gen_lowest = str(min(obs1_boundaries_float))
+        obs_gen_highest = str(max(obs1_boundaries_float))
+
+        obs_gen2_low = obs_bins[genbin][1][0]
+        obs_gen2_high = obs_bins[genbin][1][1]
+
+        obs2_boundaries = [boundary for bin in obs_bins for boundary in bin[1]]
+        obs2_boundaries_float = [float(i) for i in obs2_boundaries]
+
+        obs_gen2_lowest = str(min(obs2_boundaries_float))
+        obs_gen2_highest = str(max(obs2_boundaries_float))
+        
+        print("General information about the variable 1:")
+        print ("Chosen Gen Bin is: {}, Low geb bin value is: {}, High gen bin value is: {}, Lowest value is: {}, Highest value is: {}".format(genbin, obs_gen_low, obs_gen_high, obs_gen_lowest, obs_gen_highest))
+
+        print("General information about the variable 2:")
+        print ("Chosen Gen Bin is: {}, Low geb bin value is: {}, High gen bin value is: {}, Lowest value is: {}, Highest value is: {}".format(genbin, obs_gen2_low, obs_gen2_high, obs_gen2_lowest, obs_gen2_highest))
+
 
     if (obs_reco.startswith("mass4l")):
         m4l_low = float(obs_gen_low)
@@ -83,11 +120,28 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
         if (not Sample in Tree): continue
         if (not Tree[Sample]): continue
 
-        if (obs_reco.startswith("njets")):
+        if (obs_reco.startswith("njets")) or (obs_gen_high == "inf"):
             cutobs_gen = "("+obs_gen+">="+str(obs_gen_low)+")"
+
+            if (obs_reco2.startswith("njets")) or (obs_gen2_high == "inf"):
+                cutobs_gen  += "&& ("+obs_gen2+">="+str(obs_gen2_low)+")"
+            else:
+                cutobs_gen += "&& ("+obs_gen2+">="+str(obs_gen2_low)+" && "+obs_gen2+"<"+str(obs_gen2_high)+")"
         else:
             cutobs_gen = "("+obs_gen+">="+str(obs_gen_low)+" && "+obs_gen+"<"+str(obs_gen_high)+")"
+
+            if not (obs_reco2 == ''):
+                if obs_gen2_high == "inf":
+                    cutobs_gen += "&& ("+obs_gen2+">="+str(obs_gen2_low)+")"
+                else:
+                    cutobs_gen += "&& ("+obs_gen2+">="+str(obs_gen2_low)+" && "+obs_gen2+"<"+str(obs_gen2_high)+")"
+
         cutm4l_gen     = "(GENmass4l>"+str(m4l_low)+" && GENmass4l<"+str(m4l_high)+")"
+
+        print(bcolors.HEADER+"cutobs_gen :"+bcolors.ENDC)
+        print(cutobs_gen)
+        print(bcolors.HEADER+"cutm4l_gen :"+bcolors.ENDC)
+        print(cutm4l_gen)
 
         if (channel == "4l"):
             cutchan_gen      = "((abs(GENlep_id[GENlep_Hindex[0]])==11 || abs(GENlep_id[GENlep_Hindex[0]])==13) && (abs(GENlep_id[GENlep_Hindex[2]])==11 || abs(GENlep_id[GENlep_Hindex[2]])==13) )"
@@ -122,6 +176,9 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
 
         shortname = sample_shortnames[Sample]
         processBin = shortname+'_'+channel+'_'+opt.OBSNAME+'_genbin'+str(genbin)
+
+        if not (obs_reco2 == ''):
+            processBin = shortname+'_'+channel+'_'+opt.OBSNAME.replace(" ","_")+'_genbin'+str(genbin)
 
         #if ("NNNLOPS" in processBin):
         #    cutchan_gen = "("+cutchan_gen+" && Sum$(abs(nnloWeights[]/qcdWeights[0])>100.0)==0 )"
@@ -243,23 +300,42 @@ obs_reco_high = 140.0
 obs_gen_low = 105.0
 obs_gen_high = 140.0
 
-obs_reco = opt.OBSNAME
-obs_gen = "GEN"+opt.OBSNAME
+obs_reco2 = ''
+obs_gen2 = ''
+obs_reco2_low = -1
+obs_reco2_high = -1
+obs_gen2_low = -1
+obs_gen2_high = -1
+
+if 'vs' in opt.OBSNAME:
+    obs_reco = opt.OBSNAME.split(" vs ")[0]
+    obs_gen = "GEN" + obs_reco
+
+    obs_reco2 = opt.OBSNAME.split(" vs ")[1]
+    obs_gen2 = "GEN" + obs_reco2
+
+else:
+    obs_reco = opt.OBSNAME
+    obs_gen = "GEN"+opt.OBSNAME
+
+    obs_reco2 = ''
+    obs_gen2 = ''
 
 # variables measured in absolute values
-if (opt.OBSNAME == "rapidity4l"):
+if (obs_reco == "rapidity4l"):
     obs_reco = "abs(rapidity4l)"
     obs_gen = "abs(GENrapidity4l)"
+
+if (obs_reco2 == "rapidity4l"):
+    obs_reco2 = "abs(rapidity4l)"
+    obs_gen2 = "abs(GENrapidity4l)"
+
 
 print("[INFO] obs_reco is : {}".format(obs_reco))
 print("[INFO] obs_gen is  : {}".format(obs_gen))
 
 #obs_bins = {0:(opt.OBSBINS.split("|")[1:((len(opt.OBSBINS)-1)/2)]),1:['0','inf']}[opt.OBSNAME=='inclusive']
-obs_bins = opt.OBSBINS.split("|")
-if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')):
-    print('BINS OPTION MUST START AND END WITH A |')
-obs_bins.pop()
-obs_bins.pop(0)
+obs_bins = read_bins(opt.OBSBINS)
 
 List = []
 for long, short in sample_shortnames.iteritems():
@@ -272,9 +348,14 @@ else:
     chans = ['4e','4mu','2e2mu']
     #chans = ['4l','4e','4mu','2e2mu']
 
+Nbins = len(obs_bins)
+
+if obs_reco2 == '':
+    Nbins = Nbins - 1 #  For the double diff measurement the len(obs_bins) is the actual number of bins, while for the 1 observable we parse bin edges so it needs to be len -1
+
 for chan in chans:
-    for genbin in range(len(obs_bins)-1):
-        getunc(chan,List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, genbin)
+    for genbin in range(Nbins):
+        getunc(chan,List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, genbin, obs_reco2, obs_gen2)
 
 if (obs_reco.startswith("njets")):
     for chan in chans:
@@ -289,7 +370,7 @@ if (obs_reco.startswith("njets")):
 
 DirForUncFiles = "python"
 if not os.path.isdir(DirForUncFiles): os.mkdir(DirForUncFiles)
-with open(DirForUncFiles+'/accUnc_'+opt.OBSNAME+'.py', 'w') as f:
+with open(DirForUncFiles+'/accUnc_'+opt.OBSNAME.replace(" ","_")+'.py', 'w') as f:
     f.write('acc = '+str(acceptance)+' \n')
     f.write('qcdUncert = '+str(qcdUncert)+' \n')
     f.write('pdfUncert = '+str(pdfUncert)+' \n')
