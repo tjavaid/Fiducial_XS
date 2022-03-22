@@ -35,6 +35,7 @@ parser.add_argument( '-model', dest='modelNames', default="SM_125,SMup_125,SMdn_
                         help='Names of models for unfolding, separated by , (comma) . Default is "SM_125"')
 parser.add_argument( '-p', dest='NtupleDir', default="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/", help='Path of ntuples')
 parser.add_argument( '-m', dest='HiggsMass', default=125.0, type=float, help='Higgs mass')
+parser.add_argument( '-y', dest='year', default=2018, type=int, help='dataset year')
 parser.add_argument( '-r', dest='RunCommand', default=0, type=int, choices=[0, 1], help="if 1 then it will run the commands else it will just print the commands")
 
 args = parser.parse_args()
@@ -81,6 +82,14 @@ with open(InputYAMLFile, 'r') as ymlfile:
                     if (args.RunCommand): os.system(command)
 
             if (args.step == 3):
+                border_msg("Running Interpolation to get acceptance for MH = 125. 38 GeV")
+                command = 'python python/interpolate_differential_full.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
+                        obsName = obsName, obsBins = obsBin['bins'], year = args.year
+                )
+                print("Command: {}".format(command))
+                if (args.RunCommand): os.system(command)
+
+            if (args.step == 4):
                 border_msg("Running getUnc")
                 # command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" >& log/unc_{obsName}.log &'.format(
                 command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}"'.format(
@@ -89,8 +98,15 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 print("Command: {}".format(command))
                 if (args.RunCommand): os.system(command)
 
+            if (args.step == 5):
+                border_msg("Grab NNLOPS acc & unc for MH = 125.38 GeV using the powheg sample")
+                command = 'python python/interpolate_differential_pred.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
+                        obsName = obsName, obsBins = obsBin['bins'], year = args.year
+                )
+                print("Command: {}".format(command))
+                if (args.RunCommand): os.system(command)
 
-            if (args.step == 4):
+            if (args.step == 6):
                 border_msg("Running Background template maker")
                 # FIXME: Check if we need modelNames in step-4 or not
                 command = 'python -u runHZZFiducialXS.py --dir="{NtupleDir}" --obsName="{obsName}" --obsBins="{obsBins}" --modelNames {modelNames} --redoTemplates --templatesOnly '.format(
@@ -99,7 +115,7 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 print("Command: {}".format(command))
                 if (args.RunCommand): os.system(command)
 
-            if (args.step == 5):
+            if (args.step == 7):
                 border_msg("Running final measurement and plotters")
                 # Copy model from model directory to combine path
                 CMSSW_BASE = os.getenv('CMSSW_BASE')

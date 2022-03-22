@@ -1,5 +1,7 @@
 sample_shortnames = {
+    'GluGluHToZZTo4L_M124_2018_slimmed' :'ggH_powheg_JHUgen_124',
     'GluGluHToZZTo4L_M125_2018_slimmed' :'ggH_powheg_JHUgen_125',
+    'GluGluHToZZTo4L_M126_2018_slimmed' :'ggH_powheg_JHUgen_126',
     'testGGH_nnlops_GENonly_slimmed'    :'ggH_NNLOPS_JHUgen_125',
     'VBF_HToZZTo4L_M125_2018_slimmed'   :'VBF_powheg_JHUgen_125',
     'WH_HToZZTo4L_M125_2018_slimmed'    :'WH_powheg_JHUgen_125',

@@ -83,11 +83,13 @@ Now, all steps can be run using script ``RunEverything.py``. The available optio
 Commands to run: ::
 
 
-  python RunEverything.py -r 1 -s 1 # step-1
-  python RunEverything.py -r 1 -s 2 # step-2
-  python RunEverything.py -r 1 -s 3 # step-3
-  python RunEverything.py -r 1 -s 4 # step-4
-  python RunEverything.py -r 1 -s 5 # step-5
+  python RunEverything.py -r 1 -s 1 # step-1: Compute efficiencies
+  python RunEverything.py -r 1 -s 2 # step-2: collectInputs
+  python RunEverything.py -r 1 -s 3 # step-3: interpolation for powheg sample
+  python RunEverything.py -r 1 -s 4 # step-4: Run uncertainty step
+  python RunEverything.py -r 1 -s 5 # step-5: interpolation for the NNLOPS sample using powheg sample
+  python RunEverything.py -r 1 -s 6 # step-6: Run background template maker
+  python RunEverything.py -r 1 -s 7 # step-7: Final measurement and plotter
 
 
 2.2 Detailed, step-by-step instructions
@@ -110,13 +112,31 @@ Running the plotter: ::
   #skipping for mass4l
   #python -u plot2dsigeffs.py -l -q -b --obsName="pT4l" --obsBins="|0|10|20|30|45|80|120|200|13000|"
 
+2.2.2 Running the interpolation step
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Run the interpolation step for powheg sample:
 
-2.2.2. Running the uncertainties step
+::
+
+  python python/interpolate_differential_full.py --obsName="mass4l" --obsBins="|105.0|140.0|" --year=2018 --debug 0
+
+2.2.3. Running the uncertainties step
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ::
 
   python -u getUnc_Unc.py --obsName="mass4l" --obsBins="|105.0|140.0|" >& unc_mass4l.log &
 
+2.2.4 Running the interpolation step
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Run the interpolation step for NNLOPS sample. For NNLOPS sample we don't have M124 and M126 MC samples.
+We assume that the the ratio for the acceptance for M125 and M125.38 is same for both NNLOPS and powheg.
+Then, we compute this ratio from powheg sample and get the values for NNLOPS sample.
+
+NOTE: Run this step after the uncertainty step. As this will also update the pdf and QCD scale uncertainty for NNLOPS.
+
+::
+
+  python python/interpolate_differential_full.py --obsName="mass4l" --obsBins="|105.0|140.0|" --year=2018 --debug 0
 
 2.2.3 Running the background template maker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

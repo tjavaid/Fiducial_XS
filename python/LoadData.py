@@ -17,7 +17,9 @@ border_msg("samples directory: "+dirMC_94)
 SamplesMC_94 = [
 #File missing or needs to be redirected (Vukasin)'GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8.root',   # path needs to be redirected
 ###
+'GluGluHToZZTo4L_M124_2018_slimmed.root',
 'GluGluHToZZTo4L_M125_2018_slimmed.root',
+'GluGluHToZZTo4L_M126_2018_slimmed.root',
 'VBF_HToZZTo4L_M125_2018_slimmed.root',
 'WH_HToZZTo4L_M125_2018_slimmed.root',
 'ZH_HToZZ_4LFilter_M125_2018_slimmed.root',
