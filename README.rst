@@ -168,7 +168,7 @@ Things to fix
 Specific
 ^^^^^^^^^^^^^^^^^^^
 1. Hardcoded paths in `LoadData.py <https://github.com/vukasinmilosevic/Fiducial_XS/edit/CMSSW_10_X_VM_docs/python/LoadData.py#8/>`_
-
+1. Currently, the framework will work if all samples exists in the same directory, including the Z+X files.
 
 General
 ^^^^^^^^^^^^^^^^^^
@@ -185,6 +185,9 @@ Hardcoded Informations
     1D_Observables:
       mass4l:
         - bins: "|105.0|140.0|"
+    2D_Observables:
+      mass4l:
+        - bins: "|105.0|140.0|"
   ```
 
-  In this YAML file the two names `Observables` and `1D_Observables` should remain same, else the code will give error.
+  In this YAML file the two names `Observables`, `1D_Observables` and `2D_Observables` should remain same, else the code will give error.

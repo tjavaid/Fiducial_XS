@@ -19,11 +19,17 @@ from ROOT import *
 
 # INFO: Following items are imported from either python directory or Inputs
 from Input_Info import *
+from Utils import  logger
+import logging
+
+logger.setLevel(logging.DEBUG)
 
 sys.path.append('./'+datacardInputs)
 
 def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel):
     """Create workspace
+    this script is called once for each reco bin (obsBin)
+    in each reco bin there are (nBins) signals (one for each gen bin)
 
     Args:
         obsName (str): Name of observable
@@ -36,14 +42,82 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         modelName (str): Name of model. For example "SM_125"
         physicalModel (str): physical model. For example: "v2"
     """
+    logger.info("""Input arguments to createXSworkspace module:
+        obsName: {obsName}
+        obsType: {obsType}
+        channel: {channel}
+        nBins: {nBins}
+        obsBin: {obsBin}
+        observableBins: {observableBins}
+        usecfactor: {usecfactor}
+        addfakeH: {addfakeH}
+        modelName: {modelName}
+        physicalModel: {physicalModel}""".format(
+            obsName = obsName,
+            obsType = type(obsName),
+            channel = channel,
+            nBins = nBins,
+            obsBin = obsBin,
+            observableBins = observableBins,
+            usecfactor = usecfactor,
+            addfakeH = addfakeH,
+            modelName = modelName,
+            physicalModel = physicalModel
+        ))
+    is2DObs = False
+    obsNameOrig = obsName   # Save original list into new variable
+    obsName = obsName[0]    # get first observable to be used for both 1D or 2D
+    obsNameDictKey = obsName    # This saves key for 1D, if 2D update the key to be searched from dict
+    if len(obsNameOrig)>1:
+        is2DObs = True
+        logger.info("This is recognised as 2D observable...")
+        obsNameDictKey = obsNameOrig[0]+'_vs_'+obsNameOrig[1]   # Update the dict key
+        logger.debug("observable bin - {} - : {}".format(obsBin, observableBins[obsBin]))
 
-    obsBin_low = observableBins[obsBin]
-    obsBin_high = observableBins[obsBin+1]
+        obsBin_low = observableBins[obsBin][0][0]
+        obsBin_high = observableBins[obsBin][0][1]
 
-    obs_bin_lowest = observableBins[0]
-    obs_bin_highest = observableBins[len(observableBins)-1]
+        obs_bin_lowest   =  min(observableBins[obsBin][0])
+        obs_bin_highest =  max(observableBins[obsBin][0])
 
-    recobin = "recobin"+str(obsBin)
+        recobin = "recobin"+str(obsBin)
+        logger.debug("""
+                (obsBin_low,  obsBin_high ) = ({},{});
+                (obs_bin_lowest,  obs_bin_highest ) = ({}, {})""".format(
+                    obsBin_low, obsBin_high, obs_bin_lowest, obs_bin_highest
+                    ))
+        SuffixOfRootFile = obsNameOrig[0]+"_"+obsBin_low+"_"+obsBin_high
+        logger.debug("SuffixOfRootFile: {}".format(SuffixOfRootFile))
+
+        obsBin_low2 = observableBins[obsBin][1][0]
+        obsBin_high2 = observableBins[obsBin][1][1]
+
+        obs_bin_lowest2 = min(observableBins[obsBin][1])
+        obs_bin_highest2 = max(observableBins[obsBin][1])
+        logger.debug("""
+                (obsBin_low2, obsBin_high2) = ({},{});
+                (obs_bin_lowest2, obs_bin_highest2) = ({}, {})""".format(
+                    obsBin_low2, obsBin_high2, obs_bin_lowest2, obs_bin_highest2
+                    ))
+        SuffixOfRootFile = SuffixOfRootFile + '_' + obsNameOrig[1] + "_" + obsBin_low2 + "_" + obsBin_high2
+        logger.debug("SuffixOfRootFile: {}".format(SuffixOfRootFile))
+    else:
+        logger.info("This is recognised as 1D observable...")
+        # obsNameOrig = obsName
+        obsBin_low = observableBins[obsBin]
+        obsBin_high = observableBins[obsBin+1]
+
+        obs_bin_lowest = observableBins[0]
+        obs_bin_highest = observableBins[len(observableBins)-1]
+
+        recobin = "recobin"+str(obsBin)
+        logger.debug("""
+                (obsBin_low,  obsBin_high ) = ({},{});
+                (obs_bin_lowest,  obs_bin_highest ) = ({}, {})""".format(
+                    obsBin_low, obsBin_high, obs_bin_lowest, obs_bin_highest
+                    ))
+        SuffixOfRootFile = obsNameOrig[0]+"_"+obsBin_low+"_"+obsBin_high
+        logger.info("SuffixOfRootFile: {}".format(SuffixOfRootFile))
 
     doJES = 1
 
@@ -62,7 +136,10 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         inc_outfrac = _temp.inc_outfrac
         binfrac_outfrac = _temp.binfrac_wrongfrac
     else:
-        _temp = __import__('inputs_sig_'+obsName, globals(), locals(), ['acc','eff','inc_wrongfrac','binfrac_wrongfrac','outinratio','lambdajesup','lambdajesdn'], -1)
+        ModuleToImport = 'inputs_sig_'+obsNameDictKey
+        logger.debug("Module to import: "+ModuleToImport)
+        _temp = __import__(ModuleToImport, globals(), locals(), ['acc','eff','inc_wrongfrac','binfrac_wrongfrac','outinratio','lambdajesup','lambdajesdn'], -1)
+
         acc = _temp.acc
         eff = _temp.eff
         outinratio = _temp.outinratio
@@ -73,7 +150,9 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     binfrac_wrongfrac = _temp.binfrac_wrongfrac
 
     #from inputs_bkg_{obsName} import fractionsBackground
-    _temp = __import__('inputs_bkg_'+obsName, globals(), locals(), ['fractionsBackground'], -1)
+    ModuleToImport = 'inputs_bkg_'+obsNameDictKey
+    logger.debug("Module to import: "+ModuleToImport)
+    _temp = __import__(ModuleToImport, globals(), locals(), ['fractionsBackground'], -1)
     fractionsBackground = _temp.fractionsBackground
 
     # Load the legacy f
@@ -89,7 +168,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     # 4 lepton mass observable to perform the fit
     m = w.var("CMS_zz4l_mass")
-    #print "m.numBins()",m.numBins()
+    # m = RooRealVar("CMS_zz4l_mass", "CMS_zz4l_mass", 105.0, 140.0)
+    #logger.info("m.numBins()",m.numBins())
     m.setMin(105.0)
     m.setMax(140.0)
     #m.setBins(45)
@@ -99,12 +179,13 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     mass4mu = RooRealVar("mass4mu", "mass4mu", 105.0, 140.0)
     mass2e2mu = RooRealVar("mass2e2mu", "mass2e2mu",105.0, 140.0)
     if (not obsName=="mass4l"):
-        if (obsName=="rapidity4l" or obsName=="cosThetaStar" or obsName=="cosTheta1" or obsName=="cosTheta2" or obsName=="Phi" or obsName=="Phi1"):
-            observable = RooRealVar(obsName,obsName,-1.0*float(obs_bin_highest),float(obs_bin_highest))
-        else:
-            observable = RooRealVar(obsName,obsName,float(obs_bin_lowest),float(obs_bin_highest))
+        # if (obsName=="rapidity4l" or obsName=="cosThetaStar" or obsName=="cosTheta1" or obsName=="cosTheta2" or obsName=="Phi" or obsName=="Phi1"):
+            # observable = RooRealVar(obsName,obsName,-1.0*float(obs_bin_highest),float(obs_bin_highest))
+        observable   = RooRealVar(obsName,obsName,float(obs_bin_lowest),float(obs_bin_highest))
         observable.Print()
-
+        if is2DObs:
+            observable2 = RooRealVar(obsNameOrig[1],obsNameOrig[1],float(obs_bin_lowest2),float(obs_bin_highest2))
+            observable2.Print()
     # luminosity
     lumi = RooRealVar("lumi_13","lumi_13", 59.7) # FIXME: Lumi value is hardcoded
 
@@ -114,9 +195,30 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     WH_norm = w.function("WH_norm")
     ZH_norm = w.function("ZH_norm")
     ttH_norm = w.function("ttH_norm")
-
+    # logger.debug("""
+    #     Norm values:
+    #         ggH_norm = {}
+    #         qqH_norm = {}
+    #         WH_norm = {}
+    #         ZH_norm = {}
+    #         ttH_norm = {}
+    #         Total: n_allH = {}
+    # """.format(
+    #     ggH_norm.getVal(),
+    #     qqH_norm.getVal(),
+    #     WH_norm.getVal(),
+    #     ZH_norm.getVal(),
+    #     ttH_norm.getVal(),
+    #     ggH_norm.getVal() + qqH_norm.getVal() + WH_norm.getVal() + ZH_norm.getVal() + ttH_norm.getVal()
+    # ))
+    # logger.error("=="*51)
+    # ggH_norm = RooRealVar("ggH_norm","ggH_norm", 6.94202296623) # FIXME: got these values from 8TeV Rootfiles
+    # qqH_norm = RooRealVar("qqH_norm","qqH_norm", 0.633580595429) # FIXME: got these values from 8TeV Rootfiles
+    # WH_norm = RooRealVar("WH_norm","WH_norm", 0.209508946773) # FIXME: got these values from 8TeV Rootfiles
+    # ZH_norm = RooRealVar("ZH_norm","ZH_norm", 0.157008222773) # FIXME: got these values from 8TeV Rootfiles
+    # ttH_norm = RooRealVar("ttH_norm","ttH_norm", 0.03604907196) # FIXME: got these values from 8TeV Rootfiles
     n_allH = (ggH_norm.getVal()+qqH_norm.getVal()+WH_norm.getVal()+ZH_norm.getVal()+ttH_norm.getVal())
-    print("\n[INFO] allH norm: {}".format(n_allH))
+    logger.info("allH norm: {}".format(n_allH))
 
     # true signal shape
     trueH = w.pdf("ggH")
@@ -183,7 +285,6 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
 
     # Wrong signal combination events
-
     if (channel=='4mu'):
         #p1_1_8 = RooRealVar("CMS_fakeH_p1_1_8","p1_1_8", 150.0, 135.0, 185.)
         #p2_1_8 = RooRealVar("CMS_fakeH_p2_1_8","p2_1_8", 20.0, 10.0, 40.0)
@@ -206,12 +307,12 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         p2_3_8 = RooFormulaVar("CMS_fakeH_p2_3_8","p2_3_8","0.72*@0-@1",RooArgList(p1_3_8,p3_3_8))
         fakeH = RooLandau("fakeH", "landau", m, p1_3_8, p2_3_8)
     if (addfakeH):
-        inc_wrongfrac_ggH=inc_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-        #inc_wrongfrac_ggH=inc_wrongfrac["ggH_HRes_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_qqH=inc_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_WH=inc_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_ZH=inc_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_ttH=inc_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ggH=inc_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        #inc_wrongfrac_ggH=inc_wrongfrac["ggH_HRes_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_qqH=inc_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_WH=inc_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ZH=inc_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ttH=inc_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
     else:
         inc_wrongfrac_ggH=0.0
         inc_wrongfrac_qqH=0.0
@@ -219,14 +320,15 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         inc_wrongfrac_ZH=0.0
         inc_wrongfrac_ttH=0.0
 
-    binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    #binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_HRes_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_qqH=binfrac_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_WH=binfrac_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_ZH=binfrac_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_ttH=binfrac_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    #binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_HRes_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_qqH=binfrac_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_WH=binfrac_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ZH=binfrac_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ttH=binfrac_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
 
     if (channel=='4e'):
+        # FIXME: Check these values
         n_fakeH = (0.24*inc_wrongfrac_WH*binfrac_wrongfrac_WH+0.20*inc_wrongfrac_ZH*binfrac_wrongfrac_ZH+0.10*inc_wrongfrac_ttH*binfrac_wrongfrac_ttH)
     if (channel=='4mu'):
         n_fakeH = (0.45*inc_wrongfrac_WH*binfrac_wrongfrac_WH+0.38*inc_wrongfrac_ZH*binfrac_wrongfrac_ZH+0.20*inc_wrongfrac_ttH*binfrac_wrongfrac_ttH)
@@ -240,30 +342,6 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     # Out of acceptance events
     # (same shape as in acceptance shape)
     out_trueH = trueH.Clone()
-
-    #if (not usecfactor):
-    #    inc_outfrac_ggH=inc_outfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    #    inc_outfrac_qqH=inc_outfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    #    inc_outfrac_WH=inc_outfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    #    inc_outfrac_ZH=inc_outfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    #    inc_outfrac_ttH=inc_outfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-
-    #    binfrac_outfrac_ggH=binfrac_outfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    #    binfrac_outfrac_qqH=binfrac_outfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    #    binfrac_outfrac_WH=binfrac_outfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    #    binfrac_outfrac_ZH=binfrac_outfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    #    binfrac_outfrac_ttH=binfrac_outfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-
-    #    n_out_trueH =  binfrac_outfrac_ggH*inc_outfrac_ggH*(1.0-inc_wrongfrac_ggH)*ggH_norm.getVal()
-    #    n_out_trueH += binfrac_outfrac_qqH*inc_outfrac_qqH*(1.0-inc_wrongfrac_qqH)*qqH_norm.getVal()
-    #    n_out_trueH += binfrac_outfrac_WH*inc_outfrac_WH*(1.0-inc_wrongfrac_WH)*WH_norm.getVal()
-    #    n_out_trueH += binfrac_outfrac_ZH*inc_outfrac_ZH*(1.0-inc_wrongfrac_ZH)*ZH_norm.getVal()
-    #    n_out_trueH += binfrac_outfrac_ttH*inc_outfrac_ttH*(1.0-inc_wrongfrac_ttH)*ttH_norm.getVal()
-    #    n_out_trueH_var = RooRealVar("n_out_trueH_var_"+recobin+"_"+channel, "n_out_trueH_var_"+recobin+"_"+channel, n_out_trueH);
-
-    #n_trueH = binfrac_true_ggH*(1.0-inc_outfrac_ggH)*(1.0-inc_wrongfrac_ggH)*ggH_norm.getVal()
-    #n_trueH_var = RooRealVar("n_fakeH_var_"+recobin+"_"+channel,"n_fakeH_var_"+recobin+"_"+channel,n_fakeH);
-    #trueH_norm = RooFormulaVar("fakeH_norm","@0",RooArgList(n_fakeH_var))
 
     # true signal shape/norm
     trueH = w.pdf("ggH")
@@ -281,13 +359,13 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         lambda_JES_sig_var = RooRealVar("lambda_sig_"+modelName+"_"+channel+"_"+obsName+"_genbin"+str(obsBin)+""+"_"+recobin, "lambda_sig_"+modelName+"_"+channel+"_"+obsName+"_genbin"+str(obsBin)+""+"_"+recobin, lambda_JES_sig)
         JES_sig_rfv = RooFormulaVar("JES_rfv_sig_"+recobin+"_"+channel,"@0*@1", RooArgList(JES, lambda_JES_sig_var) )
 
-    for genbin in range(nBins-1):
+    for genbin in range(nBins):
         trueH_shape[genbin] = trueH.Clone();
         trueH_shape[genbin].SetName("trueH"+channel+"Bin"+str(genbin))
-        if (usecfactor): fideff[genbin] = cfactor[modelName+"_"+channel+"_"+obsName+"_genbin"+str(genbin)+"_"+recobin]
-        else: fideff[genbin] = eff[modelName+"_"+channel+"_"+obsName+"_genbin"+str(genbin)+"_"+recobin]
-        print("[INFO] fideff[genbin]: {}".format(fideff[genbin]))
-        print("[INFO] model name is   {}".format(modelName))
+        if (usecfactor): fideff[genbin] = cfactor[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(genbin)+"_"+recobin]
+        else: fideff[genbin] = eff[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(genbin)+"_"+recobin]
+        logger.info("fideff[genbin]: {}".format(fideff[genbin]))
+        logger.info("model name is   {}".format(modelName))
         fideff_var[genbin] = RooRealVar("effBin"+str(genbin)+"_"+recobin+"_"+channel,"effBin"+str(genbin)+"_"+recobin+"_"+channel, fideff[genbin]);
 
         if( not (obsName=='nJets' or ("jet" in obsName)) or (not doJES)) :
@@ -307,17 +385,17 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     SigmaBin = {}
     SigmaHBin = {}
 
-    for genbin in range(nBins-1):
+    for genbin in range(nBins):
         if (physicalModel=="v3"):
             fidxs = {}
             for fState in ['4e','4mu', '2e2mu']:
                 fidxs[fState] = 0
-                fidxs[fState] += higgs_xs['ggH_125.0']*higgs4l_br['125.0_'+fState]*acc['ggH_powheg_JHUgen_125_'+fState+'_'+obsName+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                #fidxs[fState] += acc['ggH_HRes_125_'+fState+'_'+obsName+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                fidxs[fState] += higgs_xs['VBF_125.0']*higgs4l_br['125.0_'+fState]*acc['VBF_powheg_JHUgen_125_'+fState+'_'+obsName+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                fidxs[fState] += higgs_xs['WH_125.0']*higgs4l_br['125.0_'+fState]*acc['WH_powheg_JHUgen_125_'+fState+'_'+obsName+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                fidxs[fState] += higgs_xs['ZH_125.0']*higgs4l_br['125.0_'+fState]*acc['ZH_powheg_JHUgen_125_'+fState+'_'+obsName+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                fidxs[fState] += higgs_xs['ttH_125.0']*higgs4l_br['125.0_'+fState]*acc['ttH_powheg_JHUgen_125_'+fState+'_'+obsName+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['ggH_125.0']*higgs4l_br['125.0_'+fState]*acc['ggH_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                #fidxs[fState] += acc['ggH_HRes_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['VBF_125.0']*higgs4l_br['125.0_'+fState]*acc['VBF_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['WH_125.0']*higgs4l_br['125.0_'+fState]*acc['WH_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['ZH_125.0']*higgs4l_br['125.0_'+fState]*acc['ZH_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['ttH_125.0']*higgs4l_br['125.0_'+fState]*acc['ttH_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
             fidxs['4l'] = fidxs['4e'] + fidxs['4mu'] + fidxs['2e2mu']
 
             fracSM4eBin[str(genbin)] = RooRealVar('fracSM4eBin'+str(genbin), 'fracSM4eBin'+str(genbin), fidxs['4e']/fidxs['4l'])
@@ -356,16 +434,16 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             else:
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2", RooArgList(rBin_channel[str(genbin)], fideff_var[genbin],lumi))
 
-    outin = outinratio[modelName+"_"+channel+"_"+obsName+"_genbin"+str(obsBin)+"_"+recobin]
-    print("outin: obsBin: {:3}\t outin: {}".format(obsBin,outin))
+    outin = outinratio[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    logger.info("outin: obsBin: {:3}\t outin: {}".format(obsBin,outin))
     outin_var = RooRealVar("outfracBin_"+recobin+"_"+channel,"outfracBin_"+recobin+"_"+channel, outin);
     outin_var.setConstant(True)
     out_trueH_norm_args = RooArgList(outin_var)
     out_trueH_norm_func = "@0*("
-    for i in range(nBins-1):
+    for i in range(nBins):
         out_trueH_norm_args.add(trueH_norm_final[i])
         out_trueH_norm_func = out_trueH_norm_func+"@"+str(i+1)+"+"
-    out_trueH_norm_func = out_trueH_norm_func.replace(str(nBins-1)+"+",str(nBins-1)+")")
+    out_trueH_norm_func = out_trueH_norm_func.replace(str(nBins)+"+",str(nBins)+")")
     out_trueH_norm = RooFormulaVar("out_trueH_norm",out_trueH_norm_func,out_trueH_norm_args)
 
     # Backgrounds
@@ -377,17 +455,17 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     bkg_sample_tags = { 'qqzz':{'2e2mu':'ZZTo2e2mu_powheg', '4e':'ZZTo4e_powheg', '4mu':'ZZTo4mu_powheg'},
                         'ggzz':{'2e2mu':'ggZZ_2e2mu_MCFM67', '4e':'ggZZ_4e_MCFM67', '4mu':'ggZZ_4mu_MCFM67'},
                         'zjets':{'2e2mu':'ZX4l_CR', '4e':'ZX4l_CR', '4mu':'ZX4l_CR'}}
-    frac_qqzz = fractionsBackground[bkg_sample_tags['qqzz'][channel]+'_'+channel+'_'+obsName+'_'+recobin]
+    frac_qqzz = fractionsBackground[bkg_sample_tags['qqzz'][channel]+'_'+channel+'_'+obsNameDictKey+'_'+recobin]
     frac_qqzz_var  = RooRealVar("frac_qqzz_"+recobin+"_"+channel,"frac_qqzz_"+recobin+"_"+channel, frac_qqzz);
 
-    frac_ggzz = fractionsBackground[bkg_sample_tags['ggzz'][channel]+'_'+channel+'_'+obsName+'_'+recobin]
+    frac_ggzz = fractionsBackground[bkg_sample_tags['ggzz'][channel]+'_'+channel+'_'+obsNameDictKey+'_'+recobin]
     frac_ggzz_var = RooRealVar("frac_ggzz_"+recobin+"_"+channel,"frac_ggzz_"+recobin+"_"+channel, frac_ggzz);
 
-    print ("fractionsBackground:\n\t{}".format(fractionsBackground))
-    frac_zjets = fractionsBackground[bkg_sample_tags['zjets'][channel]+"_AllChans_"+obsName+'_'+recobin]
+    logger.info ("fractionsBackground:\n\t{}".format(fractionsBackground))
+    frac_zjets = fractionsBackground[bkg_sample_tags['zjets'][channel]+"_AllChans_"+obsNameDictKey+'_'+recobin]
     frac_zjets_var = RooRealVar("frac_zjet_"+recobin+"_"+channel,"frac_zjet_"+recobin+"_"+channel, frac_zjets);
 
-    print ("obsBin: {obsBin:2}, frac_qqzz: {frac_qqzz:9}, frac_ggzz: {frac_ggzz:9}, frac_zjets: {frac_zjets:9}".format(
+    logger.info ("obsBin: {obsBin:2}, frac_qqzz: {frac_qqzz:9}, frac_ggzz: {frac_ggzz:9}, frac_zjets: {frac_zjets:9}".format(
         obsBin = obsBin, frac_qqzz = frac_qqzz, frac_ggzz = frac_ggzz, frac_zjets = frac_zjets
     ))
 
@@ -417,24 +495,24 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     #template path : ./templates/templatesXS/DTreeXS_{obsName}/8TeV/
     #template name : XSBackground_{bkgTag}_{finalStateString}_{obsName}_recobin{binNum}.root
 
-    template_qqzzName = "./templates/templatesXS/DTreeXS_"+obsName+"/13TeV/XSBackground_qqZZ_"+channel+"_"+obsName+"_"+obsBin_low+"_"+obsBin_high+".root"
-    template_ggzzName = "./templates/templatesXS/DTreeXS_"+obsName+"/13TeV/XSBackground_ggZZ_"+channel+"_"+obsName+"_"+obsBin_low+"_"+obsBin_high+".root"
+    logger.debug("SuffixOfRootFile: "+SuffixOfRootFile)
+    template_qqzzName = "./templates/templatesXS/DTreeXS_"+obsNameDictKey+"/13TeV/XSBackground_qqZZ_"+channel+"_"+SuffixOfRootFile+".root"
+    template_ggzzName = "./templates/templatesXS/DTreeXS_"+obsNameDictKey+"/13TeV/XSBackground_ggZZ_"+channel+"_"+SuffixOfRootFile+".root"
     if (not obsName=="mass4l"):
-        template_zjetsName = "./templates/templatesXS/DTreeXS_"+obsName+"/13TeV/XSBackground_ZJetsCR_AllChans_"+obsName+"_"+obsBin_low+"_"+obsBin_high+".root"
+        template_zjetsName = "./templates/templatesXS/DTreeXS_"+obsNameDictKey+"/13TeV/XSBackground_ZJetsCR_AllChans_"+SuffixOfRootFile+".root"
     else:
-        template_zjetsName = "./templates/templatesXS/DTreeXS_"+obsName+"/13TeV/XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+obsBin_low+"_"+obsBin_high+".root"
-
+        template_zjetsName = "./templates/templatesXS/DTreeXS_"+obsNameDictKey+"/13TeV/XSBackground_ZJetsCR_"+channel+"_"+SuffixOfRootFile+".root"
     qqzzTempFile = TFile(template_qqzzName,"READ")
-    qqzzTemplate = qqzzTempFile.Get("m4l_"+obsName+"_"+obsBin_low+"_"+obsBin_high)
-    print('[INFO] qqZZ bins : {}, {}, {}'.format(qqzzTemplate.GetNbinsX(),qqzzTemplate.GetBinLowEdge(1),qqzzTemplate.GetBinLowEdge(qqzzTemplate.GetNbinsX()+1)))
+    qqzzTemplate = qqzzTempFile.Get("m4l_"+SuffixOfRootFile)
+    logger.info('qqZZ bins : {}, {}, {}'.format(qqzzTemplate.GetNbinsX(),qqzzTemplate.GetBinLowEdge(1),qqzzTemplate.GetBinLowEdge(qqzzTemplate.GetNbinsX()+1)))
 
     ggzzTempFile = TFile(template_ggzzName,"READ")
-    ggzzTemplate = ggzzTempFile.Get("m4l_"+obsName+"_"+obsBin_low+"_"+obsBin_high)
-    print('[INFO] ggZZ bins : {}, {}, {}'.format(ggzzTemplate.GetNbinsX(),ggzzTemplate.GetBinLowEdge(1),ggzzTemplate.GetBinLowEdge(ggzzTemplate.GetNbinsX()+1)))
+    ggzzTemplate = ggzzTempFile.Get("m4l_"+SuffixOfRootFile)
+    logger.info('ggZZ bins : {}, {}, {}'.format(ggzzTemplate.GetNbinsX(),ggzzTemplate.GetBinLowEdge(1),ggzzTemplate.GetBinLowEdge(ggzzTemplate.GetNbinsX()+1)))
 
     zjetsTempFile = TFile(template_zjetsName,"READ")
-    zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+obsBin_low+"_"+obsBin_high)
-    print('[INFO] zjets bins: {}, {}, {}'.format(zjetsTemplate.GetNbinsX(),zjetsTemplate.GetBinLowEdge(1),zjetsTemplate.GetBinLowEdge(zjetsTemplate.GetNbinsX()+1)))
+    zjetsTemplate = zjetsTempFile.Get("m4l_"+SuffixOfRootFile)
+    logger.info('zjets bins: {}, {}, {}'.format(zjetsTemplate.GetNbinsX(),zjetsTemplate.GetBinLowEdge(1),zjetsTemplate.GetBinLowEdge(zjetsTemplate.GetNbinsX()+1)))
 
     binscale = 3 # FIXME: Why number 3 hardcoded?
     qqzzTemplateNew = TH1F("qqzzTemplateNew","qqzzTemplateNew",binscale*qqzzTemplate.GetNbinsX(),qqzzTemplate.GetBinLowEdge(1),qqzzTemplate.GetBinLowEdge(qqzzTemplate.GetNbinsX()+1))
@@ -489,19 +567,22 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     else:  data_obs_file = TFile('Inputs/data_13TeV.root') #FIXME: Want to keep this in Input directory or at the same place where all ntuples are stored
     data_obs_tree = data_obs_file.Get('passedEvents')
 
-    print ("[INFO] Obs name: {:11}  Bin (low, high) edge: ({}, {})".format(obsName,obsBin_low,obsBin_high))
+    logger.info ("Obs name: {:11}  Bin (low, high) edge: ({}, {})".format(obsName,obsBin_low,obsBin_high))
     if (obsName == "nJets"): obsName = "njets_reco_pt30_eta4p7"
     if (channel=='4mu'):
         if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu),"(mass4mu>105.0 && mass4mu<140.0)")
         elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),"(mass4mu>105.0 && mass4mu<140.0 && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
-        else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),"(mass4mu>105.0 && mass4mu<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
+        elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable,observable2),"(mass4mu>105.0 && mass4mu<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsName+")<"+obsBin_high2+")")
+        else:                  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),                    "(mass4mu>105.0 && mass4mu<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
     if (channel=='4e'):
         if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e),"(mass4e>105.0 && mass4e<140.0)")
         elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>105.0 && mass4e<140.0 && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
+        elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable,observable2),"(mass4e>105.0 && mass4e<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsName+")<"+obsBin_high2+")")
         else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>105.0 && mass4e<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
     if (channel=='2e2mu'):
         if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu),"(mass2e2mu>105.0 && mass2e2mu<140.0)")
         elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>105.0 && mass2e2mu<140.0 && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
+        elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable,observable2),"(mass2e2mu>105.0 && mass2e2mu<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsName+")<"+obsBin_high2+")")
         else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>105.0 && mass2e2mu<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
     #for event in range(data_obs.numEntries()):
     #    row = data_obs.get(event)
@@ -545,7 +626,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         getattr(wout,'import')(CMS_zz4l_n2_1_8_centralValue,RooFit.RecycleConflictNodes())
         getattr(wout,'import')(CMS_zz4l_mean_m_err_1_8,RooFit.RecycleConflictNodes())
 
-    for genbin in range(nBins-1):
+    for genbin in range(nBins):
         # For Silence issue we should shift to ROOT 6.18
         # Reference: https://root-forum.cern.ch/t/rooworkspace-import-roofit-silence-does-not-work-when-importing-datasets/32591/2
         getattr(wout,'import')(trueH_shape[genbin],RooFit.RecycleConflictNodes()) # RooFit.Silence()
@@ -559,7 +640,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     getattr(wout,'import')(fakeH) # RooFit.Silence()
     getattr(wout,'import')(fakeH_norm) # RooFit.Silence()
 
-    #print "trueH norm: ",n_trueH,"fakeH norm:",n_fakeH
+    #logger.info("trueH norm: ",n_trueH,"fakeH norm:",n_fakeH)
     qqzzTemplatePdf.SetName("bkg_qqzz")
     qqzzTemplatePdf.Print("v")
     getattr(wout,'import')(qqzzTemplatePdf,RooFit.RecycleConflictNodes()) # RooFit.Silence()
@@ -580,16 +661,17 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     if (addfakeH):
         if (usecfactor):
-            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".Cfactor.root","RECREATE")
+            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsNameDictKey+"_"+physicalModel+".Databin"+str(obsBin)+".Cfactor.root","RECREATE")
         else:
-            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".root","RECREATE")
+            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsNameDictKey+"_"+physicalModel+".Databin"+str(obsBin)+".root","RECREATE")
     else:
         if (usecfactor):
-            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".Cfactor.NoFakeH.root","RECREATE")
+            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsNameDictKey+"_"+physicalModel+".Databin"+str(obsBin)+".Cfactor.NoFakeH.root","RECREATE")
         else:
-            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin"+str(obsBin)+".NoFakeH.root","RECREATE")
+            fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsNameDictKey+"_"+physicalModel+".Databin"+str(obsBin)+".NoFakeH.root","RECREATE")
 
-    print ("write ws to fout")
+    logger.info("write workspace to output root file")
+    logger.debug("Total entries in data_obs: "+str(data_obs.numEntries()))
     fout.WriteTObject(wout)
     fout.Close()
 

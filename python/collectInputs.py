@@ -10,15 +10,15 @@ sys.path.append('./'+datacardInputs)
 def collect(obsName):
 
 	acc = {}
-	dacc = {} 
-	acc_4l = {} 
+	dacc = {}
+	acc_4l = {}
 	dacc_4l = {}
 	dacc_4l = {}
 	eff = {}
 	deff = {}
 	inc_outfrac = {}
 	binfrac_outfrac = {}
-	outinratio = {} 
+	outinratio = {}
 	doutinratio = {}
 	inc_wrongfrac = {}
 	binfrac_wrongfrac = {}
@@ -30,8 +30,8 @@ def collect(obsName):
 	if (obsName=='mass4l'): channels.append('4l')
 
 	for ch in channels:
-		border_msg("module to import: "+'inputs_sig_'+obsName+'_'+ch+".py")
-		_tmp = __import__('inputs_sig_'+obsName+'_'+ch, globals(), locals(), -1)
+		border_msg("module to import: "+'inputs_sig_'+obsName.replace(' ','_')+'_'+ch+".py")
+		_tmp = __import__('inputs_sig_'+obsName.replace(' ','_')+'_'+ch, globals(), locals(), -1)
 
 		acc.update(_tmp.acc)
 		dacc.update(_tmp.dacc)
@@ -49,7 +49,7 @@ def collect(obsName):
 		lambdajesup.update(_tmp.lambdajesup)
 		lambdajesdn.update(_tmp.lambdajesdn)
 
-	with open(datacardInputs+'/inputs_sig_'+obsName+'.py', 'w') as f:
+	with open(datacardInputs+'/inputs_sig_'+obsName.replace(" ","_")+'.py', 'w') as f:
 		f.write('acc = '+str(acc)+' \n')
 		f.write('dacc = '+str(dacc)+' \n')
 		f.write('acc_4l = '+str(acc_4l)+' \n')

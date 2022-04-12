@@ -11,6 +11,7 @@ import yaml
 from Input_Info import *
 from sample_shortnames import *
 from Utils import *
+from read_bins import read_bins
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -32,6 +33,7 @@ def parseOptions():
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
+    parser.add_option('', '--obs', dest='OneDOr2DObs', default=1, type=int, help="1 for 1D obs, 2 for 2D observable")
 
     # store options and arguments as global variables
     global opt, args
@@ -54,31 +56,38 @@ ROOT.gStyle.SetPaintTextFormat("1.2f")
 #ROOT.gStyle.SetPalette(55)
 ROOT.gStyle.SetNumberContours(99)
 
+ObsToStudy = "1D_Observables" if opt.OneDOr2DObs == 1 else "2D_Observables"
 obsName = opt.OBSNAME
+ListObsName = (''.join(obsName.split())).split('vs')
 
 # Get label name from YAML file.
 with open(opt.inYAMLFile, 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
-    if ( ("Observables" not in cfg) or ("1D_Observables" not in cfg['Observables']) ) :
-        print('''No section named 'observable' or sub-section name '1D-Observable' found in file {}.
+    if ( ("Observables" not in cfg) or (ObsToStudy not in cfg['Observables']) ) :
+        print('''No section named 'observable' or sub-section name '1D-Observable' or '2D-Observable' found in file {}.
                  Please check your YAML file format!!!'''.format(InputYAMLFile))
 
-    label = cfg['Observables']['1D_Observables'][obsName]['label']
+    label = cfg['Observables'][ObsToStudy][obsName]['label']
     border_msg("Label name: {}".format(label))
 
-obs_bins = opt.OBSBINS.split("|")
-if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')):
-    print('BINS OPTION MUST START AND END WITH A |')
-obs_bins.pop()
-obs_bins.pop(0)
-if float(obs_bins[len(obs_bins)-1])>199:
-    obs_bins[len(obs_bins)-1]='250'
-if (opt.OBSNAME=="nJets" or opt.OBSNAME.startswith("njets")):
-    obs_bins[len(obs_bins)-1]='4'
+
+obs_bins = read_bins(opt.OBSBINS)
+logger.info("Parsed bins: {}".format(obs_bins))
+logger.info("Bin size = "+str(len(obs_bins)))
+
+nBins = len(obs_bins) -1
+if len(ListObsName) == 2:    # INFO: for 2D this list size == 2
+    nBins = len(obs_bins)
+logger.debug("nBins: = "+str(nBins))
+
+if float(obs_bins[nBins])>199:
+    obs_bins[nBins]='250'
+if (opt.OBSNAME=="nJets" or opt.OBSNAME.startswith("njets")): # FIXME: This won't work for 2D bins
+    obs_bins[nBins]='4'
 
 sys.path.append('./'+datacardInputs)
 
-_temp = __import__('inputs_sig_'+obsName, globals(), locals(), ['eff','deff'], -1)
+_temp = __import__('inputs_sig_'+obsName.replace(' ','_'), globals(), locals(), ['eff','deff'], -1)
 eff = _temp.eff
 deff = _temp.deff
 #_temp = __import__('moreinputs_sig_'+obsName, globals(), locals(), ['folding','dfolding','effanyreco','deffanyreco'], -1)
@@ -103,31 +112,31 @@ c=TCanvas("c","c",1000,800)
 
 for model in modelNames:
     for fState in fStates:
-        eff2d = TH2D("eff2d", label, len(obs_bins)-1, a_bins, len(obs_bins)-1, a_bins)
+        eff2d = TH2D("eff2d", label, nBins, a_bins, nBins, a_bins)
         # FIXME: ensure if we don't need folding2D and eff2D4l histograms
-        # folding2d = TH2D("folding2d", label, len(obs_bins)-1, a_bins, len(obs_bins)-1, a_bins)
-        # eff2d4l = TH2D("eff2d4l", label, len(obs_bins)-1, a_bins, len(obs_bins)-1, a_bins)
-        for x in range(0,len(obs_bins)-1):
-            for y in range(0,len(obs_bins)-1):
+        # folding2d = TH2D("folding2d", label, nBins, a_bins, nBins, a_bins)
+        # eff2d4l = TH2D("eff2d4l", label, nBins, a_bins, nBins, a_bins)
+        for x in range(0,nBins):
+            for y in range(0,nBins):
                 # eff2d.GetXaxis().SetBinLabel(x+1,str(x))
                 # eff2d.GetYaxis().SetBinLabel(y+1,str(y))
                 bin = eff2d.GetBin(x+1,y+1)
-                if eff[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]>0:
-                    eff2d.SetBinContent(bin,eff[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]), eff2d.SetBinError(bin,deff[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])
+                if eff[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)]>0:
+                    eff2d.SetBinContent(bin,eff[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)]), eff2d.SetBinError(bin,deff[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)])
                 else: eff2d.SetBinContent(bin,0), eff2d.SetBinError(bin,0)
-                # if (not model.startswith('SM') and eff[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]!=0):
-                # eff2d.SetBinError(bin,deff[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])
-                # elif (not model.startswith('SM') and eff[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]==0):
+                # if (not model.startswith('SM') and eff[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)]!=0):
+                # eff2d.SetBinError(bin,deff[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)])
+                # elif (not model.startswith('SM') and eff[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)]==0):
                 # eff2d.SetBinError(bin,0)
-                # else: eff2d.SetBinError(bin,deff['ggH_powheg_JHUgen_125_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])
+                # else: eff2d.SetBinError(bin,deff['ggH_powheg_JHUgen_125_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)])
                 # folding2d.GetXaxis().SetBinLabel(x+1,str(x))
                 # folding2d.GetYaxis().SetBinLabel(y+1,str(y))
-                # folding2d.SetBinContent(bin,folding[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])
-                # if (not model.startswith('SM')): folding2d.SetBinError(bin,dfolding[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])
+                # folding2d.SetBinContent(bin,folding[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)])
+                # if (not model.startswith('SM')): folding2d.SetBinError(bin,dfolding[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)])
                 # eff2d4l.GetXaxis().SetBinLabel(x+1,str(x))
                 # eff2d4l.GetYaxis().SetBinLabel(y+1,str(y))
-                # eff2d4l.SetBinContent(bin,effanyreco[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]*folding[model+'_4l_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])
-                # deff2d4l = sqrt((effanyreco[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]*dfolding[model+'_4l_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])**2+(folding[model+'_4l_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)]*deffanyreco[model+'_'+fState+'_'+obsName+'_genbin'+str(x)+'_recobin'+str(y)])**2)
+                # eff2d4l.SetBinContent(bin,effanyreco[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)]*folding[model+'_4l_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)])
+                # deff2d4l = sqrt((effanyreco[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)]*dfolding[model+'_4l_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)])**2+(folding[model+'_4l_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)]*deffanyreco[model+'_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(x)+'_recobin'+str(y)])**2)
                 # eff2d4l.SetBinError(bin,deff2d4l)
         # c.cd()
         c.SetTopMargin(0.10)
@@ -154,9 +163,10 @@ for model in modelNames:
         latex2.SetTextSize(0.25*c.GetTopMargin())
         latex2.DrawLatex(0.45, 0.92, model.replace("_"," ")+" GeV (#sqrt{s} = 13 TeV)")
 
-        if not os.path.isdir(SigEfficiencyPlots.format(obsName = obsName)): os.makedirs(SigEfficiencyPlots.format(obsName = obsName))
-        c.SaveAs(SigEfficiencyPlots.format(obsName = obsName)+"/eff2d_"+model+"_"+obsName+"_"+fState+".png")
-        c.SaveAs(SigEfficiencyPlots.format(obsName = obsName)+"/eff2d_"+model+"_"+obsName+"_"+fState+".pdf")
+        if not os.path.isdir(SigEfficiencyPlots.format(obsName = obsName.replace(' ','_'))):
+            os.makedirs(SigEfficiencyPlots.format(obsName = obsName.replace(' ','_')))
+        c.SaveAs(SigEfficiencyPlots.format(obsName = obsName.replace(' ','_'))+"/eff2d_"+model+"_"+obsName.replace(' ','_')+"_"+fState+".png")
+        c.SaveAs(SigEfficiencyPlots.format(obsName = obsName.replace(' ','_'))+"/eff2d_"+model+"_"+obsName.replace(' ','_')+"_"+fState+".pdf")
         c.Clear()
         # c=TCanvas("c","c",1000,800)
         # c.cd()

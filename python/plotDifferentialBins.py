@@ -9,7 +9,8 @@ import yaml
 # INFO: Following items are imported from either python directory or Inputs
 from sample_shortnames import *
 from Input_Info import *
-from Utils import *
+from read_bins import read_bins
+from Utils import logger, border_msg
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -50,23 +51,31 @@ from ROOT import *
 from tdrStyle import *
 setTDRStyle()
 
-if (not os.path.exists("plots")):
-    os.system("mkdir plots")
 
 asimovDataModel = opt.ASIMOV
 asimovPhysicalModel = 'v2'
 obsName = opt.OBSNAME
-observableBins = opt.OBSBINS.split('|')
-observableBins.pop()
-observableBins.pop(0)
-print("{}".format(float(observableBins[len(observableBins)-1])))
-if float(observableBins[len(observableBins)-1])>200.0:
-    observableBins[len(observableBins)-1]='200.0'
+ListObsName = (''.join(obsName.split())).split('vs')
+
+observableBins = read_bins(opt.OBSBINS)
+logger.info("Parsed bins: {}".format(observableBins))
+logger.info("Bin size = "+str(len(observableBins)))
+
+nBins = len(observableBins) -1
+if len(ListObsName) == 2:    # INFO: for 2D this list size == 2
+    nBins = len(observableBins)
+logger.debug("nBins: = "+str(nBins))
+
+
+if len(ListObsName) == 1:    # INFO: for 2D this list size == 1
+    print("{}".format(float(observableBins[nBins])))
+    if float(observableBins[nBins])>200.0:
+        observableBins[nBins]='200.0'
 
 def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, observableBins):
 
+    global nBins
 
-    nBins = len(observableBins)-1
     # FIXME: we could relate channel and fstate???
     # FIXME: Channels and fstates are given at many places.
     # FIXME: Is it possible to define them at one place and grab it where its necessary?
@@ -81,7 +90,7 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 
     # FIXME: Improve the directory naming/pointer of hardcoded directory
-    f_asimov = TFile(combineOutputs+"/"+asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
+    f_asimov = TFile(combineOutputs+"/"+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
     if (not opt.UNBLIND):
         data = f_asimov.Get("toys/toy_asimov");
     #data.Print("v");
@@ -226,7 +235,7 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     c = TCanvas("c","c",1000,800)
     c.cd()
 
-    # Get label name from YAML file.
+    # Get label name & Unit from YAML file.
     with open(opt.inYAMLFile, 'r') as ymlfile:
         cfg = yaml.load(ymlfile)
         if ( ("Observables" not in cfg) or ("1D_Observables" not in cfg['Observables']) ) :
@@ -236,60 +245,6 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
         label = cfg['Observables']['1D_Observables'][obsName]['label']
         unit = cfg['Observables']['1D_Observables'][obsName]['unit']
         border_msg("Label name: {}, Unit: {}".format(label, unit))
-
-
-    # # FIXME: Also, this part we can define at one central place, probably in yaml file
-    # if (obsName=="pT4l"):
-    #     label="p_{T}^{H}"
-    #     unit="GeV"
-    # elif (obsName=="massZ2"):
-    #     label = "m(Z_{2})"
-    #     unit = "GeV"
-    # elif (obsName=="massZ1"):
-    #     label = "m(Z_{1})"
-    #     unit = "GeV"
-    # elif (obsName=="nJets" or obsName=="njets_pt30_eta4p7"):
-    #     label = "N(jets) |#eta|<4.7"
-    #     unit = ""
-    # elif (obsName=="njets_pt30_eta2p5"):
-    #     label = "N(jets) |#eta|<2.5"
-    #     unit = ""
-    # elif (obsName=="pt_leadingjet_pt30_eta4p7"):
-    #     label = "p_{T}(jet)"
-    #     unit = "GeV"
-    # elif (obsName=="pt_leadingjet_pt30_eta2p5"):
-    #     label = "p_{T}(jet) |#eta|<2.5"
-    #     unit = "GeV"
-    # elif (obsName=="absrapidity_leadingjet_pt30_eta4p7"):
-    #     label = "|y(jet)|"
-    #     unit = ""
-    # elif (obsName=="absrapidity_leadingjet_pt30_eta2p5"):
-    #     label = "|y(jet)| |#eta|<2.5"
-    #     unit = ""
-    # elif (obsName=="absdeltarapidity_hleadingjet_pt30_eta4p7"):
-    #     label = "|y(H)-y(jet)|"
-    #     unit = ""
-    # elif (obsName=="absdeltarapidity_hleadingjet_pt30_eta2p5"):
-    #     label = "|y(H)-y(jet)| |#eta|<2.5"
-    #     unit = ""
-    # elif (obsName=="rapidity4l"):
-    #     label = "|y^{H}|"
-    #     unit = ""
-    # elif (obsName=="cosThetaStar"):
-    #     label = "cos#theta*"
-    #     unit = ""
-    # elif (obsName=="cosTheta1"):
-    #     label = "cos#theta_{1}"
-    #     unit = ""
-    # elif (obsName=="cosTheta2"):
-    #     label = "cos#theta_{2}"
-    #     unit = ""
-    # elif (obsName=="Phi"):
-    #     label = "#Phi"
-    #     unit = ""
-    # elif (obsName=="Phi1"):
-    #     label = "#Phi_{1}"
-    #     unit = ""
 
 
     if (obsName.startswith("njets")):
@@ -355,12 +310,16 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     legend.SetLineColor(0);
     legend.Draw()
 
+    # Create output directory if it does not exits
+    OutputPath = DifferentialBins.format(obsName = obsName.replace(' ','_'))
+    if not os.path.isdir(OutputPath):
+        os.makedirs(OutputPath)
     if (not opt.UNBLIND):
-        c.SaveAs("plots/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName+'_'+fstate+".pdf")
-        c.SaveAs("plots/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName+'_'+fstate+".png")
+        c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".pdf")
+        c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".png")
     else:
-        c.SaveAs("plots/data_"+obsName+'_'+fstate+".pdf")
-        c.SaveAs("plots/data_"+obsName+'_'+fstate+".png")
+        c.SaveAs(OutputPath+"/data_"+obsName.replace(' ','_')+'_'+fstate+".pdf")
+        c.SaveAs(OutputPath+"/data_"+obsName.replace(' ','_')+'_'+fstate+".png")
 
 
 fStates = ["4e","4mu","2e2mu","4l"]

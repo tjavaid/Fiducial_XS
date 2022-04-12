@@ -18,6 +18,13 @@ combineOutputs = "xs_125.0"
 
 SigEfficiencyPlots = "plots/SigEfficiency/2018/{obsName}"
 
+DifferentialBins = "plots/DifferentialBins/2018/{obsName}"
+
+AsimovPlots = "plots/plotAsimov/2018/{obsName}"
+
+LHScanPlots =  "plots/LHScanPlots/2018/{obsName}"
+
+ResultsPlot = "plots/results/2018/"
 ################################
 # Paths of ntuples
 ################################

@@ -8,7 +8,8 @@ from math import *
 # INFO: Following items are imported from either python directory or Inputs
 from sample_shortnames import *
 from Input_Info import *
-
+from read_bins import read_bins
+from Utils import logger
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -51,17 +52,28 @@ from ROOT import *
 from tdrStyle import *
 setTDRStyle()
 
-if (not os.path.exists("plots")):
-    os.system("mkdir plots")
 
 modelName = opt.UNFOLD
 physicalModel = 'v2'
 asimovDataModel = opt.ASIMOV
 asimovPhysicalModel = 'v2'
 obsName = opt.OBSNAME
-observableBins = opt.OBSBINS.split('|')
-observableBins.pop()
-observableBins.pop(0)
+ListObsName = (''.join(obsName.split())).split('vs')
+
+observableBins = read_bins(opt.OBSBINS)
+logger.info("Parsed bins: {}".format(observableBins))
+logger.info("Bin size = "+str(len(observableBins)))
+
+nBins = len(observableBins) -1
+if len(ListObsName) == 2:    # INFO: for 2D this list size == 2
+    nBins = len(observableBins)
+logger.debug("nBins: = "+str(nBins))
+
+#asimovModelName = 'ggH_powheg15_JHUgen_125'
+#asimovPhysicalModel = 'v2'
+#modelName = 'ggH_powheg15_JHUgen_125'
+#physicalModel = 'v2'
+#recobin = 0
 
 def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, obsName, fstate, recobin):
 
@@ -75,8 +87,8 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
 
     RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 
-    print('[INFO] Filename: {}'.format(asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ'))
-    f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
+    print('[INFO] Filename: {}'.format(asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ'))
+    f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
     if (not opt.UNBLIND):
         data = f_asimov.Get("toys/toy_asimov");
     #data.Print("v");
@@ -130,7 +142,7 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
         n_qqzz_asimov["4l"] += qqzz_asimov[fState].getVal()
         n_zz_asimov["4l"] += n_ggzz_asimov[fState]+n_qqzz_asimov[fState]
 
-    f_modelfit = TFile(combineOutputs+'/'+modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root','READ')
+    f_modelfit = TFile(combineOutputs+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_result.root','READ')
     w_modelfit = f_modelfit.Get("w")
     sim = w_modelfit.pdf("model_s")
     #sim.Print("v")
@@ -334,30 +346,19 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     latex2.SetTextSize(0.45*c.GetTopMargin())
     #latex2.DrawLatex(0.20,0.85,"Unfolding model: "+modelName.replace("_"," ")+" GeV")
 
+    # Create output directory if it does not exits
+    OutputPath = AsimovPlots.format(obsName = obsName.replace(' ','_'))
+    if not os.path.isdir(OutputPath):
+        os.makedirs(OutputPath)
 
     if (not opt.UNBLIND):
-        c.SaveAs("plots/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName+'_'+fstate+"_recobin"+str(recobin)+".pdf")
-        c.SaveAs("plots/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName+'_'+fstate+"_recobin"+str(recobin)+".png")
+        c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+"_recobin"+str(recobin)+".pdf")
+        c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+"_recobin"+str(recobin)+".png")
     else:
-        c.SaveAs("plots/data_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName+'_'+fstate+"_recobin"+str(recobin)+".pdf")
-        c.SaveAs("plots/data_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName+'_'+fstate+"_recobin"+str(recobin)+".png")
+        c.SaveAs(OutputPath+"/data_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+"_recobin"+str(recobin)+".pdf")
+        c.SaveAs(OutputPath+"/data_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+"_recobin"+str(recobin)+".png")
 
-
-modelName = opt.UNFOLD
-physicalModel = 'v2'
-asimovDataModel = opt.ASIMOV
-asimovPhysicalModel = 'v2'
-obsName = opt.OBSNAME
-observableBins = opt.OBSBINS.split('|')
-observableBins.pop()
-observableBins.pop(0)
-
-#asimovModelName = 'ggH_powheg15_JHUgen_125'
-#asimovPhysicalModel = 'v2'
-#modelName = 'ggH_powheg15_JHUgen_125'
-#physicalModel = 'v2'
-#recobin = 0
 
 for fState in ["4e","4mu","2e2mu","4l"]:
-    for recobin in range(len(observableBins)-1):
+    for recobin in range(nBins):
         plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, 'mass4l', fState, recobin)

@@ -13,91 +13,102 @@ Observables:
      label: "M_{4l}"
      unit: "GeV"
      gen: "GENmass4l"
+     ifAbs: False
 
     pT4l:
      bins: "|0|10|20|30|45|60|80|120|200|13000|"
      label: "p_{T}(H)"
      unit: "GeV"
      gen: "GENpT4l"
+     ifAbs: False
 
     rapidity4l:
      bins: "|0.0|0.15|0.3|0.45|0.6|0.75|0.9|1.2|1.6|2.5|"
      label: "|y(H)|"
      unit: ""
      gen: "GENrapidity4l"
+     ifAbs: False
 
     cosTheta1:
      bins: "|-1.0|-0.75|-0.5|-0.25|0.0|0.25|0.5|0.75|1.0|"
      label: "cos(#theta_{1})"
      unit: ""
      gen: "GENcosTheta1"
+     ifAbs: False
 
     cosTheta2:
      bins: "|-1.0|-0.75|-0.5|-0.25|0.0|0.25|0.5|0.75|1.0|"
      label: "cos(#theta_{2})"
      unit: ""
      gen: "GENcosTheta2"
+     ifAbs: False
 
     Phi:
      bins: "|-3.14159|-2.35619|-1.570795|-0.7853975|0.0|0.7853975|1.570795|2.35619|3.14159|"
      label: "#Phi"
      unit: ""
      gen: "GENPhi"
+     ifAbs: False
 
     Phi1:
      bins: "|-3.14159|-2.35619|-1.570795|-0.7853975|0.0|0.7853975|1.570795|2.35619|3.14159|"
      label: "#Phi_{1}"
      unit: ""
      gen: "GENPhi1"
+     ifAbs: False
 
     cosThetaStar:
       bins: "|-1.0|-0.75|-0.5|-0.25|0.0|0.25|0.5|0.75|1.0|"
       label: "cos(#theta*)"
       unit: ""
       gen: "GENcosThetaStar"
+      ifAbs: False
 
     massZ1:
      bins: "|40.0|65.0|73.0|80.0|85.0|90.0|120.0|"
      label: "m(Z_{1})"
      unit: "GeV"
      gen: "GENmassZ1"
+     ifAbs: False
 
     massZ2:
      bins: "|12.0|22.0|25.0|28.0|30.0|32.0|35.0|40.0|50.0|65.0|"
      label: "m(Z_{2})"
      unit: "GeV"
      gen: "GENmassZ2"
+     ifAbs: False
 
     pt_leadingjet_pt30_eta2p5:
      bins: "|-2.0|30.0|55.0|95.0|200.0|13000.0|"
      label: "p_{T}(jet) |#eta|<2.5"
      unit: "GeV"
      gen: "GENpt_leadingjet_pt30_eta2p5"
+     ifAbs: False
 
     njets_pt30_eta2p5:
      bins: "|0.0|1.0|2.0|3.0|4.0|10.0|"
      label: "N(jets) |#eta|<2.5"
      unit: ""
      gen: "GENnjets_pt30_eta2p5"
+     ifAbs: False
 
 
-  # Copied the 2D values from here: https://github.com/tjavaid/DDXS/blob/d3f9cadc5967d713e077fbbd8a89cb14f7e39fb0/doAllEffs_channels_DXS.sh
   2D_Observables:
 
-    1:
-      massZ1:
-        bins: "|50.0|74.0|88.0|94.0|106.0|"
-      massZ2:
-        bins: "|12|24|"
+      "massZ1 vs massZ2":
+        bins: "|50|80| vs |10|30| / |50|80| vs |30|60| / |80|110| vs |10|25| / |80|110| vs |25|30|"
+        label: ""
+        unit: ""
+        gen: ""
 
-    2:
-      massZ1:
-        bins: "|50.0|74.0|88.0|94.0|106.0|"
-      massZ2:
-        bins: "|24|32|"
+      "njets_pt30_eta2p5 vs pT4l":
+        bins: '|0|1|2|3|20| vs |0|15|30|120|350| / |0|15|30|120|350| / |0|120|350| / |0|120|350|'
+        label: ""
+        unit: ""
+        gen: ""
 
-    3:
-      massZ1:
-        bins: "|50.0|74.0|88.0|94.0|106.0|"
-      massZ2:
-        bins: "|32|65|"
+      "rapidity4l vs pT4l":
+        bins: '|0.0|0.5| vs |0|40| / |0.0|0.5| vs |40|80| / |0.0|0.5| vs |80|150| / |0.0|0.5| vs |150|1300| / |0.5|1.0| vs |0|45| / |0.5|1.0| vs |45|120| / |0.5|1.0| vs |120|1300| / |1.0|2.5| vs |0|45| / |1.0|2.5| vs |45|120| / |1.0|2.5| vs |120|1300|'
+        label: ""
+        unit: ""
+        gen: ""

@@ -80,10 +80,10 @@ const unsigned int outNwidth = 16;
 TString PROCESSING_TYPE = "XSTree";// "XSTreeZ4l"
 
 void templatesXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
-                 TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit);
+                 TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit, TString obsName2, TString obsBinDn2, TString obsBinUp2);
 
 int getTemplateXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
-                  TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit,
+                  TString obsName, TString obsBinDn, TString obsBinUp, TString obsName2, TString obsBinDn2, TString obsBinUp2, TString fitTypeZ4l, bool useRefit,
                   double elpT = CUT_ELPT, double mupT = CUT_MUPT, double mZ2_low = CUT_MZ2LOW,
                   double mZ1_low = CUT_MZ1LOW, double m4l_low = CUT_M4LLOW, double m4l_high = CUT_M4LHIGH);
 
@@ -95,6 +95,7 @@ TString strRandom(unsigned int rndmMax = 100000);
 void smoothAndNormaliseTemplate(TH2D* &h2D, bool silent = true);
 void smoothAndNormaliseTemplate1D(TH1D* &h1D, double norm = 1.);
 void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit);
+void storeTreeAndTemplatesXS(TTree *TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit, TString obsName2, TString obsBinDn2, TString obsBinUp2);
 int normaliseHist(TH2D* &h2D, double norm = 1.);
 int normaliseHist(TH1D* &h1D, double norm = 1.);
 int fillEmptyBinsHist2D(TH2D* &h2D, double floor = .00001);
@@ -111,7 +112,8 @@ double nEvents = -1;
 
 
 //_______________________________________________________________________________________________________________________________________________
-void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileName = "ZZTo2e2mu_mZZ95-160.root", TString sfinalState = "4l", TString obsName = "massZ2", TString obsBinDn = "0", TString obsBinUp = "120", TString sqrtsTag = "8TeV", TString baseDirXS = "templatesXS", TString sProcessingType = "DTreeXS", TString fitTypeZ4l = "none", bool useRefit = false){
+void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileName = "ZZTo2e2mu_mZZ95-160.root", TString sfinalState = "4l", TString obsName = "massZ1", TString obsBinDn = "0", TString obsBinUp = "120", TString sqrtsTag = "8TeV", TString baseDirXS = "templatesXS", TString sProcessingType = "DTreeXS", TString fitTypeZ4l = "none", bool useRefit = false,  TString obsName2 = "", TString obsBinDn2 = "", TString obsBinUp2 = "")
+{
     // prepare XS templates for given parameters
     PROCESSING_TYPE = sProcessingType;
     templatesDir = baseDirXS;
@@ -134,7 +136,7 @@ void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileNam
         nbinsX=15;
     }
     cout<<"Begin templatesXS"<<endl;
-    templatesXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit);
+    templatesXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit, obsName2, obsBinDn2, obsBinUp2);
 }
 
 //_______________________________________________________________________________________________________________________________________________
@@ -145,22 +147,24 @@ void analysisInit() {
 
 //_______________________________________________________________________________________________________________________________________________
 void templatesXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
-                 TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit) {
-
+                 TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit, TString obsName2, TString obsBinDn2, TString obsBinUp2)
+{
     analysisInit();
 
-    useRefit = false;
+    useRefit = false; // FIXME: we can remove this from here. It should be controlled from `runHZZFiducialXS.py`
 
     // produce XS 2D templates (uniform binning)
     cout << "======\n[INFO] preparing 2D XS templates, process: "+processNameTag+", sqrts: "+sqrtsTag+", Final State: ["<<sfinalState<<"]" << "["<<PROCESSING_TYPE<<"]" << "["<<CUT_M4LLOW<<" < m4l < "<<CUT_M4LHIGH<<"] " << endl;
     cout<<"[INFO] fitType: "<<fitTypeZ4l<<" templatesXS using refit? "<<useRefit<<endl;
 
     if (sfinalState == "4l") {
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, "2e2mu", obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit);
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4e", obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit);
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4mu", obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit);
-    } else {
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, "2e2mu", obsName, obsBinDn, obsBinUp, obsName2, obsBinDn2, obsBinUp2, fitTypeZ4l, useRefit);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4e", obsName, obsBinDn, obsBinUp, obsName2, obsBinDn2, obsBinUp2, fitTypeZ4l, useRefit);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4mu", obsName, obsBinDn, obsBinUp, obsName2, obsBinDn2, obsBinUp2, fitTypeZ4l, useRefit);
+    }
+    else
+    {
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, obsName2, obsBinDn2, obsBinUp2, fitTypeZ4l, useRefit);
     }
 }
 
@@ -403,9 +407,9 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
 //_______________________________________________________________________________________________________________________________________________
 // using the fixed floor at the moment, to be changed
 int getTemplateXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
-                  TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit,
-                  double elpT, double mupT, double mZ2_low, double mZ1_low, double m4l_low, double m4l_high) {
-
+                  TString obsName, TString obsBinDn, TString obsBinUp, TString obsName2, TString obsBinDn2, TString obsBinUp2, TString fitTypeZ4l, bool useRefit,
+                  double elpT, double mupT, double mZ2_low, double mZ1_low, double m4l_low, double m4l_high)
+{
     // prepare final state variables (for loop, later also plotting)
     unsigned int iFinState;
     if      (sfinalState == "4mu")   {iFinState = 1;}
@@ -416,6 +420,7 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
 
     // get chains
     TChain* sigTree;
+    // FIXME: Hardcoded tree names???
     if (processNameTag == "Data") {
         sigTree = new TChain("Ana/passedEvents");
     } else if (processNameTag == "ZJetsCR") {
@@ -430,7 +435,11 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
     TString fOption = "RECREATE";
     TString templateNameTag = getTemplateNameTag(processNameTag);
     TString fLocation = templatesDir+"/"+PROCESSING_TYPE+"_"+obsName+"/"+sqrtsTag+"/";
-    TFile* fTemplateTree = new TFile(fLocation+"/"+templateNameTag+"_"+sfinalState+".root", fOption);
+    if (obsName2 != ""){
+        fLocation = templatesDir + "/" + PROCESSING_TYPE + "_" + obsName + "_vs_" + obsName2 + "/" + sqrtsTag + "/";
+    }
+    // std::cout << "[DEBUG: fiducialXSTemplates.C#441]  fLocation: " << fLocation << std::endl;
+    TFile *fTemplateTree = new TFile(fLocation + "/" + templateNameTag + "_" + sfinalState + ".root", fOption);
     TTree* TT = new TTree("selectedEvents","selectedEvents");
 
     //nEvents
@@ -463,7 +472,7 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
     // TString fLocation = templatesDir+"/"+PROCESSING_TYPE+"_"+obsName+"/"+sqrtsTag+"/";
     // TString fOption = "RECREATE";
     cout<<"obsBinDn "<<obsBinDn<<" obsBinUp "<<obsBinUp<<endl;
-    if (obsBinDn==obsBinUp && obsBinDn.Contains("|")) { // if bin boundaries are passed - get the  boundaries in TObjArray and loop
+    if (obsBinDn==obsBinUp && obsBinDn.Contains("|") && obsBinDn2 == "") { // if bin boundaries are passed - get the  boundaries in TObjArray and loop
         TObjArray* ta = (TObjArray*) obsBinDn.Tokenize("|");
         for (int kEntry = 0; kEntry < ta->GetEntries() - 1; kEntry++){
             TString obsBinDn = ((TObjString*) ta->At(kEntry))->GetString();
@@ -471,7 +480,24 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
             cout<<"test1: "<<endl;
             storeTreeAndTemplatesXS(TT, obsName, obsBinDn, obsBinUp, sfinalState, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit);
         }
+    }
+    else if (obsBinDn == obsBinUp && obsBinDn.Contains("|") && obsBinDn2 == obsBinUp2)
+    {
+        TObjArray *ta = (TObjArray *)obsBinDn.Tokenize("|");
+        TObjArray *ta2 = (TObjArray *)obsBinDn2.Tokenize("|");
+        TString obsBinDn2 = ((TObjString *)ta2->At(0))->GetString();
+        TString obsBinUp2 = ((TObjString *)ta2->At(0 + 1))->GetString();
+        cout << "obsBinDn2, obsBinUp2 is....: " << obsBinDn2 << "\t" << obsBinUp2 << endl;
+        for (int kEntry = 0; kEntry < ta->GetEntries() - 1; kEntry++)
+        {
+            TString obsBinDn = ((TObjString *)ta->At(kEntry))->GetString();
+            TString obsBinUp = ((TObjString *)ta->At(kEntry + 1))->GetString();
+            cout << "[DEBUG]#502:  " << endl;
+            storeTreeAndTemplatesXS(TT, obsName, obsBinDn, obsBinUp, sfinalState, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit, obsName2, obsBinDn2, obsBinUp2);
+        }
     } else { // if one set of up & down bin boundaries is passed - run for it
+        // FIXME: Add the else statement for both 1D and 2D
+        // if one set of up & down bin boundaries is passed - run for itate, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit);
         cout<<"test1: "<<endl;
         storeTreeAndTemplatesXS(TT, obsName, obsBinDn, obsBinUp, sfinalState, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit);
     }
@@ -554,7 +580,8 @@ void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TStri
     TString treeWeightedCut; treeWeightedCut = sWeight + treeCut;
     TT->Draw(treeReq.Data(), treeWeightedCut.Data(), "goff");
 
-    TString templateLocation = fLocation+"/"+templateNameTag+"_"+sfinalState+"_"+obsTag+".root";
+    // std::cout << "==>#582 fLocation: " << fLocation << std::endl;
+    TString templateLocation = fLocation + "/" + templateNameTag + "_" + sfinalState + "_" + obsTag + ".root";
     TFile* fTemplate = new TFile(templateLocation, fOption);
     fTemplate->cd();
     h1D->GetXaxis()->SetTitle("CMS_zz4l_mass");
@@ -565,6 +592,138 @@ void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TStri
         //if (templateNameTag == "XSBackground_ZJetsCR") {
         //    for (int k = 0; k < 5; k++) smoothAndNormaliseTemplate1D(h1D); // once again 5-smoothing
         // }
+    }
+
+    h1D->Write();
+    fTemplate->Close();
+    h1D->Delete();
+}
+
+//_______________________________________________________________________________________________________________________________________________
+void storeTreeAndTemplatesXS(TTree *TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit, TString obsName2, TString obsBinDn2, TString obsBinUp2)
+{
+    TString obsTag = obsName + "_" + obsBinDn + "_" + obsBinUp;
+    //  for second observable
+    TString obsTag2 = obsName2 + "_" + obsBinDn2 + "_" + obsBinUp2;
+    TH1D *h1D = new TH1D("m4l_" + obsTag + "_" + obsTag2, "m4l_" + obsTag + "_" + obsTag2, nbinsX, CUT_M4LLOW, CUT_M4LHIGH);
+
+    // adjust obsName for the selection, e.g. where abs(x) is required
+    TString selectionObsName = "1";
+    TString selectionObsName2 = "1";
+
+    if (obsName == "costhetastar")
+    {
+        selectionObsName = "abs(cosThetaStar)";
+    }
+    else if (obsName == "cosThetaStar")
+    {
+        selectionObsName = "abs(cosThetaStar)";
+    }
+    else if (obsName == "cosTheta1")
+    {
+        selectionObsName = "abs(cosTheta1)";
+    }
+    else if (obsName == "costheta1")
+    {
+        selectionObsName = "abs(cosTheta1)";
+    }
+    else if (obsName == "costheta2")
+    {
+        selectionObsName = "abs(cosTheta2)";
+    }
+    else if (obsName == "cosTheta2")
+    {
+        selectionObsName = "abs(cosTheta2)";
+    }
+    else if (obsName == "Phi")
+    {
+        selectionObsName = "abs(Phi)";
+    }
+    else if (obsName == "phi")
+    {
+        selectionObsName = "abs(Phi)";
+    }
+    else if (obsName == "Phi1")
+    {
+        selectionObsName = "abs(Phi1)";
+    }
+    else if (obsName == "phi1")
+    {
+        selectionObsName = "abs(Phi1)";
+    }
+    else if (obsName == "eta4l")
+    {
+        selectionObsName = "abs(eta4l)";
+    }
+    else if (obsName == "rapidity4l")
+    {
+        selectionObsName = "abs(rapidity4l)";
+    }
+    else if (obsName == "inclusive")
+    {
+        selectionObsName = "pT4l";
+    }
+    else
+    {
+        selectionObsName = obsName;
+    }
+    // second observable
+    selectionObsName2 = obsName2;
+
+    // prepare cuts and get hist from the tree->Draw()
+    // TString treeCut = "((" + obsBinDn + " <= "+selectionObsName+") && ("+selectionObsName+" < " + obsBinUp + "))";
+    TString treeCut1 = "((" + obsBinDn + " <= " + selectionObsName + ") && (" + selectionObsName + " < " + obsBinUp + "))";
+    cout << "[  Tree cut 1 is............ " << treeCut1 << "]" << endl;
+    TString treeCut2 = "((" + obsBinDn2 + " <= " + selectionObsName2 + ") && (" + selectionObsName2 + " < " + obsBinUp2 + "))";
+    cout << "[  Tree cut 2 is............ " << treeCut2 << "]" << endl;
+    TString treeCut = "(" + treeCut1 + " && " + treeCut2 + ")"; // joint cut
+    cout << "[  Tree cut is............ " << treeCut << "]" << endl;
+    TString sM4l = "";
+    if (useRefit)
+    {
+        sM4l = "mass4lREFIT>>m4l_";
+    }
+    else
+    {
+        sM4l = "mass4l>>m4l_";
+    }
+    TString treeReq;
+    treeReq = sM4l + obsTag;
+    double entriesTot = TT->GetEntries();
+    double entriesBin = TT->GetEntries(treeCut);
+    double fracBin = (double)entriesBin / entriesTot;
+    cout << "[Observable tag: " << obsTag << "]" << endl;
+    cout << "[Tree and templates saved in: " << fLocation << "]" << endl;
+    cout << "[Bin fraction: " << fracBin << "][end fraction]" << endl;
+    if (obsName.Contains("jet"))
+    { // assumes obserbale name in form "njets_pt{pt}_eta{eta}"
+        TString treeCut_jesdn = "((" + obsBinDn + " <= " + obsName + "_jesdn) && (" + obsName + "_jesdn < " + obsBinUp + "))";
+        double entriesBin_jesdn = TT->GetEntries(treeCut_jesdn);
+        double fracBin_jesdn = (double)entriesBin_jesdn / entriesTot;
+        TString treeCut_jesup = "((" + obsBinDn + " <= " + obsName + "_jesup) && (" + obsName + "_jesup < " + obsBinUp + "))";
+        double entriesBin_jesup = TT->GetEntries(treeCut_jesup);
+        double fracBin_jesup = (double)entriesBin_jesup / entriesTot;
+        cout << "[Bin fraction (JESdn): " << fracBin_jesdn << "]" << endl;
+        cout << "[Bin fraction (JESup): " << fracBin_jesup << "]" << endl;
+    }
+
+    TString sWeight = "weight*";
+    TString treeWeightedCut;
+    treeWeightedCut = sWeight + treeCut;
+    TT->Draw(treeReq.Data(), treeWeightedCut.Data(), "goff");
+
+    TString templateLocation = fLocation + "/" + templateNameTag + "_" + sfinalState + "_" + obsTag + "_" + obsTag2 + ".root";
+    TFile *fTemplate = new TFile(templateLocation, fOption);
+    fTemplate->cd();
+    h1D->GetXaxis()->SetTitle("CMS_zz4l_mass");
+
+    if (fitTypeZ4l != "doHighMass")
+    {
+        // for (int k = 0; k < 5; k++)
+        smoothAndNormaliseTemplate1D(h1D); // 5-smoothing
+        // if (templateNameTag == "XSBackground_ZJetsCR") {
+        //     for (int k = 0; k < 5; k++) smoothAndNormaliseTemplate1D(h1D); // once again 5-smoothing
+        //  }
     }
 
     h1D->Write();

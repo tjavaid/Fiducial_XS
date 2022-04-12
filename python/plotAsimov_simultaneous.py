@@ -3,11 +3,14 @@ import os
 import sys
 from decimal import *
 from math import *
+import yaml
 
 
 # INFO: Following items are imported from either python directory or Inputs
 from Input_Info import *
 from sample_shortnames import *
+from read_bins import read_bins
+from Utils import logger, border_msg
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -24,6 +27,7 @@ def parseOptions():
 
     # input options
     parser.add_option('-d', '--dir',    dest='SOURCEDIR',  type='string',default='./', help='run from the SOURCEDIR as working area, skip if SOURCEDIR is an empty string')
+    parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
     parser.add_option('',   '--asimovModel',dest='ASIMOV',type='string',default='ggH_powheg15_JHUgen_125', help='Name of the asimov data mode')
     parser.add_option('',   '--asimovMass',dest='ASIMOVMASS',type='string',default='125.0', help='Asimov Mass')
     parser.add_option('',   '--unfoldModel',dest='UNFOLD',type='string',default='ggH_powheg15_JHUgen_125', help='Name of the unfolding model')
@@ -34,6 +38,7 @@ def parseOptions():
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
+    parser.add_option('', '--obs', dest='OneDOr2DObs', default=1, type=int, help="1 for 1D obs, 2 for 2D observable")
 
     # store options and arguments as global variables
     global opt, args
@@ -49,22 +54,28 @@ from ROOT import *
 from tdrStyle import *
 setTDRStyle()
 
-if (not os.path.exists("plots")):
-    os.system("mkdir plots")
-
 modelName = opt.UNFOLD
 physicalModel = 'v3'
 asimovDataModel = opt.ASIMOV
 asimovPhysicalModel = 'v2'
 obsName = opt.OBSNAME
-observableBins = opt.OBSBINS.split('|')
-observableBins.pop()
-observableBins.pop(0)
+ListObsName = (''.join(obsName.split())).split('vs')
+
+observableBins = read_bins(opt.OBSBINS)
+logger.info("Parsed bins: {}".format(observableBins))
+logger.info("Bin size = "+str(len(observableBins)))
+
+nBins = len(observableBins) -1
+if len(ListObsName) == 2:    # INFO: for 2D this list size == 2
+    nBins = len(observableBins)
+logger.debug("nBins: = "+str(nBins))
+
+ObsToStudy = "1D_Observables" if opt.OneDOr2DObs == 1 else "2D_Observables"
 
 def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, obsName, fstate, observableBins, recobin):
 
-
-    nBins = len(observableBins)-1
+    global nBins, ObsToStudy
+    logger.debug("nBins: = "+str(nBins))
     channel = {"4mu":"1", "4e":"2", "2e2mu":"3", "4l":"2"} # 4l is dummy, won't be used
 
     # Load some libraries
@@ -75,9 +86,9 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
 
     RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 
-    print (asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root')
+    print (asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root')
     # FIXME: Improve the directory naming/pointer of hardcoded directory
-    f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
+    f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
 
     if (not opt.UNBLIND):
         data = f_asimov.Get("toys/toy_asimov");
@@ -144,9 +155,9 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
         n_zz_asimov["4l"] += n_ggzz_asimov[fState]+n_qqzz_asimov[fState]
 
 
-    print (modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root')
+    print (modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_result.root')
     # FIXME: Improve the directory naming/pointer of hardcoded directory
-    f_modelfit = TFile(combineOutputs+"/"+modelName+'_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'_result.root','READ')
+    f_modelfit = TFile(combineOutputs+"/"+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_result.root','READ')
     w_modelfit = f_modelfit.Get("w")
     sim = w_modelfit.pdf("model_s")
     #sim.Print("v")
@@ -347,64 +358,16 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
 
     mass.Draw("same")
 
-    # FIXME: Also, this part we can define at one central place, probably in yaml file
-    if (obsName=="pT4l"):
-        label="p_{T}^{H}"
-        unit="GeV"
-    elif (obsName=="massZ2"):
-        label = "m(Z_{2})"
-        unit = "GeV"
-    elif (obsName=="massZ1"):
-        label = "m(Z_{1})"
-        unit = "GeV"
-    elif (obsName=="nJets" or obsName=="njets_reco_pt30_eta4p7"):
-        label = "N(jets) |#eta|<4.7"
-        unit = ""
-    elif (obsName=="njets_pt30_eta2p5"):
-        label = "N(jets) |#eta|<2.5"
-        unit = ""
-    elif (obsName=='pt_leadingjet_pt30_eta4p7'):
-        label = "p_{T}(jet)"
-        unit = "GeV"
-    elif (obsName=='pt_leadingjet_pt30_eta2p5'):
-        label = "p_{T}(jet) |#eta|<2.5"
-        unit = "GeV"
-    elif (obsName=='absdeltarapidity_hleadingjet_pt30_eta4p7'):
-        label = "|y(H)-y(jet)|"
-        unit = ""
-    elif (obsName=='absdeltarapidity_hleadingjet_pt30_eta2p5'):
-        label = "|y(H)-y(jet)| |#eta|<2.5"
-        unit = ""
-    elif (obsName=='absrapidity_leadingjet_pt30_eta4p7'):
-        label = "|y(jet)|"
-        unit = ""
-    elif (obsName=='absrapidity_leadingjet_pt30_eta2p5'):
-        label = "|y(jet)| |#eta|<2.5"
-        unit = ""
-    elif (obsName=="rapidity4l"):
-        label = "|y^{H}|"
-        unit = ""
-    elif (obsName=="cosThetaStar"):
-        label = "cos#theta*"
-        unit = ""
-    elif (obsName=="cosTheta1"):
-        label = "cos#theta_{1}"
-        unit = ""
-    elif (obsName=="cosTheta2"):
-        label = "cos#theta_{2}"
-        unit = ""
-    elif (obsName=="Phi"):
-        label = "#Phi"
-        unit = ""
-    elif (obsName=="Phi1"):
-        label = "#Phi_{1}"
-        unit = ""
-    elif (obsName=="mass4l"):
-        label = "inclusive"
-        unit = ""
-    else:
-        label = obsName
-        unit = ""
+    # Get label name & Unit from YAML file.
+    with open(opt.inYAMLFile, 'r') as ymlfile:
+        cfg = yaml.load(ymlfile)
+        if ( ("Observables" not in cfg) or (ObsToStudy not in cfg['Observables']) ) :
+            print('''No section named 'observable' or sub-section name '1D-Observable' found in file {}.
+                    Please check your YAML file format!!!'''.format(InputYAMLFile))
+
+        label = cfg['Observables'][ObsToStudy][obsName]['label']
+        unit = cfg['Observables'][ObsToStudy][obsName]['unit']
+        border_msg("Label name: {}, Unit: {}".format(label, unit))
 
     latex2 = TLatex()
     latex2.SetNDC()
@@ -427,17 +390,29 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     latex2.SetTextFont(42)
     latex2.SetTextSize(0.45*c.GetTopMargin())
     #latex2.DrawLatex(0.20,0.85, observableBins[recobin]+" "+unit+" < "+label+" < "+observableBins[recobin+1]+" "+unit+"    Unfolding model: "+modelName.replace("_"," ")+" GeV")
-    latex2.DrawLatex(0.65,0.85, observableBins[recobin]+" "+unit+" < "+label+" < "+observableBins[recobin+1]+" "+unit)
+    if (ObsToStudy == "1D_Observables"):
+        latex2.DrawLatex(0.65,0.85, observableBins[recobin]+" "+unit+" < "+label+" < "+observableBins[recobin+1]+" "+unit)
+    else:
+        # print( observableBins[recobin])
+        # print(observableBins[recobin])
+        latex2.DrawLatex(0.65,0.85, observableBins[recobin][0][0]+" "+unit+" < "+label[0]+" < "+observableBins[recobin][0][1]+" "+unit)
+        latex2.DrawLatex(0.65,0.75, observableBins[recobin][1][0]+" "+unit+" < "+label[1]+" < "+observableBins[recobin][1][1]+" "+unit)
+        # exit()
+        # latex2.DrawLatex(0.65,0.85, observableBins[recobin]+" "+unit+" < "+label+" < "+observableBins[recobin+1]+" "+unit)
+    # Create output directory if it does not exits
+    OutputPath = AsimovPlots.format(obsName = obsName.replace(' ','_'))
+    if not os.path.isdir(OutputPath):
+        os.makedirs(OutputPath)
 
     if (not opt.UNBLIND):
-        c.SaveAs("plots/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName+'_'+fstate+"_recobin"+str(recobin)+".pdf")
-        c.SaveAs("plots/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName+'_'+fstate+"_recobin"+str(recobin)+".png")
+        c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+"_recobin"+str(recobin)+".pdf")
+        c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+"_recobin"+str(recobin)+".png")
     else:
-        c.SaveAs("plots/data_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName+'_'+fstate+"_recobin"+str(recobin)+".pdf")
-        c.SaveAs("plots/data_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName+'_'+fstate+"_recobin"+str(recobin)+".png")
+        c.SaveAs(OutputPath+"/data_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+"_recobin"+str(recobin)+".pdf")
+        c.SaveAs(OutputPath+"/data_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+"_recobin"+str(recobin)+".png")
 
 
 fStates = ["4e","4mu","2e2mu","4l"]
 for fState in fStates:
-    for recobin in range(len(observableBins)-1):
+    for recobin in range(nBins):
         plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, obsName, fState, observableBins, recobin)

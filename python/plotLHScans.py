@@ -1,10 +1,14 @@
 import optparse
+import os
 import sys
 from array import array
 from decimal import *
 from math import *
 
 from sample_shortnames import *
+from Input_Info import *
+from Utils import logger
+from read_bins import read_bins
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -21,6 +25,7 @@ def parseOptions():
 
     # input options
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "mass4l", "pT4l", "massZ2", "rapidity4l", "cosThetaStar", "nets_reco_pt30_eta4p7"')
+    parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
     parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
@@ -41,23 +46,35 @@ from tdrStyle import *
 setTDRStyle()
 
 observables = [opt.OBSNAME]
+ListObsName = (''.join((opt.OBSNAME).split())).split('vs')
+
+observableBins = read_bins(opt.OBSBINS)
+logger.info("Parsed bins: {}".format(observableBins))
+logger.info("Bin size = "+str(len(observableBins)))
+
+nBins = len(observableBins) -1
+if len(ListObsName) == 2:    # INFO: for 2D this list size == 2
+    nBins = len(observableBins)
+logger.debug("nBins: = "+str(nBins))
+
 
 resultsXS ={}
 
 for obsName in observables:
 
-    if obsName=="mass4l": obsbins = ['SigmaBin0','r2e2muBin0','r4muBin0','r4eBin0']
-    elif obsName=="Phi" or obsName=="Phi1" or obsName=="cosTheta1" or obsName=="cosTheta2" or obsName=="cosThetaStar" : obsbins = ['SigmaBin0','SigmaBin1','SigmaBin2','SigmaBin3','SigmaBin4','SigmaBin5','SigmaBin6','SigmaBin7']
-    elif obsName=="pT4l" or obsName=="rapidity4l" or obsName=="massZ2": obsbins = ['SigmaBin0','SigmaBin1','SigmaBin2','SigmaBin3','SigmaBin4','SigmaBin5','SigmaBin6','SigmaBin7','SigmaBin8']
-    elif obsName=="massZ1": obsbins = ['SigmaBin0','SigmaBin1','SigmaBin2','SigmaBin3','SigmaBin4','SigmaBin5']
-    elif obsName=="massZ2": obsbins = ['SigmaBin0','SigmaBin1','SigmaBin2','SigmaBin3','SigmaBin4','SigmaBin5','SigmaBin6']
-    else: obsbins = ['SigmaBin0','SigmaBin1','SigmaBin2','SigmaBin3','SigmaBin4']
+    if obsName=="mass4l":
+        obsbins = ['SigmaBin0','r2e2muBin0','r4muBin0','r4eBin0']
+    else:
+        obsbins = ["SigmaBin"+str(bins_) for bins_ in range(0, nBins)]
+
+    logger.debug("obsName: {:12}, obsBins: {}".format(obsName, obsbins))
 
     for obsbin in obsbins:
 
+        # FIXME: Why continue for `cosTheta1`
         if (obsName=="cosTheta1" and obsbin=="0"): continue
 
-        f = TFile("higgsCombine"+obsName+"_"+obsbin+".MultiDimFit.mH125.09.root","READ")
+        f = TFile("higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+".MultiDimFit.mH125.09.root","READ")
         if (f==0): continue
 
         limit = f.Get("limit")
@@ -67,85 +84,18 @@ for obsName in observables:
         deltanll = []
         bestfit = 9999.0
 
-        for point in range(0,npoints):
+        for point in range(0, npoints):
             limit.GetEntry(point)
-            if (obsbin=="SigmaBin0"):
-                if (point==0): bestfit=limit.SigmaBin0
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.SigmaBin0)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="SigmaBin1"):
-                if (point==0): bestfit=limit.SigmaBin1
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.SigmaBin1)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="SigmaBin2"):
-                if (point==0): bestfit=limit.SigmaBin2
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.SigmaBin2)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="SigmaBin3"):
-                if (point==0): bestfit=limit.SigmaBin3
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.SigmaBin3)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="SigmaBin4"):
-                if (point==0): bestfit=limit.SigmaBin4
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.SigmaBin4)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="SigmaBin5"):
-                if (point==0): bestfit=limit.SigmaBin5
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.SigmaBin5)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="SigmaBin6"):
-                if (point==0): bestfit=limit.SigmaBin6
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.SigmaBin6)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="SigmaBin7"):
-                if (point==0): bestfit=limit.SigmaBin7
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.SigmaBin7)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="SigmaBin8"):
-                if (point==0): bestfit=limit.SigmaBin8
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.SigmaBin8)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="r2e2muBin0"):
-                if (point==0): bestfit=limit.r2e2muBin0
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.r2e2muBin0)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="r4muBin0"):
-                if (point==0): bestfit=limit.r4muBin0
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.r4muBin0)
-                        deltanll.append(2.0*limit.deltaNLL)
-            if (obsbin=="r4eBin0"):
-                if (point==0): bestfit=limit.r4eBin0
-                if (point>0):
-                    if (limit.deltaNLL<2.5):
-                        sigma.append(limit.r4eBin0)
-                        deltanll.append(2.0*limit.deltaNLL)
+            if (point == 0): bestfit=getattr(limit, obsbin)
+            if (point > 0):
+                if (limit.deltaNLL<2.5):
+                    sigma.append(getattr(limit, obsbin))
+                    deltanll.append(2.0*limit.deltaNLL)
 
             if point>0 and len(deltanll)>0:
                 if deltanll[len(deltanll)-1]>5.0 and sigma[len(sigma)-1]>bestfit: break
 
-        fstat = TFile("higgsCombine"+obsName+"_"+obsbin+"_NoSys.MultiDimFit.mH125.09.root","READ")
+        fstat = TFile("higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_NoSys.MultiDimFit.mH125.09.root","READ")
         if (fstat==0): continue
 
         limitstat = fstat.Get("limit")
@@ -157,78 +107,11 @@ for obsName in observables:
 
         for point in range(0,npointsstat):
             limitstat.GetEntry(point)
-            if (obsbin=="SigmaBin0"):
-                if (point==0): bestfit=limitstat.SigmaBin0
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.SigmaBin0)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="SigmaBin1"):
-                if (point==0): bestfit=limitstat.SigmaBin1
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.SigmaBin1)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="SigmaBin2"):
-                if (point==0): bestfit=limitstat.SigmaBin2
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.SigmaBin2)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="SigmaBin3"):
-                if (point==0): bestfit=limitstat.SigmaBin3
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.SigmaBin3)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="SigmaBin4"):
-                if (point==0): bestfit=limitstat.SigmaBin4
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.SigmaBin4)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="SigmaBin5"):
-                if (point==0): bestfit=limitstat.SigmaBin5
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.SigmaBin5)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="SigmaBin6"):
-                if (point==0): bestfit=limitstat.SigmaBin6
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.SigmaBin6)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="SigmaBin7"):
-                if (point==0): bestfit=limitstat.SigmaBin7
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.SigmaBin7)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="SigmaBin8"):
-                if (point==0): bestfit=limitstat.SigmaBin8
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.SigmaBin8)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="r2e2muBin0"):
-                if (point==0): bestfit=limitstat.r2e2muBin0
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.r2e2muBin0)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="r4muBin0"):
-                if (point==0): bestfit=limitstat.r4muBin0
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.r4muBin0)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
-            if (obsbin=="r4eBin0"):
-                if (point==0): bestfit=limitstat.r4eBin0
-                if (point>0):
-                    if (limitstat.deltaNLL<2.5):
-                        sigmastat.append(limitstat.r4eBin0)
-                        deltanllstat.append(2.0*limitstat.deltaNLL)
+            if (point == 0): bestfit=getattr(limitstat, obsbin)
+            if (point > 0):
+                if (limitstat.deltaNLL<2.5):
+                    sigmastat.append(getattr(limitstat, obsbin))
+                    deltanllstat.append(2.0*limitstat.deltaNLL)
 
             if point>0 and len(deltanllstat)>0:
                 if deltanllstat[len(deltanllstat)-1]>5.0 and sigmastat[len(sigmastat)-1]>bestfit: break
@@ -297,7 +180,7 @@ for obsName in observables:
         cl95upstat = 0.0
         cl95dnstat = 0.0
 
-        for i in range(0,100000):
+        for i in range(0,100000): # FIXME: What is this doing?
             x = 0.+i/20000.
             #scanval = f1.Eval(x)
             scanval = scan.Eval(x)
@@ -366,7 +249,6 @@ for obsName in observables:
         latex2.DrawLatex(0.37,0.78, "#sigma_{fid.} = "+str(round(bestfit,3))+" ^{+"+str(cl68upstat)+"}_{-"+str(cl68dnstat)+"} (stat.) ^{+"+str(sysup)+"}_{-"+str(sysdn)+"} (sys.)")
 
 
-        # FIXME: We can generalize the following if/else by only one line for `resultsXS` and `resultsXS_statsOnly` based on SigmaBin0 last string #QUICKFIX
         if (obsName=="mass4l"):
             if (obsbin=="SigmaBin0"):
                 resultsXS['SM_125_mass4l_genbin0'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
@@ -374,99 +256,17 @@ for obsName in observables:
             else:
                 resultsXS['SM_125_mass4l_'+obsbin.replace('r','').replace('Bin0','')+'_genbin0'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
                 resultsXS['SM_125_mass4l_'+obsbin.replace('r','').replace('Bin0','')+'_genbin0_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-#        elif obsName=="pT4l":
-        elif obsName=="pT4l" or obsName=="massZ2" or obsName=="rapidity4l":
-            if (obsbin=="SigmaBin0"):
-                resultsXS['SM_125_'+obsName+'_genbin0'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin0_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin1"):
-                resultsXS['SM_125_'+obsName+'_genbin1'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin1_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin2"):
-                resultsXS['SM_125_'+obsName+'_genbin2'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin2_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin3"):
-                resultsXS['SM_125_'+obsName+'_genbin3'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin3_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin4"):
-                resultsXS['SM_125_'+obsName+'_genbin4'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin4_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin5"):
-                resultsXS['SM_125_'+obsName+'_genbin5'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin5_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin6"):
-                resultsXS['SM_125_'+obsName+'_genbin6'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin6_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin7"):
-                resultsXS['SM_125_'+obsName+'_genbin7'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin7_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin8"):
-                resultsXS['SM_125_'+obsName+'_genbin8'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin8_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-        elif obsName=="Phi" or obsName=="Phi1" or obsName=="cosTheta1" or obsName=="cosTheta2" or obsName=="cosThetaStar":
-            if (obsbin=="SigmaBin0"):
-                resultsXS['SM_125_'+obsName+'_genbin0'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin0_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin1"):
-                resultsXS['SM_125_'+obsName+'_genbin1'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin1_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin2"):
-                resultsXS['SM_125_'+obsName+'_genbin2'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin2_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin3"):
-                resultsXS['SM_125_'+obsName+'_genbin3'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin3_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin4"):
-                resultsXS['SM_125_'+obsName+'_genbin4'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin4_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin5"):
-                resultsXS['SM_125_'+obsName+'_genbin5'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin5_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin6"):
-                resultsXS['SM_125_'+obsName+'_genbin6'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin6_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin7"):
-                resultsXS['SM_125_'+obsName+'_genbin7'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin7_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-
-        elif obsName=="massZ1":
-            if (obsbin=="SigmaBin0"):
-                resultsXS['SM_125_'+obsName+'_genbin0'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin0_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin1"):
-                resultsXS['SM_125_'+obsName+'_genbin1'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin1_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin2"):
-                resultsXS['SM_125_'+obsName+'_genbin2'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin2_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin3"):
-                resultsXS['SM_125_'+obsName+'_genbin3'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin3_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin4"):
-                resultsXS['SM_125_'+obsName+'_genbin4'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin4_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin5"):
-                resultsXS['SM_125_'+obsName+'_genbin5'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin5_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
         else:
-            if (obsbin=="SigmaBin0"):
-                resultsXS['SM_125_'+obsName+'_genbin0'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin0_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin1"):
-                resultsXS['SM_125_'+obsName+'_genbin1'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin1_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin2"):
-                resultsXS['SM_125_'+obsName+'_genbin2'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin2_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin3"):
-                resultsXS['SM_125_'+obsName+'_genbin3'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin3_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
-            if (obsbin=="SigmaBin4"):
-                resultsXS['SM_125_'+obsName+'_genbin4'] = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
-                resultsXS['SM_125_'+obsName+'_genbin4_statOnly'] = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
+            resultsXS['SM_125_'+obsName.replace(' ','_')+'_genbin'+obsbin.replace('SigmaBin','')]                       = {"uncerDn": -1.0*cl68dn, "uncerUp": cl68up, "central": bestfit}
+            resultsXS['SM_125_'+obsName.replace(' ','_')+'_genbin'+obsbin.replace('SigmaBin','')+'_statOnly']   = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
 
-        c.SaveAs("plots/lhscan_"+obsName+"_"+obsbin+".pdf")
-        c.SaveAs("plots/lhscan_"+obsName+"_"+obsbin+".png")
+        # Create output directory if it does not exits
+        OutputPath = LHScanPlots.format(obsName = obsName.replace(' ','_'))
+        if not os.path.isdir(OutputPath):
+            os.makedirs(OutputPath)
+
+        c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+".pdf")
+        c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+".png")
 
         # FIXME: currently its sending the modules to the python directory.
         #        we should fix this. Instead of sending this to python send
@@ -479,5 +279,5 @@ for obsName in observables:
                 with open('python/resultsXS_LHScan_mass4l_v2.py', 'w') as f:
                     f.write('resultsXS = '+str(resultsXS)+' \n')
         else:
-            with open('python/resultsXS_LHScan_'+obsName+'_v3.py', 'w') as f:
+            with open('python/resultsXS_LHScan_'+obsName.replace(' ','_')+'_v3.py', 'w') as f:
                 f.write('resultsXS = '+str(resultsXS)+' \n')
