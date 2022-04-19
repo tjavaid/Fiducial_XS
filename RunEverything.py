@@ -71,9 +71,9 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 border_msg("Running efficiencies step: "+ obsName)
                 for channel in args.channels:
                     logger.info("==> channel: {}".format(channel))
-                    command = 'nohup python -u efficiencyFactors.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -c "{channel}" >& log/effs_{obsName_log}_{channel}.log &'.format(
+                    command = 'nohup python -u efficiencyFactors.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -c "{channel}" -y "{year}" >& log/effs_{obsName_log}_{channel}.log &'.format(
                     # command = 'python -u efficiencyFactors.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -c "{channel}"'.format(
-                        obsName = obsName, obsBins = obsBin['bins'], channel = channel, obsName_log = obsName.replace(" ","_")
+                        obsName = obsName, obsBins = obsBin['bins'], channel = channel, year = args.year, obsName_log = obsName.replace(" ","_")
                     )
                     logger.info("Command: {}".format(command))
                     if (args.RunCommand): os.system(command)
@@ -105,8 +105,8 @@ with open(InputYAMLFile, 'r') as ymlfile:
             if (args.step == 4):
                 border_msg("Running getUnc")
                 # command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" >& log/unc_{obsName}.log &'.format(
-                command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}"'.format(
-                        obsName = obsName, obsBins = obsBin['bins']
+                command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -y "{year}"'.format(
+                        obsName = obsName, obsBins = obsBin['bins'], year = args.year
                 )
                 logger.info("Command: {}".format(command))
                 if (args.RunCommand): os.system(command)

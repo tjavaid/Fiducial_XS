@@ -14,9 +14,6 @@ from sample_shortnames import *
 from Utils import *
 from read_bins import *
 
-if not os.path.isdir(datacardInputs):
-    os.mkdir(datacardInputs)
-
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
     grootargs.append(opt)
@@ -114,9 +111,9 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
     gSystem.Load("$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so")
     gSystem.AddIncludePath("-I$ROOFITSYS/include")
 
-    logging.info(sample)
-    if ("NNLOPS" in sample or "nnlops" in sample):
-        print ("Will skip: "+ sample)
+    #logging.info(sample) - Comment: Not needed? VM
+    #if ("NNLOPS" in sample or "nnlops" in sample):
+    #    print ("Will skip: "+ sample)
     
     recoweight = "genWeight*pileupWeight*dataMCWeight"
 
@@ -211,7 +208,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             border_msg("Sample: "+Sample+"\t Observable: "+str(obs_reco)+"\trecobin: "+str(recobin)+"\tgenbin: "+str(genbin))
 
         if ("NNLOPS" in Sample or "nnlops" in Sample):
-            print ("Skipping: "+ sample)
+            print ("Skipping: "+ Sample)
             #VM: For discussion: This can be removed as it is gonna continue anyway
             #recoweight = "genWeight*pileupWeight*dataMCWeight"
             continue
@@ -222,7 +219,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
         if (not Tree[Sample]): continue
         i_sample = i_sample+1
 
-        shortname = sample_shortnames[Sample]
+        shortname = sample_shortnames[opt.ERA][Sample]
         processBin = shortname+'_'+channel+'_'+opt.OBSNAME+'_genbin'+str(genbin)+'_recobin'+str(recobin)
 
         if not (obs_reco2 == ''):
@@ -303,18 +300,22 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
         # Reco observable cut - if using the _jesup/down variations
 
         if (("jet" in obs_reco.lower()) or ("jet" in obs_reco2.lower())):
-            cutobs_reco_jesup = "("+obs_reco+"_jesup"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesup"+"<"+str(obs_reco_high)+")"
-            cutobs_reco_jesdn = "("+obs_reco+"_jesdn"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesdn"+"<"+str(obs_reco_high)+")"
+            cutobs_reco_jesup = ''
+            cutobs_reco_jesdn = ''
 
-            if obs_reco_high == "inf":
-                cutobs_reco_jesup = "("+obs_reco+"_jesup"+">="+str(obs_reco_low)+")"
-                cutobs_reco_jesdn = "("+obs_reco+"_jesdn"+">="+str(obs_reco_low)+")"
+            if ("jet" in obs_reco.lower()):
+                cutobs_reco_jesup = "("+obs_reco+"_jesup"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesup"+"<"+str(obs_reco_high)+")"
+                cutobs_reco_jesdn = "("+obs_reco+"_jesdn"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesdn"+"<"+str(obs_reco_high)+")"
+
+                if obs_reco_high == "inf":
+                    cutobs_reco_jesup = "("+obs_reco+"_jesup"+">="+str(obs_reco_low)+")"
+                    cutobs_reco_jesdn = "("+obs_reco+"_jesdn"+">="+str(obs_reco_low)+")"
            
             # Double differential measurement addition: Reco observable cut - if using the _jesup/down variations
             tmp_up = ''
             tmp_dn = ''
 
-            if not (obs_reco2 == ''):
+            if (not (obs_reco2 == '')) and ("jet" in obs_reco2.lower()) :
                 tmp_up = " && ("+obs_reco2+"_jesup"+">="+str(obs_reco2_low)+" && "+obs_reco2+"_jesup"+"<"+str(obs_reco2_high)+")"
                 tmp_dn = " && ("+obs_reco2+"_jesdn"+">="+str(obs_reco2_low)+" && "+obs_reco2+"_jesdn"+"<"+str(obs_reco2_high)+")"
 
@@ -902,8 +903,10 @@ print("[INFO] obs_gen2  is  : {}".format(obs_gen2))
 
 obs_bins = read_bins(opt.OBSBINS)
 
+RootFile, Tree, nEvents, sumw = GrabMCTrees(opt.ERA)
+
 SampleList = []
-for long, short in sample_shortnames.iteritems():
+for long, short in sample_shortnames[opt.ERA].iteritems():
     #if (not ("WH" in short) or ("ttH" in short) or ("ZH" in short)): continue
     #if (not ("ggH" in short)): continue
     #if (not "VBF" in short): continue
@@ -925,7 +928,6 @@ Nbins = len(obs_bins)
 if obs_reco2 == '':
     Nbins = Nbins - 1 #  For the double diff measurement the len(obs_bins) is the actual number of bins, while for the 1 observable we parse bin edges so it needs to be len -1
     
-
 for chan in chans:
     for recobin in range(Nbins):
         for genbin in range(Nbins):
@@ -940,7 +942,11 @@ ext=''
 if (not opt.CHAN==''):
     ext='_'+opt.CHAN
 
-output_file_name = datacardInputs+'/inputs_sig_'+label+ext+'.py'
+
+if not os.path.isdir(opt.ERA): os.mkdir(opt.ERA)
+if not os.path.isdir(opt.ERA+"/"+datacardInputs): os.mkdir(opt.ERA+"/"+datacardInputs)
+
+output_file_name = opt.ERA+"/"+datacardInputs+'/inputs_sig_'+label+ext+'.py'
 
 
 with open(output_file_name, 'w') as f:
@@ -961,10 +967,10 @@ with open(output_file_name, 'w') as f:
     f.write('lambdajesdn = '+str(lambdajesdn)+' \n')
 
 
-more_output_file_name = datacardInputs+'/moreinputs_sig_'+opt.OBSNAME+ext+'.py'
+more_output_file_name = opt.ERA+'/'+datacardInputs+'/moreinputs_sig_'+opt.OBSNAME+ext+'.py'
 
 if not (obs_reco2 == ''):
-    more_output_file_name = datacardInputs+'/moreinputs_sig_'+opt.OBSNAME.replace(" ", "_")+'.py'
+    more_output_file_name = opt.ERA+'/'+datacardInputs+'/moreinputs_sig_'+opt.OBSNAME.replace(" ", "_")+'.py'
 
 
 with open(more_output_file_name, 'w') as f:
@@ -976,4 +982,4 @@ with open(more_output_file_name, 'w') as f:
     f.write('dfolding = '+str(dfolding)+' \n')
     #f.write('effanyreco = '+str(effanyreco)+' \n')
     #f.write('deffanyreco = '+str(deffanyreco)+' \n')
-print "All samples in all process bins compiled!"
+print("All samples in all process bins compiled!")

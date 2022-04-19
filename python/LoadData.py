@@ -3,18 +3,18 @@ from array import array
 import os
 from Utils import *
 
-dirMC_94 = '/raid/raid9/qguo/combine/2018_MC_Ntuple/'
-dirMC_94 = '/publicfs/cms/user/qyguo/ufl_machine/tools/combine/2018_MC_Ntuple/'
-#dirMC_94 = 'root://eosuser.cern.ch//eos/cms/store/group/phys_muon/TagAndProbe/HZZ4L/2018/'
-dirMC_94 = '/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/'
-dirMC_94_1 = '/raid/raid7/tjavaid/sig_samples_mc/'    # after copying to the local from Lucien working directory
-dirMC_94_Mad = '/raid/raid9/qguo/Run2/after/Run2_2/new/CMSSW_10_2_18/src/'
-dirData_94 = 'root://cmsio5.rc.ufl.edu//store/user/t2/users/klo/Higgs/HZZ4l/NTuple/Run2/MC80X_M17_4l_Feb21/'  # /cms/data/store/user/t2/users/archived/dsperka/Run2/Zprime/2017/rootfiles_Data_Apr16/  #to be added
+dirMC = {}
 
-border_msg("samples directory: "+dirMC_94)
+dirMC['2018'] = '/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/'
+dirMC['2017'] = '/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/' # 2018 for now until we sort out the locations
+dirMC['2016'] = '/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/' # 2018 for now until we sort out the locations
 
+dirData_94 = '/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/'  
 
-SamplesMC_94 = [
+border_msg("samples directory: "+dirMC['2018'])
+
+SamplesMC = {}
+SamplesMC['2018'] = [
 #File missing or needs to be redirected (Vukasin)'GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8.root',   # path needs to be redirected
 ###
 'GluGluHToZZTo4L_M124_2018_slimmed.root',
@@ -30,67 +30,51 @@ SamplesMC_94 = [
 #'ttH_p.root'
 ]
 
-SamplesData_94 = [
+SamplesData = {}
+
+SamplesData['2017'] = [
 'DoubleEG_Run2017B-17Nov2017-v1.root','DoubleEG_Run2017C-17Nov2017-v1.root','DoubleEG_Run2017D-17Nov2017-v1.root','DoubleEG_Run2017E-17Nov2017-v1.root','DoubleEG_Run2017F-17Nov2017-v1.root',
 'DoubleMuon_Run2017-17Nov2017-v1.root','DoubleMuon_Run2017B-17Nov2017-v1.root','DoubleMuon_Run2017C-17Nov2017-v1.root'
 ]
 
 
-RootFile = {}
-Tree = {}
-nEvents = {}
-sumw = {}
-
-for i in range(0,len(SamplesMC_94)):
-
-    sample = SamplesMC_94[i].rstrip('.root')
 
 
-    if ("NNLOPS" in sample):
-        RootFile[sample] = TFile(dirMC_94_1+'/'+sample+'.root',"READ")
-        Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
+def GrabMCTrees(era = '2018'):
+    RootFile = {}
+    Tree = {}
+    nEvents = {}
+    sumw = {}
 
-    elif ("ggH_amcatnloFXFX" in sample):
-        RootFile[sample] = TFile(dirMC_94+'/'+sample+'.root',"READ")
-        Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
+    for i in range(0,len(SamplesMC[era])):
 
-    else:
-        RootFile[sample] = TFile.Open(dirMC_94+'/'+sample+'.root',"READ")
-        Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
+        sample = SamplesMC[era][i].rstrip('.root')
 
-    h_nevents = RootFile[sample].Get("Ana/nEvents")
-    h_sumw = RootFile[sample].Get("Ana/sumWeights")
 
-    if (h_nevents): nEvents[sample] = h_nevents.Integral()
-    else: nEvents[sample] = 0.
+        if ("NNLOPS" in sample):
+            RootFile[sample] = TFile(dirMC[era]+'/'+sample+'.root',"READ")
+            Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
 
-    if (h_sumw): sumw[sample] = h_sumw.Integral()
-    else: sumw[sample] = 0.
+        elif ("ggH_amcatnloFXFX" in sample):
+            RootFile[sample] = TFile(dirMC[era]+'/'+sample+'.root',"READ")
+            Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
 
-    if (not Tree[sample]): print sample+' has no passedEvents tree'
-    else:
-        print('{sample:37}\t nevents: {nevents:11}\t sumw: {sumw}'.format(
-            sample = sample, nevents = nEvents[sample], sumw = sumw[sample]))
+        else:
+            RootFile[sample] = TFile.Open(dirMC[era]+'/'+sample+'.root',"READ")
+            Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
 
-for i in range(0,len(SamplesData_94)):
-    break
-    sample = SamplesData_94[i].rstrip('.root')
+        h_nevents = RootFile[sample].Get("Ana/nEvents")
+        h_sumw = RootFile[sample].Get("Ana/sumWeights")
 
-    RootFile[sample] = TFile(dirData_94+'/'+sample+'.root',"READ")
+        if (h_nevents): nEvents[sample] = h_nevents.Integral()
+        else: nEvents[sample] = 0.
 
-    Tree[sample]  = RootFile[sample].Get("Ana/passedEvents")
+        if (h_sumw): sumw[sample] = h_sumw.Integral()
+        else: sumw[sample] = 0.
 
-    h_nevents = RootFile[sample].Get("nEvents")
-    h_sumw = RootFile[sample].Get("sumWeights")
+        if (not Tree[sample]): print sample+' has no passedEvents tree'
+        else:
+            print('{sample:37}\t nevents: {nevents:11}\t sumw: {sumw}'.format(
+                sample = sample, nevents = nEvents[sample], sumw = sumw[sample]))
 
-    if (h_nevents):
-        nEvents[sample] = h_nevents.Integral()
-        sumw[sample] = h_sumw.Integral()
-    else:
-        nEvents[sample] = 0.
-        sumw[sample] = 0.
-
-    if (not Tree[sample]): print sample+' has no passedEvents tree'
-    else:
-        print sample,"nevents",nEvents[sample],"sumw",sumw[sample]
-
+    return RootFile, Tree, nEvents, sumw

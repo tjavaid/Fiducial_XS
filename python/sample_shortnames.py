@@ -1,4 +1,6 @@
-sample_shortnames = {
+sample_shortnames = {}
+
+sample_shortnames['2018'] = {
     'GluGluHToZZTo4L_M124_2018_slimmed' :'ggH_powheg_JHUgen_124',
     'GluGluHToZZTo4L_M125_2018_slimmed' :'ggH_powheg_JHUgen_125',
     'GluGluHToZZTo4L_M126_2018_slimmed' :'ggH_powheg_JHUgen_126',
@@ -10,7 +12,9 @@ sample_shortnames = {
     'ggH_amcatnloFXFX_2018_slimmed'     :'ggH_amcatnloFXFX_125',
 }
 
-background_samples = {
+background_samples = {}
+
+background_samples['2018'] = {
     'ZX4l_CR':'2018_noDuplicates.root',
     'ZX4l_CR_4e':'2018_noDuplicates.root',
     'ZX4l_CR_4mu':'2018_noDuplicates.root',

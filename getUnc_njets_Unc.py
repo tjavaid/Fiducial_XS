@@ -24,6 +24,7 @@ def parseOptions():
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
     parser.add_option('-f', '--doFit', action="store_true", dest='DOFIT', default=False, help='doFit, default false')
     parser.add_option('-p', '--doPlots', action="store_true", dest='DOPLOTS', default=False, help='doPlots, default false')
+    parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
@@ -49,6 +50,8 @@ from LoadData import *
 RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)    
 
 if (opt.DOPLOTS and os.path.isfile('tdrStyle.py')):
+    os.system("mkdir plots")
+    os.system('mkdir plots/'+opt.ERA)
     from tdrStyle import setTDRStyle
     setTDRStyle()
 
@@ -112,7 +115,7 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
             if (channel == "2e2mu"):
                 cutchan_gen_out  = "((GENZ_MomId[0]==25 && (GENZ_DaughtersId[0]==11 || GENZ_DaughtersId[0]==13) && GENZ_MomId[1]==25 && (GENZ_DaughtersId[1]==11 || GENZ_DaughtersId[1]==13) && GENZ_DaughtersId[0]!=GENZ_DaughtersId[1]) || (GENZ_MomId[0]==25 && (GENZ_DaughtersId[0]==11 || GENZ_DaughtersId[0]==13) && GENZ_MomId[2]==25 && (GENZ_DaughtersId[2]==11 || GENZ_DaughtersId[2]==13) && GENZ_DaughtersId[0]!=GENZ_DaughtersId[2]) || (GENZ_MomId[1]==25 && (GENZ_DaughtersId[1]==11 || GENZ_DaughtersId[1]==13) && GENZ_MomId[2]==25 && (GENZ_DaughtersId[2]==11 || GENZ_DaughtersId[2]==13) && GENZ_DaughtersId[1]!=GENZ_DaughtersId[2]))"
  
-        shortname = sample_shortnames[Sample]
+        shortname = sample_shortnames[opt.ERA][Sample]
         processBin = shortname+'_'+channel+'_'+opt.OBSNAME+'_genbin'+str(genbin)
 
         # GEN level        
@@ -248,8 +251,10 @@ if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')):
 obs_bins.pop()
 obs_bins.pop(0) 
 
+RootFile, Tree, nEvents, sumw = GrabMCTrees(opt.ERA)
+
 List = []
-for long, short in sample_shortnames.iteritems():
+for long, short in sample_shortnames[opt.ERA].iteritems():
     if (not "ggH" in short): continue
     #if ("NNLOPS" in short): continue
     List.append(long)
@@ -268,7 +273,7 @@ if (obs_reco.startswith("njets")):
     for chan in chans:
         for genbin in range(len(obs_bins)-1):
             for Sample in List:
-                shortname = sample_shortnames[Sample]
+                shortname = sample_shortnames[opt.ERA][Sample]
                 processBin = shortname+'_'+chan+'_'+obs_reco+'_genbin'+str(genbin)
                 processBinPlus1 = shortname+'_'+chan+'_'+obs_reco+'_genbin'+str(genbin+1)
                 
@@ -281,9 +286,10 @@ if (obs_reco.startswith("njets")):
                     qcdUncert[processBin]['uncerDn'] = sqrt(qcdUncert[processBin]['uncerDn']*qcdUncert[processBin]['uncerDn']+qcdUncert[processBinPlus1]['uncerDn']*qcdUncert[processBinPlus1]['uncerDn'])/acceptance[processBin]
                 
                 #print Sample,processBin,qcdUncert[processBin]['uncerUp'],qcdUncert[processBin]['uncerDn']
-                    
-os.system('cp accUnc_'+opt.OBSNAME+'.py accUnc_'+opt.OBSNAME+'_ORIG.py')
-with open('accUnc_'+opt.OBSNAME+'.py', 'w') as f:
+
+DirForUncFiles = opt.ERA              
+if not os.path.isdir(DirForUncFiles): os.mkdir(DirForUncFiles)
+with open(DirForUncFiles+'/accUnc_'+opt.OBSNAME.replace(" ","_")+'.py', 'w') as f:
     f.write('acc = '+str(acceptance)+' \n')
     f.write('qcdUncert = '+str(qcdUncert)+' \n')
     f.write('pdfUncert = '+str(pdfUncert)+' \n')
