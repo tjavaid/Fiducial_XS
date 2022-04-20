@@ -942,11 +942,12 @@ ext=''
 if (not opt.CHAN==''):
     ext='_'+opt.CHAN
 
+datacardInputs = datacardInputs.format(year = opt.ERA)
 
 if not os.path.isdir(opt.ERA): os.mkdir(opt.ERA)
-if not os.path.isdir(opt.ERA+"/"+datacardInputs): os.mkdir(opt.ERA+"/"+datacardInputs)
+if not os.path.isdir(datacardInputs): os.mkdir(datacardInputs)
 
-output_file_name = opt.ERA+"/"+datacardInputs+'/inputs_sig_'+label+ext+'.py'
+output_file_name = datacardInputs+'/inputs_sig_'+label+ext+'.py'
 
 
 with open(output_file_name, 'w') as f:
@@ -967,10 +968,10 @@ with open(output_file_name, 'w') as f:
     f.write('lambdajesdn = '+str(lambdajesdn)+' \n')
 
 
-more_output_file_name = opt.ERA+'/'+datacardInputs+'/moreinputs_sig_'+opt.OBSNAME+ext+'.py'
+more_output_file_name = datacardInputs+'/moreinputs_sig_'+opt.OBSNAME+ext+'.py'
 
 if not (obs_reco2 == ''):
-    more_output_file_name = opt.ERA+'/'+datacardInputs+'/moreinputs_sig_'+opt.OBSNAME.replace(" ", "_")+'.py'
+    more_output_file_name = datacardInputs+'/moreinputs_sig_'+opt.OBSNAME.replace(" ", "_")+'.py'
 
 
 with open(more_output_file_name, 'w') as f:
