@@ -7,7 +7,7 @@ from math import *
 
 from sample_shortnames import *
 from Input_Info import *
-from Utils import logger
+from Utils import logger, GetDirectory
 from read_bins import read_bins
 
 grootargs = []
@@ -27,13 +27,16 @@ def parseOptions():
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "mass4l", "pT4l", "massZ2", "rapidity4l", "cosThetaStar", "nets_reco_pt30_eta4p7"')
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
     parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
+    parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
 
     # store options and arguments as global variables
-    global opt, args
+    global opt, args, datacardInputs
     (opt, args) = parser.parse_args()
+
+    datacardInputs = datacardInputs.format(year = opt.ERA)
 
 # parse the arguments and options
 global opt, args, runAllSteps
@@ -261,9 +264,8 @@ for obsName in observables:
             resultsXS['SM_125_'+obsName.replace(' ','_')+'_genbin'+obsbin.replace('SigmaBin','')+'_statOnly']   = {"uncerDn": -1.0*cl68dnstat, "uncerUp": cl68upstat, "central": bestfit}
 
         # Create output directory if it does not exits
-        OutputPath = LHScanPlots.format(obsName = obsName.replace(' ','_'))
-        if not os.path.isdir(OutputPath):
-            os.makedirs(OutputPath)
+        OutputPath = LHScanPlots.format(year = opt.ERA, obsName = obsName.replace(' ','_'))
+        GetDirectory(OutputPath)
 
         c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+".pdf")
         c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+".png")
@@ -273,11 +275,11 @@ for obsName in observables:
         #        to some other temp directory then import at appropriate place
         if (obsName=="mass4l"):
             if (obsbin=="SigmaBin0"):
-                with open('python/resultsXS_LHScan_mass4l_v3.py', 'w') as f:
+                with open(datacardInputs+'/resultsXS_LHScan_mass4l_v3.py', 'w') as f:
                     f.write('resultsXS = '+str(resultsXS)+' \n')
             else:
-                with open('python/resultsXS_LHScan_mass4l_v2.py', 'w') as f:
+                with open(datacardInputs+'/resultsXS_LHScan_mass4l_v2.py', 'w') as f:
                     f.write('resultsXS = '+str(resultsXS)+' \n')
         else:
-            with open('python/resultsXS_LHScan_'+obsName.replace(' ','_')+'_v3.py', 'w') as f:
+            with open(datacardInputs+'/resultsXS_LHScan_'+obsName.replace(' ','_')+'_v3.py', 'w') as f:
                 f.write('resultsXS = '+str(resultsXS)+' \n')

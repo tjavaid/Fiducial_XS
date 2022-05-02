@@ -1,5 +1,6 @@
 # ignore root file; if we need to add root file then we can use -f option to add
 *.root
+*.stdout
 *.jdl
 *.txt
 
@@ -33,3 +34,4 @@ plots/
 table/
 Inputs/.__afsB8D6
 CMSSW_10_2_13.tgz
+CommandsRun.txt

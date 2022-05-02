@@ -4,10 +4,13 @@ import sys
 from array import array
 from decimal import *
 from math import *
+import yaml
 
 # INFO: Following items are imported from either python directory or Inputs
 from Input_Info import *
 from sample_shortnames import *
+from read_bins import read_bins
+from Utils import logger, border_msg, GetDirectory
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -24,6 +27,7 @@ def parseOptions():
 
     # input options
     parser.add_option('-d', '--dir',    dest='SOURCEDIR',  type='string',default='./', help='run from the SOURCEDIR as working area, skip if SOURCEDIR is an empty string')
+    parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
     parser.add_option('',   '--unfoldModel',dest='UNFOLD',type='string',default='ggH_powheg_JHUgen_125', help='Name of the unfolding model for central value')
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "inclusive", "pT", "eta", "Njets"')
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
@@ -32,13 +36,16 @@ def parseOptions():
     parser.add_option('',   '--setLog', action='store_true', dest='SETLOG', default=False, help='set plot to log scale y, default is False')
     parser.add_option('',   '--unblind', action='store_true', dest='UNBLIND', default=False, help='Use real data')
     parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
+    parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
 
     # store options and arguments as global variables
-    global opt, args
+    global opt, args, datacardInputs
     (opt, args) = parser.parse_args()
+
+    datacardInputs = datacardInputs.format(year = opt.ERA)
 
 # parse the arguments and options
 global opt, args, runAllSteps
@@ -49,16 +56,41 @@ if (not os.path.exists("plots")):
     os.system("mkdir plots")
 
 from ROOT import *
-
 from tdrStyle import *
-
 setTDRStyle()
 
 datamodel = opt.UNFOLD
 
 sys.path.append('./'+datacardInputs)
 
-def plotXS(obsName, obs_bins):
+
+ListObsName = (''.join((opt.OBSNAME).split())).split('vs')
+
+obs_bins = read_bins(opt.OBSBINS)
+nBins = len(obs_bins) -1
+
+obs_bins_boundaries = False
+if len(ListObsName) == 1:    # INFO: for 2D this list size == 1
+    if float(obs_bins[nBins])>300.0:
+        obs_bins[nBins]='250.0'
+    if (opt.OBSNAME=="nJets" or opt.OBSNAME.startswith("njets")):
+        obs_bins[nBins]='5'
+else:
+    nBins = len(obs_bins)
+    obs_bins_boundaries = obs_bins
+    obs_bins = [i for i in range(nBins+1)]  # bins hack
+logger.info("Parsed bins: {}".format(obs_bins))
+logger.debug("nBins: = "+str(nBins))
+
+obsName =  (opt.OBSNAME).replace(' ','_')
+
+def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
+    global nBins, ListObsName
+    logger.debug("""Inputs for module "plotXS":
+        obsName: {},
+        obs_bins: {},
+        obs_bins_boundaries: {}
+    """.format(obsName, obs_bins, obs_bins_boundaries))
 
     _temp = __import__('inputs_sig_'+obsName, globals(), locals(), ['acc'], -1)
     acc = _temp.acc
@@ -185,8 +217,7 @@ def plotXS(obsName, obs_bins):
     unc_qcd_ZH = 0.031
     unc_qcd_ttH = 0.0655
 
-    nBins=len(obs_bins)
-    for obsBin in range(nBins-1):
+    for obsBin in range(nBins):
 
         # theory cross sections
         ggH_powheg.append(0.0)
@@ -361,7 +392,7 @@ def plotXS(obsName, obs_bins):
             total_NLOunc_fs_powheg_lo += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
                                           *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
-            print(channel,total_NLOunc_fs_powheg_hi)
+            logger.debug("channel: {:5} total_NLOunc_fs_powheg_hi = {}".format(channel,total_NLOunc_fs_powheg_hi))
 
             total_NLOunc_fs_minloHJ_hi += XH_qcdunc_fs
             total_NLOunc_fs_minloHJ_lo += XH_qcdunc_fs
@@ -542,7 +573,7 @@ def plotXS(obsName, obs_bins):
 
             obsBin=0
 
-            print(obsBin,acc)
+            logger.debug("obsBin: {:3} acc = {}".format(obsBin,acc))
             XH_fs = higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
             XH_fs += higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
             XH_fs += higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
@@ -689,13 +720,13 @@ def plotXS(obsName, obs_bins):
 
 
 
-    print('data',data)
+    logger.debug('data: {}'.format(data))
     sumdata = 0.0
     for i in range(len(data)):
         sumdata+=data[i]
-    print(obsName,'sum data',sumdata)
-    print('data_hi',data_hi)
-    print('data_lo',data_lo)
+    logger.debug('obsName: {:6} sum data: {}'.format(obsName,sumdata))
+    logger.debug('data_hi: {}'.format(data_hi))
+    logger.debug('data_lo: {}'.format(data_lo))
     #print 'ggH HRes + XH',ggH_HRes
     #print 'NNLO ggH HRes + XH',ggH_HRes_NNLOunc_hi
     #print 'NNLO ggH HRes + XH',ggH_HRes_NNLOunc_lo
@@ -826,25 +857,27 @@ def plotXS(obsName, obs_bins):
         elif (obsName=="pt_leadingjet_pt30_eta2p5"): offset=30.0
         elif (obsName=="njets_pt30_eta2p5"): offset=999.0
         else: offset = 0.0
-        a_observable  = array('d',[0.5*(float(obs_bins[i])+float(obs_bins[i+1])) for i in range(len(obs_bins)-1)])
+
+        a_observable  = array('d',[0.5*(float(obs_bins[i])+float(obs_bins[i+1])) for i in range(nBins)])
         v_observable  = TVectorD(len(a_observable),a_observable)
-        a_dobservable = array('d',[0.5*(float(obs_bins[i+1])-float(obs_bins[i])) for i in range(len(obs_bins)-1)])
+        a_dobservable = array('d',[0.5*(float(obs_bins[i+1])-float(obs_bins[i])) for i in range(nBins)])
         v_dobservable = TVectorD(len(a_dobservable),a_dobservable)
 
-        a_observable_1  = array('d',[(0.5*(float(obs_bins[i])+float(obs_bins[i+1]))+min(offset,0.25*(float(obs_bins[i+1])-float(obs_bins[i])))) for i in range(len(obs_bins)-1)])
+        a_observable_1  = array('d',[(0.5*(float(obs_bins[i])+float(obs_bins[i+1]))+min(offset,0.25*(float(obs_bins[i+1])-float(obs_bins[i])))) for i in range(nBins)])
         v_observable_1  = TVectorD(len(a_observable_1),a_observable_1)
-        a_dobservable_1 = array('d',[0.125*(float(obs_bins[i+1])-float(obs_bins[i])) for i in range(len(obs_bins)-1)])
+        a_dobservable_1 = array('d',[0.125*(float(obs_bins[i+1])-float(obs_bins[i])) for i in range(nBins)])
         v_dobservable_1 = TVectorD(len(a_dobservable_1),a_dobservable_1)
 
-        a_observable_2  = array('d',[(0.5*(float(obs_bins[i])+float(obs_bins[i+1]))-min(offset,0.25*(float(obs_bins[i+1])-float(obs_bins[i])))) for i in range(len(obs_bins)-1)])
+        a_observable_2  = array('d',[(0.5*(float(obs_bins[i])+float(obs_bins[i+1]))-min(offset,0.25*(float(obs_bins[i+1])-float(obs_bins[i])))) for i in range(nBins)])
         v_observable_2  = TVectorD(len(a_observable_2),a_observable_2)
-        a_dobservable_2 = array('d',[0.125*(float(obs_bins[i+1])-float(obs_bins[i])) for i in range(len(obs_bins)-1)])
+        a_dobservable_2 = array('d',[0.125*(float(obs_bins[i+1])-float(obs_bins[i])) for i in range(nBins)])
         v_dobservable_2 = TVectorD(len(a_dobservable_2),a_dobservable_2)
 
-        a_zeros = array('d',[0.0 for i in range(len(obs_bins)-1)])
+        a_zeros = array('d',[0.0 for i in range(nBins)])
         v_zeros = TVectorD(len(a_zeros),a_zeros)
-        a_twos = array('d',[0.015*(float(obs_bins[len(obs_bins)-1])-float(obs_bins[0])) for i in range(len(obs_bins)-1)])
+        a_twos = array('d',[0.015*(float(obs_bins[nBins])-float(obs_bins[0])) for i in range(nBins)])
         v_twos = TVectorD(len(a_twos),a_twos)
+
         a_ggH_powheg = array('d',[ggH_powheg[i]/(float(obs_bins[i+1])-float(obs_bins[i])) for i in range(len(ggH_powheg))])
         v_ggH_powheg = TVectorD(len(a_ggH_powheg),a_ggH_powheg)
         a_ggH_powheg_unc_hi =  array('d',[ggH_powheg_NLOunc_hi[i]/(float(obs_bins[i+1])-float(obs_bins[i])) for i in range(len(ggH_powheg_unc_hi))])
@@ -875,7 +908,6 @@ def plotXS(obsName, obs_bins):
         v_ggH_HRes_unc_hi = TVectorD(len(a_ggH_HRes_unc_hi),a_ggH_HRes_unc_hi)
         v_ggH_HRes_unc_lo = TVectorD(len(a_ggH_HRes_unc_lo),a_ggH_HRes_unc_lo)
         '''
-
         a_XH = array('d',[XH[i]/(float(obs_bins[i+1])-float(obs_bins[i])) for i in range(len(XH))])
         v_XH = TVectorD(len(a_XH),a_XH)
 
@@ -939,11 +971,11 @@ def plotXS(obsName, obs_bins):
     else:
         if ("jet" in obsName and (not obsName.startswith("njets"))):
             h_ggH_powheg = TH1D("h_ggH_powheg","h_ggH_powheg",nBins-2, array('d',[float(obs_bins[i]) for i in range(1,len(obs_bins))]) )
-            for i in range(1,nBins-1):
+            for i in range(1,nBins):
                 h_ggH_powheg.SetBinContent(i,v_ggH_powheg[i])
         else:
-            h_ggH_powheg = TH1D("h_ggH_powheg","h_ggH_powheg",nBins-1, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
-            for i in range(nBins-1):
+            h_ggH_powheg = TH1D("h_ggH_powheg","h_ggH_powheg",nBins, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
+            for i in range(nBins):
                 h_ggH_powheg.SetBinContent(i+1,v_ggH_powheg[i])
 
     h_ggH_powheg.SetLineColor(ROOT.kAzure+2)
@@ -976,11 +1008,11 @@ def plotXS(obsName, obs_bins):
     else:
         if ("jet" in obsName and (not obsName.startswith("njets"))):
             h_ggH_minloHJ = TH1D("h_ggH_minloHJ","h_ggH_minloHJ",nBins-2, array('d',[float(obs_bins[i]) for i in range(1,len(obs_bins))]) )
-            for i in range(1,nBins-1):
+            for i in range(1,nBins):
                 h_ggH_minloHJ.SetBinContent(i,v_ggH_minloHJ[i])
         else:
-            h_ggH_minloHJ = TH1D("h_ggH_minloHJ","h_ggH_minloHJ",nBins-1, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
-            for i in range(nBins-1):
+            h_ggH_minloHJ = TH1D("h_ggH_minloHJ","h_ggH_minloHJ",nBins, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
+            for i in range(nBins):
                 h_ggH_minloHJ.SetBinContent(i+1,v_ggH_minloHJ[i])
 
     h_ggH_minloHJ.SetLineColor(ROOT.kOrange+2)
@@ -1013,11 +1045,11 @@ def plotXS(obsName, obs_bins):
     else:
         if ("jet" in obsName and (not obsName.startswith("njets"))):
             h_ggH_mad = TH1D("h_ggH_mad","h_ggH_mad",nBins-2, array('d',[float(obs_bins[i]) for i in range(1,len(obs_bins))]) )
-            for i in range(1,nBins-1):
+            for i in range(1,nBins):
                 h_ggH_mad.SetBinContent(i,v_ggH_mad[i])
         else:
-            h_ggH_mad = TH1D("h_ggH_mad","h_ggH_mad",nBins-1, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
-            for i in range(nBins-1):
+            h_ggH_mad = TH1D("h_ggH_mad","h_ggH_mad",nBins, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
+            for i in range(nBins):
                 h_ggH_mad.SetBinContent(i+1,v_ggH_mad[i])
 
     h_ggH_mad.SetLineColor(ROOT.kGreen+2)
@@ -1117,11 +1149,11 @@ def plotXS(obsName, obs_bins):
     else:
         if ("jet" in obsName and (not obsName.startswith("njets"))):
             h_ratio_powheg = TH1D("h_ratio_powheg","h_ratio_powheg",nBins-2, array('d',[float(obs_bins[i]) for i in range(1,len(obs_bins))]) )
-            for i in range(1,nBins-1):
+            for i in range(1,nBins):
                 h_ratio_powheg.SetBinContent(i,v_ratio_powheg[i])
         else:
-            h_ratio_powheg = TH1D("h_ratio_powheg","h_ratio_powheg",nBins-1, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
-            for i in range(nBins-1):
+            h_ratio_powheg = TH1D("h_ratio_powheg","h_ratio_powheg",nBins, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
+            for i in range(nBins):
                 h_ratio_powheg.SetBinContent(i+1,v_ratio_powheg[i])
 
     h_ratio_powheg.SetLineColor(ROOT.kAzure+2)
@@ -1154,11 +1186,11 @@ def plotXS(obsName, obs_bins):
     else:
         if ("jet" in obsName and (not obsName.startswith("njets"))):
             h_ratio_minloHJ = TH1D("h_ratio_minloHJ","h_ratio_minloHJ",nBins-2, array('d',[float(obs_bins[i]) for i in range(1,len(obs_bins))]) )
-            for i in range(1,nBins-1):
+            for i in range(1,nBins):
                 h_ratio_minloHJ.SetBinContent(i,v_ratio_minloHJ[i])
         else:
-            h_ratio_minloHJ = TH1D("h_ratio_minloHJ","h_ratio_minloHJ",nBins-1, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
-            for i in range(nBins-1):
+            h_ratio_minloHJ = TH1D("h_ratio_minloHJ","h_ratio_minloHJ",nBins, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
+            for i in range(nBins):
                 h_ratio_minloHJ.SetBinContent(i+1,v_ratio_minloHJ[i])
 
     h_ratio_minloHJ.SetLineColor(ROOT.kOrange+2)
@@ -1191,11 +1223,11 @@ def plotXS(obsName, obs_bins):
     else:
         if ("jet" in obsName and (not obsName.startswith("njets"))):
             h_ratio_mad = TH1D("h_ratio_mad","h_ratio_mad",nBins-2, array('d',[float(obs_bins[i]) for i in range(1,len(obs_bins))]) )
-            for i in range(1,nBins-1):
+            for i in range(1,nBins):
                 h_ratio_mad.SetBinContent(i,v_ratio_mad[i])
         else:
-            h_ratio_mad = TH1D("h_ratio_mad","h_ratio_mad",nBins-1, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
-            for i in range(nBins-1):
+            h_ratio_mad = TH1D("h_ratio_mad","h_ratio_mad",nBins, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
+            for i in range(nBins):
                 h_ratio_mad.SetBinContent(i+1,v_ratio_mad[i])
 
     h_ratio_mad.SetLineColor(ROOT.kGreen+2)
@@ -1222,63 +1254,25 @@ def plotXS(obsName, obs_bins):
     g_data_allunc.SetMarkerStyle(20)
     g_data_allunc.SetMarkerSize(1.2)
 
-    if (obsName=="pT4l"):
-        label="p_{T}(H)"
-        unit="GeV"
-    elif (obsName=="massZ2"):
-        label = "m(Z_{2})"
-        unit = "GeV"
-    elif (obsName=="massZ1"):
-        label = "m(Z_{1})"
-        unit = "GeV"
-    elif (obsName=="nJets" or obsName=="njets_pt30_eta4p7"):
-        label = "N(jets)"
-        unit = ""
-    elif (obsName=="njets_pt30_eta2p5"):
-        label = "N(jets)"
-        unit = ""
-    elif (obsName=="pt_leadingjet_pt30_eta4p7"):
-        label = "p_{T}(jet)"
-        unit = "GeV"
-    elif (obsName=="pt_leadingjet_pt30_eta2p5"):
-        label = "p_{T}(jet)"
-        unit = "GeV"
-    elif (obsName=="absrapidity_leadingjet_pt30_eta4p7"):
-        label = "|y(jet)|"
-        unit = ""
-    elif (obsName=="absrapidity_leadingjet_pt30_eta2p5"):
-        label = "|y(jet)| |#eta|<2.5"
-        unit = ""
-    elif (obsName=="absdeltarapidity_hleadingjet_pt30_eta4p7"):
-        label = "|y(H)-y(jet)|"
-        unit = ""
-    elif (obsName=="absdeltarapidity_hleadingjet_pt30_eta2p5"):
-        label = "|y(H)-y(jet)| |#eta|<2.5"
-        unit = ""
-    elif (obsName=="rapidity4l"):
-        label = "|y(H)|"
-        unit = ""
-    elif (obsName=="cosThetaStar"):
-        label = "cos#theta*"
-        unit = ""
-    elif (obsName=="cosTheta1"):
-        label = "cos#theta_{1}"
-        unit = ""
-    elif (obsName=="cosTheta2"):
-        label = "cos#theta_{2}"
-        unit = ""
-    elif (obsName=="Phi"):
-        label = "#Phi"
-        unit = ""
-    elif (obsName=="Phi1"):
-        label = "#Phi_{1}"
-        unit = ""
-    elif (obsName=="mass4l"):
-        label = "inclusive"
-        unit = ""
-    else:
-        label = obsName
-        unit = ""
+    # Get label name & Unit from YAML file.
+    ObsToStudy = "1D_Observables" if  len(ListObsName) == 1 else "2D_Observables"
+    label = ""
+    label2 = ""
+    unit = ""
+    unit2 = ""
+    with open(opt.inYAMLFile, 'r') as ymlfile:
+        cfg = yaml.load(ymlfile)
+        if ( ("Observables" not in cfg) or (ObsToStudy not in cfg['Observables']) ) :
+            print('''No section named 'observable' or sub-section name '1D-Observable' found in file {}.
+                    Please check your YAML file format!!!'''.format(InputYAMLFile))
+        label = cfg['Observables'][ObsToStudy][obsName.replace('_vs_',' vs ')]['label'] # FIXME: hardcoded '_vs_'
+        unit = cfg['Observables'][ObsToStudy][obsName.replace('_vs_',' vs ')]['unit']
+        if ObsToStudy == "2D_Observables":
+            label2 = label[1]
+            label = label[0]
+            unit2 = unit[1]
+            unit = unit[0]
+        border_msg("Label name: {}, Unit: {}".format(label, unit))
 
     c = TCanvas("c",obsName, 1400, 1400)
     if(opt.SETLOG): c.SetLogy()
@@ -1297,21 +1291,21 @@ def plotXS(obsName, obs_bins):
             h_XH.SetBinContent(i+1,a_XH[i])
     else:
         if ("jet" in obsName and (not obsName.startswith("njets"))):
-            dummy = TH1D("dummy","dummy", int(float(obs_bins[nBins-1])-float(obs_bins[1])), float(obs_bins[1]), float(obs_bins[nBins-1]))
-            for i in range(int(float(obs_bins[nBins-1])-float(obs_bins[1]))):
+            dummy = TH1D("dummy","dummy", int(float(obs_bins[nBins])-float(obs_bins[1])), float(obs_bins[1]), float(obs_bins[nBins]))
+            for i in range(int(float(obs_bins[nBins])-float(obs_bins[1]))):
                 dummy.SetBinContent(i,2.5*max(a_ggH_powheg))
-            #h_XH = TH1D("h_XH","h_XH",nBins-1, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
-            #for i in range(nBins-1):
+            #h_XH = TH1D("h_XH","h_XH",nBins, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
+            #for i in range(nBins):
             #    h_XH.SetBinContent(i+1,a_XH[i])
             h_XH = TH1D("h_XH","h_XH",nBins-2, array('d',[float(obs_bins[i]) for i in range(1,len(obs_bins))]) )
-            for i in range(1,nBins-1):
+            for i in range(1,nBins):
                 h_XH.SetBinContent(i,a_XH[i])
         else:
-            dummy = TH1D("dummy","dummy", int(float(obs_bins[nBins-1])-float(obs_bins[0])), float(obs_bins[0]), float(obs_bins[nBins-1]))
-            for i in range(int(float(obs_bins[nBins-1])-float(obs_bins[0]))):
+            dummy = TH1D("dummy","dummy", int(float(obs_bins[nBins])-float(obs_bins[0])), float(obs_bins[0]), float(obs_bins[nBins]))
+            for i in range(int(float(obs_bins[nBins])-float(obs_bins[0]))):
                 dummy.SetBinContent(i,2.5*max(a_ggH_powheg))
-            h_XH = TH1D("h_XH","h_XH",nBins-1, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
-            for i in range(nBins-1):
+            h_XH = TH1D("h_XH","h_XH",nBins, array('d',[float(obs_bins[i]) for i in range(len(obs_bins))]) )
+            for i in range(nBins):
                 h_XH.SetBinContent(i+1,a_XH[i])
 
     if(opt.SETLOG):
@@ -1416,7 +1410,7 @@ def plotXS(obsName, obs_bins):
     latex2.SetTextSize(0.5*c.GetTopMargin())
     latex2.SetTextFont(42)
     latex2.SetTextAlign(31) # align right
-    print(opt.LUMISCALE)
+    logger.debug("LUMISCALE: {}".format(opt.LUMISCALE))
     if (not opt.LUMISCALE=="1.0"):
         lumi = round(59.7*float(opt.LUMISCALE),1)
         latex2.DrawLatex(0.94, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
@@ -1481,15 +1475,15 @@ def plotXS(obsName, obs_bins):
             dummy2.GetXaxis().SetBinLabel(4,'4e')
         else:
             if ("jet" in obsName and (not obsName.startswith("njets"))):
-                dummy2 = TH1D("dummy2","dummy2", int(float(obs_bins[nBins-1])-float(obs_bins[1])), float(obs_bins[1]), float(obs_bins[nBins-1]))
-                for i in range(int(float(obs_bins[nBins-1])-float(obs_bins[1]))):
+                dummy2 = TH1D("dummy2","dummy2", int(float(obs_bins[nBins])-float(obs_bins[1])), float(obs_bins[1]), float(obs_bins[nBins]))
+                for i in range(int(float(obs_bins[nBins])-float(obs_bins[1]))):
                     dummy2.SetBinContent(i,1.02)
             else:
                 if (obsName=="pT4l"):
-                    dummy2 = TH1D("dummy2","dummy2", int(float(obs_bins[nBins-1])-float(obs_bins[0])), float(obs_bins[0]), float(obs_bins[nBins-1]))
+                    dummy2 = TH1D("dummy2","dummy2", int(float(obs_bins[nBins])-float(obs_bins[0])), float(obs_bins[0]), float(obs_bins[nBins]))
                 else:
-                    dummy2 = TH1D("dummy2","dummy2", int(float(obs_bins[nBins-1])-float(obs_bins[0])), float(obs_bins[0]), float(obs_bins[nBins-1]))
-                for i in range(int(float(obs_bins[nBins-1])-float(obs_bins[0]))):
+                    dummy2 = TH1D("dummy2","dummy2", int(float(obs_bins[nBins])-float(obs_bins[0])), float(obs_bins[0]), float(obs_bins[nBins]))
+                for i in range(int(float(obs_bins[nBins])-float(obs_bins[0]))):
                     dummy2.SetBinContent(i,1.02)
         dummy2.GetXaxis().SetLabelSize(0.04)
 
@@ -1570,39 +1564,35 @@ def plotXS(obsName, obs_bins):
 
     if (not opt.UNBLIND): set_log = set_log + '_asimov'
 
-    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.pdf')
-    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.png')
-    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.root')
-    c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'.C')
-    #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.pdf')
-    #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.png')
-    #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.root')
-    #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_unpublished.C')
-    #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_preliminary.pdf')
-    #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_preliminary.png')
-    #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_preliminary.root')
-    #c.SaveAs('plots/'+obsName+'_unfoldwith_'+datamodel+set_log+'_preliminary.C')
+    OutputPath = ResultsPlot.format(year = year, obsName = obsName.replace(' ','_'))
+    GetDirectory(OutputPath)
 
-    if not os.path.isdir('table'): os.mkdir('table')
-    with open('table/table_'+opt.OBSNAME+'.py', 'w') as f:
+    c.SaveAs(OutputPath+'/'+obsName+'_unfoldwith_'+datamodel+set_log+'.pdf')
+    c.SaveAs(OutputPath+'/'+obsName+'_unfoldwith_'+datamodel+set_log+'.png')
+    c.SaveAs(OutputPath+'/'+obsName+'_unfoldwith_'+datamodel+set_log+'.root')
+    c.SaveAs(OutputPath+'/'+obsName+'_unfoldwith_'+datamodel+set_log+'.C')
+
+    GetDirectory('table')
+
+    with open('table/table_'+opt.OBSNAME+'.tex', 'w') as f:
          f.write('\\documentclass{article} \n')
          f.write('\\begin{document} \n')
          f.write('\\begin{table}[!h!tb] \n')
          f.write('\\begin{center} \n')
          f.write('\\begin{tabular}{|l|')
-         for columns in range(0,len(obs_bins)-1):
+         for columns in range(0,nBins):
              f.write('c|')
          f.write('} \\hline \\hline \n')
          f.write('Observable & ' )
-         for obsbin in range(0,len(obs_bins)-1):
-             f.write('$'+obs_bins[obsbin]+'-'+obs_bins[obsbin+1]+'$')
+         for obsbin in range(0,nBins):
+             f.write('$'+str(obs_bins[obsbin])+'-'+str(obs_bins[obsbin+1])+'$')
              if (obsbin == len(obs_bins)-2):
                  f.write(' \\\\ \\hline \n')
              else:
                  f.write (' & ')
          f.write(opt.OBSNAME+' & \n')
          rbin =0
-         for obsbin in range(0,len(obs_bins)-1):
+         for obsbin in range(0,nBins):
              f.write('$'+str(round(a_data[obsbin],3))+'^{+'+str(abs(round(sqrt(a_data_hi[obsbin]**2-a_systematics_hi[obsbin]**2),3)))+'+'+str(abs(round(a_systematics_hi[obsbin],3)))+'}'+'_{-'+str(abs(round(sqrt(a_data_lo[obsbin]**2-a_systematics_lo[obsbin]**2),3)))+'-'+str(abs(round(a_systematics_lo[obsbin],3)))+'}$')
              if (obsbin == len(obs_bins)-2):
                  f.write (' \n ')
@@ -1613,15 +1603,6 @@ def plotXS(obsName, obs_bins):
          f.write('\\end{center} \n')
          f.write('\\end{table} \n')
          f.write('\\end{document} \n')
-obs_bins = opt.OBSBINS.split("|")
-if (not (obs_bins[0] == '' and obs_bins[len(obs_bins)-1]=='')):
-    print('BINS OPTION MUST START AND END WITH A |')
-obs_bins.pop()
-obs_bins.pop(0)
-if float(obs_bins[len(obs_bins)-1])>300.0:
-    obs_bins[len(obs_bins)-1]='250.0'
-if (opt.OBSNAME=="nJets" or opt.OBSNAME.startswith("njets")):
-    obs_bins[len(obs_bins)-1]='5'
 
-plotXS(opt.OBSNAME, obs_bins)
 
+plotXS(obsName, obs_bins, obs_bins_boundaries, opt.ERA)

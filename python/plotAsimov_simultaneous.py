@@ -10,7 +10,7 @@ import yaml
 from Input_Info import *
 from sample_shortnames import *
 from read_bins import read_bins
-from Utils import logger, border_msg
+from Utils import logger, border_msg, GetDirectory
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -39,10 +39,13 @@ def parseOptions():
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
     parser.add_option('', '--obs', dest='OneDOr2DObs', default=1, type=int, help="1 for 1D obs, 2 for 2D observable")
+    parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
 
     # store options and arguments as global variables
-    global opt, args
+    global opt, args, combineOutputs
     (opt, args) = parser.parse_args()
+
+    combineOutputs = combineOutputs.format(year = opt.ERA)
 
 # parse the arguments and options
 global opt, args, runAllSteps
@@ -72,7 +75,7 @@ logger.debug("nBins: = "+str(nBins))
 
 ObsToStudy = "1D_Observables" if opt.OneDOr2DObs == 1 else "2D_Observables"
 
-def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, obsName, fstate, observableBins, recobin):
+def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, obsName, fstate, observableBins, recobin, year):
 
     global nBins, ObsToStudy
     logger.debug("nBins: = "+str(nBins))
@@ -389,20 +392,14 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     latex2.DrawLatex(0.30, 0.95, "Preliminary")
     latex2.SetTextFont(42)
     latex2.SetTextSize(0.45*c.GetTopMargin())
-    #latex2.DrawLatex(0.20,0.85, observableBins[recobin]+" "+unit+" < "+label+" < "+observableBins[recobin+1]+" "+unit+"    Unfolding model: "+modelName.replace("_"," ")+" GeV")
     if (ObsToStudy == "1D_Observables"):
         latex2.DrawLatex(0.65,0.85, observableBins[recobin]+" "+unit+" < "+label+" < "+observableBins[recobin+1]+" "+unit)
     else:
-        # print( observableBins[recobin])
-        # print(observableBins[recobin])
-        latex2.DrawLatex(0.65,0.85, observableBins[recobin][0][0]+" "+unit+" < "+label[0]+" < "+observableBins[recobin][0][1]+" "+unit)
-        latex2.DrawLatex(0.65,0.75, observableBins[recobin][1][0]+" "+unit+" < "+label[1]+" < "+observableBins[recobin][1][1]+" "+unit)
-        # exit()
-        # latex2.DrawLatex(0.65,0.85, observableBins[recobin]+" "+unit+" < "+label+" < "+observableBins[recobin+1]+" "+unit)
+        latex2.DrawLatex(0.65,0.85, observableBins[recobin][0][0]+" "+unit[0]+" < "+label[0]+" < "+observableBins[recobin][0][1]+" "+unit[0])
+        latex2.DrawLatex(0.65,0.75, observableBins[recobin][1][0]+" "+unit[1]+" < "+label[1]+" < "+observableBins[recobin][1][1]+" "+unit[1])
     # Create output directory if it does not exits
-    OutputPath = AsimovPlots.format(obsName = obsName.replace(' ','_'))
-    if not os.path.isdir(OutputPath):
-        os.makedirs(OutputPath)
+    OutputPath = AsimovPlots.format(year = year, obsName = obsName.replace(' ','_'))
+    GetDirectory(OutputPath)
 
     if (not opt.UNBLIND):
         c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_unfoldwith_"+modelName+"_"+physicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+"_recobin"+str(recobin)+".pdf")
@@ -415,4 +412,4 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
 fStates = ["4e","4mu","2e2mu","4l"]
 for fState in fStates:
     for recobin in range(nBins):
-        plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, obsName, fState, observableBins, recobin)
+        plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, obsName, fState, observableBins, recobin, opt.ERA)

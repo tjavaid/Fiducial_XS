@@ -22,8 +22,12 @@ def parseOptions():
     global opt, args
     (opt, args) = parser.parse_args()
 
-def interpolate_full(x, nbins, obsName, DEBUG = 0):
+def interpolate_full(x, nbins, obsName, year, DEBUG = 0):
+    global datacardInputs
+
     border_msg("Start of module `interpolate_full`")
+
+    datacardInputs = datacardInputs.format(year = year)
     sys.path.append(datacardInputs)
 
     x_points = [124, 125, 126]
@@ -180,5 +184,5 @@ if __name__ == "__main__":
 
     print("Obs Name: {:15}  nBins: {:2}  bins: {}".format(opt.OBSNAME, nbins, observableBins))
 
-    interpolate_full(125.38, nbins, opt.OBSNAME, opt.DEBUG)
+    interpolate_full(125.38, nbins, opt.OBSNAME, opt.YEAR, opt.DEBUG)
     print("Interpolation completed... :) ")

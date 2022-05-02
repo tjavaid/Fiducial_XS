@@ -14,6 +14,10 @@ parser = argparse.ArgumentParser(description="""
 
     Example command:
     ---------------------
+    # For 1D observables
+    python CondorScripts/condor_job.py  -obs 1 -c longlunch -f OneDJobs --OutputPath <EOSOutPutPath> --log log_OneDJobs --tar
+
+    # For 2D observables
     python CondorScripts/condor_job.py  -obs 2 -c tomorrow -f TwoDJobs --OutputPath <EOSOutPutPath> --log log_TwoDJobs --tar
     """, formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument( '-i', dest='inYAMLFile', default="Inputs/observables_list.yml", type=str, help='Input YAML file having observable names and bin information')
@@ -22,10 +26,10 @@ parser.add_argument('-f', dest='CondorFileName', type=str,
                     default='test',
                     help='String to be added in the output file name')
 parser.add_argument('-c', dest='condorQueue', type=str,
-                    default="espresso",
+                    default="longlunch",
                     help='The condor queue to use',
                     # Reference: https://twiki.cern.ch/twiki/bin/view/ABPComputing/LxbatchHTCondor#Queue_Flavours
-                    choices=['longlunch',  # 20min
+                    choices=['espresso',  # 20min
                              'microcentury',  # 1h
                              'longlunch',  # 2h
                              'workday',  # 8h
@@ -40,7 +44,10 @@ parser.add_argument('--log', type=str,
                     default='condor_logs',
                     help='output path, where the CMSSW tar file and the datacard dict will be stored')
 parser.add_argument('--tar', dest="ifTar", action='store_true', help='if want to run using nohup')
+parser.add_argument( '-y', dest='year', default=2018, type=int, help='dataset year')
 args = parser.parse_args()
+
+datacardInputs = datacardInputs.format(year = args.year)
 
 def CreateCMSSWTarFile(OutputPath_):
     """Create tarball of present working CMSSW base directory
@@ -180,7 +187,7 @@ if __name__ == "__main__":
     # Create necessary directory that we need
     if not os.path.isdir(args.log): os.mkdir(args.log)
     if not os.path.isdir(args.OutputPath): os.mkdir(args.OutputPath)
-    if not os.path.isdir(args.OutputPath + "/{}".format(datacardInputs)): os.mkdir(args.OutputPath + "/{}".format(datacardInputs))
+    if not os.path.isdir(args.OutputPath + "/{}".format(datacardInputs)): os.makedirs(args.OutputPath + "/{}".format(datacardInputs))
 
     if args.ifTar:
         CreateCMSSWTarFile(args.OutputPath)

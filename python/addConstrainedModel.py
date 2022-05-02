@@ -33,6 +33,7 @@ def parseOptions():
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
     parser.add_option("", "--logLevel", action="store", dest="logLevel", help="Change log verbosity(WARNING: 0, INFO: 1, DEBUG: 2)")
+    parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
 
     # store options and arguments as global variables
     global opt, args
@@ -52,6 +53,7 @@ elif opt.logLevel == "2":
     log_level = logging.DEBUG
 logger.setLevel( log_level)
 
+datacardInputs = datacardInputs.format(year = opt.ERA)
 sys.path.append('./'+datacardInputs)
 
 obsName = opt.OBSNAME

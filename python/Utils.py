@@ -2,6 +2,7 @@ import logging
 import os
 from inspect import currentframe
 from subprocess import *
+import datetime
 
 
 class bcolors:
@@ -97,6 +98,10 @@ def processCmd(cmd, lineNumber = 0, moduleNameWhereItsCalled = "", quiet = 0):
     Returns:
         str: The full output of the command
     """
+    f = open("CommandsRun.txt", "a") # INFO: Save commands in external file for debug purpose only
+    ct = datetime.datetime.now()
+    f.write("\n\n==> current time: {}\n{}\n{}".format(ct, os.getcwd(), cmd))
+    f.close()
     output = '\n'
     logger.info("="*51)
     logger.info("[INFO]: Current working directory: {0}".format(os.getcwd()))
@@ -114,3 +119,12 @@ def processCmd(cmd, lineNumber = 0, moduleNameWhereItsCalled = "", quiet = 0):
     logger.info("="*51)
 
     return output
+
+def GetDirectory(DirToCreate):
+    try:
+        if not os.path.exists(DirToCreate):
+            os.makedirs(DirToCreate)
+        if os.path.exists(DirToCreate):
+            logger.warning("Direcoty created/exist - "+DirToCreate)
+    except OSError as err:
+        logger.error(err)

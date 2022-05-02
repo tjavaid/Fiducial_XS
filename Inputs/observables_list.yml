@@ -69,46 +69,46 @@ Observables:
      label: "m(Z_{1})"
      unit: "GeV"
      gen: "GENmassZ1"
-     ifAbs: False
+      ifAbs: False
 
     massZ2:
      bins: "|12.0|22.0|25.0|28.0|30.0|32.0|35.0|40.0|50.0|65.0|"
      label: "m(Z_{2})"
      unit: "GeV"
      gen: "GENmassZ2"
-     ifAbs: False
+      ifAbs: False
 
     pt_leadingjet_pt30_eta2p5:
      bins: "|-2.0|30.0|55.0|95.0|200.0|13000.0|"
-     label: "p_{T}(jet) |#eta|<2.5"
+     label: "p_{T}(jet) (p_{T}>30 GeV, |#eta|<2.5)"
      unit: "GeV"
      gen: "GENpt_leadingjet_pt30_eta2p5"
-     ifAbs: False
+      ifAbs: False
 
     njets_pt30_eta2p5:
-     bins: "|0.0|1.0|2.0|3.0|4.0|10.0|"
-     label: "N(jets) |#eta|<2.5"
-     unit: ""
-     gen: "GENnjets_pt30_eta2p5"
-     ifAbs: False
+      bins: "|0.0|1.0|2.0|3.0|4.0|10.0|"
+      label: "N(jets) ( p_{T}>30 GeV, |#eta|<2.5)"
+      unit: ""
+      gen: "GENnjets_pt30_eta2p5"
+      ifAbs: False
 
 
   2D_Observables:
 
       "massZ1 vs massZ2":
         bins: "|50|80| vs |10|30| / |50|80| vs |30|60| / |80|110| vs |10|25| / |80|110| vs |25|30|"
-        label: ""
-        unit: ""
+        label: ["m(Z_{1})", "m(Z_{2})"]
+        unit: ["GeV", "GeV"]
         gen: ""
 
       "njets_pt30_eta2p5 vs pT4l":
         bins: '|0|1|2|3|20| vs |0|15|30|120|350| / |0|15|30|120|350| / |0|120|350| / |0|120|350|'
-        label: ""
-        unit: ""
+        label: ["N(jets) |#eta|<2.5", "p_{T}(H)"]
+        unit: ["", "GeV"]
         gen: ""
 
       "rapidity4l vs pT4l":
         bins: '|0.0|0.5| vs |0|40| / |0.0|0.5| vs |40|80| / |0.0|0.5| vs |80|150| / |0.0|0.5| vs |150|1300| / |0.5|1.0| vs |0|45| / |0.5|1.0| vs |45|120| / |0.5|1.0| vs |120|1300| / |1.0|2.5| vs |0|45| / |1.0|2.5| vs |45|120| / |1.0|2.5| vs |120|1300|'
-        label: ""
-        unit: ""
+        label: ["|y(H)|", "p_{T}(H)"]
+        unit: ["", "GeV"]
         gen: ""

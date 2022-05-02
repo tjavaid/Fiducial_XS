@@ -12,7 +12,7 @@ except ImportError as e:
     raise ImportError("Check if you run `source setup.sh`. If not please run it.\n")
 
 try:
-    from Utils import logging, logger, border_msg
+    from Utils import logging, logger, border_msg, GetDirectory
 except Exception as e:
     print (e)
     raise ImportError("Check if you run `source setup.sh`. If not please run it.\n")
@@ -37,6 +37,7 @@ parser.add_argument( '-m', dest='HiggsMass', default=125.0, type=float, help='Hi
 parser.add_argument( '-y', dest='year', default=2018, type=int, help='dataset year')
 parser.add_argument( '-r', dest='RunCommand', default=0, type=int, choices=[0, 1], help="if 1 then it will run the commands else it will just print the commands")
 parser.add_argument( '-obs', dest='OneDOr2DObs', default=1, type=int, choices=[1, 2], help="1 for 1D obs, 2 for 2D observable")
+parser.add_argument( '-test', dest='TestVar', default="", type=str, help="Name of test variables to run over. For example: mass4l")
 parser.add_argument('-n', dest="nohup", action='store_true', help='if want to run using nohup')
 parser.add_argument(
      "--log-level",
@@ -50,7 +51,7 @@ args = parser.parse_args()
 logger.setLevel(args.log_level)
 
 # create a directory named "log" to save nohup outputs.
-if not os.path.isdir('log'): os.mkdir('log')
+GetDirectory("log")
 
 InputYAMLFile = args.inYAMLFile
 ObsToStudy = "1D_Observables" if args.OneDOr2DObs == 1 else "2D_Observables"
@@ -65,6 +66,9 @@ with open(InputYAMLFile, 'r') as ymlfile:
 
     if ObsToStudy in cfg['Observables']:
         for obsName, obsBin in cfg['Observables'][ObsToStudy].items():
+            if (args.TestVar != "" and args.TestVar != obsName):
+                """If the test variable is given, then only run over that variable"""
+                continue
             logger.info("="*51)
             logger.info("Observable: {:11} Bins: {}".format(obsName, obsBin['bins']))
             if (args.step == 1):
@@ -81,14 +85,14 @@ with open(InputYAMLFile, 'r') as ymlfile:
 
             if (args.step == 2):
                 border_msg("Running collect inputs: "+ obsName)
-                collect(obsName)
+                collect(obsName, str(args.year))
                 logger.info("="*51)
 
                 # FIXME: Currently the plotter is only working for 1D vars.
                 if ((not obsName.startswith("mass4l") ) and (ObsToStudy != "2D_Observables")):
                     border_msg("Running plotter to plot 2D signal efficiencies")
-                    command = 'python python/plot2dsigeffs.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" --inYAMLFile="{inYAMLFile}" --obs={obsToStudy}'.format(
-                        obsName = obsName, obsBins = obsBin['bins'], inYAMLFile = args.inYAMLFile, obsToStudy = args.OneDOr2DObs
+                    command = 'python python/plot2dsigeffs.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" --inYAMLFile="{inYAMLFile}" --obs="{obsToStudy}" --year={year}'.format(
+                        obsName = obsName, obsBins = obsBin['bins'], inYAMLFile = args.inYAMLFile, obsToStudy = args.OneDOr2DObs, year = args.year
                     )
                     logger.info("Command: {}".format(command))
                     if (args.RunCommand): os.system(command)
@@ -124,8 +128,8 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 # FIXME: Check if we need modelNames in step-4 or not
                 command = ''
                 if args.nohup: command = 'nohup '
-                command += 'python -u runHZZFiducialXS.py --dir="{NtupleDir}" --obsName="{obsName}" --obsBins="{obsBins}" --modelNames {modelNames} --redoTemplates --templatesOnly '.format(
-                        obsName = obsName, obsBins = obsBin['bins'], NtupleDir = args.NtupleDir, modelNames= args.modelNames
+                command += 'python -u runHZZFiducialXS.py --dir="{NtupleDir}" --obsName="{obsName}" --obsBins="{obsBins}" --modelNames {modelNames} --year="{year}" --redoTemplates --templatesOnly '.format(
+                        obsName = obsName, obsBins = obsBin['bins'], NtupleDir = args.NtupleDir, modelNames= args.modelNames, year = args.year
                 )
                 if args.nohup: command += ' >& log/step_6_nohup.log &'
                 logger.info("Command: {}".format(command))
@@ -140,8 +144,8 @@ with open(InputYAMLFile, 'r') as ymlfile:
 
                 command = ''
                 if args.nohup: command = 'nohup '
-                command += 'python -u runHZZFiducialXS.py --obsName="{obsName}" --obsBins="{obsBins}"  --calcSys --asimovMass {HiggsMass} --modelNames {modelNames}'.format(
-                        obsName = obsName, obsBins = obsBin['bins'], HiggsMass = args.HiggsMass, modelNames= args.modelNames
+                command += 'python -u runHZZFiducialXS.py --obsName="{obsName}" --obsBins="{obsBins}"  --calcSys --asimovMass {HiggsMass} --modelNames {modelNames} --year="{year}"'.format(
+                        obsName = obsName, obsBins = obsBin['bins'], HiggsMass = args.HiggsMass, modelNames= args.modelNames, year = args.year
                 )
                 if args.nohup: command += ' >& log/step_7_nohup.log &'
                 logger.info("Command: {}".format(command))

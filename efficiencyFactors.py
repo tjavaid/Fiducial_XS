@@ -61,8 +61,7 @@ from ROOT import *
 doFit = opt.DOFIT
 doPlots = opt.DOPLOTS
 
-if (not os.path.exists("plots") and doPlots):
-    os.system("mkdir plots")
+if doPlots: GetDirectory("plots")
 
 save = ""
 
@@ -114,7 +113,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
     #logging.info(sample) - Comment: Not needed? VM
     #if ("NNLOPS" in sample or "nnlops" in sample):
     #    print ("Will skip: "+ sample)
-    
+
     recoweight = "genWeight*pileupWeight*dataMCWeight"
 
 
@@ -258,15 +257,15 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             cutobs_reco = "("+obs_reco+">="+str(obs_reco_low)+")"
 
         # Double differential measurement addition for the reco observable cut
-       
-        
+
+
         tmp = ''
         if not (obs_reco2 == ''):
             tmp = " && ("+obs_reco2+">="+str(obs_reco2_low)+" && "+obs_reco2+"<"+str(obs_reco2_high)+")"
 
             if obs_reco2_high == "inf":
                 tmp = " && ("+obs_reco2+">="+str(obs_reco2_low)+")"
-                
+
             cutobs_reco += tmp
 
         print(bcolors.HEADER + "cutobs_reco:" + bcolors.ENDC)
@@ -275,7 +274,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
 
         # Generator observable cut - important to keep it in the desired bin range
 
-     
+
 
         cutobs_gen = "("+obs_gen+">="+str(obs_gen_low)+" && "+obs_gen+"<"+str(obs_gen_high)+")"
 
@@ -290,7 +289,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
 
             if obs_gen2_high == "inf":
                 tmp = " && ("+obs_gen2+">="+str(obs_gen2_low)+")"
-                
+
             cutobs_gen += tmp
 
         print(bcolors.HEADER + "cutobs_gen:" + bcolors.ENDC)
@@ -310,7 +309,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
                 if obs_reco_high == "inf":
                     cutobs_reco_jesup = "("+obs_reco+"_jesup"+">="+str(obs_reco_low)+")"
                     cutobs_reco_jesdn = "("+obs_reco+"_jesdn"+">="+str(obs_reco_low)+")"
-           
+
             # Double differential measurement addition: Reco observable cut - if using the _jesup/down variations
             tmp_up = ''
             tmp_dn = ''
@@ -332,7 +331,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             print(cutobs_reco_jesdn)
 
         # Generator level selection on the out of the fiducial range - i.e. outside of the deisred bin, but still within the high/low range for the observed variable.
-        
+
         cutobs_gen_otherfid = "(("+obs_gen+"<"+str(obs_gen_low)+" && "+obs_gen+">="+str(obs_gen_lowest)+") || ("+obs_gen+">="+str(obs_gen_high)+" && "+obs_gen+"<="+str(obs_gen_highest)+"))"
 
         if obs_gen_highest == "inf": # can use a check like this because gen and reco bin boundaries are the same - so either reco or gen is ok, but gen is better following the cut logic
@@ -341,7 +340,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
 
             else:
                 cutobs_gen_otherfid = "(("+obs_gen+"<"+str(obs_gen_low)+" && "+obs_gen+">="+str(obs_gen_lowest)+") || ("+obs_gen+">="+str(obs_gen_high)+"))"
-            
+
 
         # Double differential measurement addition: Generator level selection on the out of the fiducial range - i.e. outside of the deisred bin, but still within the high/low range for the observed variable.
         ### FIXME: For now implementing how it was agreed with LLR, but this should be understood
@@ -353,7 +352,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             if obs_gen2_highest == "inf":
                 if obs_gen2_high == "inf":
                     tmp = " || (("+obs_gen2+"<"+str(obs_gen2_low)+" && "+obs_gen2+">="+str(obs_gen2_lowest)+"))"
-                
+
                 else:
                     tmp = " || (("+obs_gen2+"<"+str(obs_gen2_low)+" && "+obs_gen2+">="+str(obs_gen2_lowest)+") || ("+obs_gen2+">="+str(obs_gen2_high)+"))"
 
@@ -385,7 +384,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             cutchan_gen_out  = "((GENZ_DaughtersId[0]==11 && GENZ_DaughtersId[1]==13) || (GENZ_DaughtersId[0]==13 && GENZ_DaughtersId[1]==11))"
             cutm4l_gen       = "(GENmass4l>"+str(m4l_low)+" && GENmass4l<"+str(m4l_high)+")"
             cutm4l_reco      = "(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+")"
-            
+
         #Generator level requirement for the Higgs boson being the Allfather :D
         cuth4l_gen  = "(GENlep_MomMomId[GENlep_Hindex[0]]==25 && GENlep_MomMomId[GENlep_Hindex[1]]==25 && GENlep_MomMomId[GENlep_Hindex[2]]==25 && GENlep_MomMomId[GENlep_Hindex[3]]==25)"
         #Reco level requirement for the Higgs boson being the Allfather (yes, I'm going with Odin reference) :D
@@ -407,9 +406,9 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
 
         # Setting up the correct generator weight variable
         # FIXME: Why 10000 factor?
-        if (recoweight=="totalWeight"): 
+        if (recoweight=="totalWeight"):
             genweight = "10000.0*genWeight/"+str(sumw[Sample])
-        else: 
+        else:
             genweight = "genWeight"
 
         # RECO level histograms initialisation
@@ -927,7 +926,7 @@ Nbins = len(obs_bins)
 
 if obs_reco2 == '':
     Nbins = Nbins - 1 #  For the double diff measurement the len(obs_bins) is the actual number of bins, while for the 1 observable we parse bin edges so it needs to be len -1
-    
+
 for chan in chans:
     for recobin in range(Nbins):
         for genbin in range(Nbins):
@@ -943,9 +942,7 @@ if (not opt.CHAN==''):
     ext='_'+opt.CHAN
 
 datacardInputs = datacardInputs.format(year = opt.ERA)
-
-if not os.path.isdir(opt.ERA): os.mkdir(opt.ERA)
-if not os.path.isdir(datacardInputs): os.mkdir(datacardInputs)
+GetDirectory(datacardInputs)
 
 output_file_name = datacardInputs+'/inputs_sig_'+label+ext+'.py'
 
@@ -968,11 +965,7 @@ with open(output_file_name, 'w') as f:
     f.write('lambdajesdn = '+str(lambdajesdn)+' \n')
 
 
-more_output_file_name = datacardInputs+'/moreinputs_sig_'+opt.OBSNAME+ext+'.py'
-
-if not (obs_reco2 == ''):
-    more_output_file_name = datacardInputs+'/moreinputs_sig_'+opt.OBSNAME.replace(" ", "_")+'.py'
-
+more_output_file_name = datacardInputs+'/moreinputs_sig_'+opt.OBSNAME.replace(" ", "_")+ext+'.py'
 
 with open(more_output_file_name, 'w') as f:
     f.write('CB_mean = '+str(CB_mean_post)+' \n')

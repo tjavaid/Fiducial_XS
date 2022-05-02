@@ -26,7 +26,7 @@ logger.setLevel(logging.DEBUG)
 
 sys.path.append('./'+datacardInputs)
 
-def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel):
+def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel, year):
     """Create workspace
     this script is called once for each reco bin (obsBin)
     in each reco bin there are (nBins) signals (one for each gen bin)
@@ -42,6 +42,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         modelName (str): Name of model. For example "SM_125"
         physicalModel (str): physical model. For example: "v2"
     """
+    global combineOutputs
     logger.info("""Input arguments to createXSworkspace module:
         obsName: {obsName}
         obsType: {obsType}
@@ -659,6 +660,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     ## data
     getattr(wout,'import')(data_obs.reduce(RooArgSet(m))) # RooFit.Silence()
 
+    combineOutputs = combineOutputs.format(year = year)
     if (addfakeH):
         if (usecfactor):
             fout = TFile(combineOutputs+"/hzz4l_"+channel+"S_13TeV_xs_"+modelName+"_"+obsNameDictKey+"_"+physicalModel+".Databin"+str(obsBin)+".Cfactor.root","RECREATE")

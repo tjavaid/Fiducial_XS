@@ -9,22 +9,21 @@ For example: Directory name, etc.
 # Name of output directories
 datacardInputs = "{year}/datacardInputs"
 
-combineOutputs = "xs_125.0"
-# combineOutputs = "combineOutputs"
+combineOutputs = "xs_125.0_{year}"
 
 #################################
 # Path of plot directory
 # Plots/TypeOfPlot/Year/plotName.png
 
-SigEfficiencyPlots = "plots/SigEfficiency/2018/{obsName}"
+SigEfficiencyPlots = "plots/SigEfficiency/{year}/{obsName}"
 
-DifferentialBins = "plots/DifferentialBins/2018/{obsName}"
+DifferentialBins = "plots/DifferentialBins/{year}/{obsName}"
 
-AsimovPlots = "plots/plotAsimov/2018/{obsName}"
+AsimovPlots = "plots/plotAsimov/{year}/{obsName}"
 
-LHScanPlots =  "plots/LHScanPlots/2018/{obsName}"
+LHScanPlots =  "plots/LHScanPlots/{year}/{obsName}"
 
-ResultsPlot = "plots/results/2018/"
+ResultsPlot = "plots/results/{year}/"
 ################################
 # Paths of ntuples
 ################################
