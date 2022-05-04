@@ -74,6 +74,7 @@ def border_msg(msg):
     h = ''.join(['+'] + ['-' *row] + ['+'])
     result= h + '\n'"|  "+msg+"  |"'\n' + h
     print(bcolors.OKGREEN + result +  bcolors.ENDC)
+    return result
 
 def fixed_border_msg(msg):
     border = "="*51

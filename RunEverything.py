@@ -1,7 +1,7 @@
 import os
 import argparse
 import yaml
-
+import datetime
 
 # INFO: Following items are imported from either python directory or Inputs
 # FIXME: Seems like try-except not implemented correctly
@@ -56,6 +56,9 @@ GetDirectory("log")
 InputYAMLFile = args.inYAMLFile
 ObsToStudy = "1D_Observables" if args.OneDOr2DObs == 1 else "2D_Observables"
 
+f = open("CommandsRun.txt", "a") # INFO: Save commands in external file for debug purpose only
+ct = datetime.datetime.now()
+
 with open(InputYAMLFile, 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
 
@@ -72,7 +75,8 @@ with open(InputYAMLFile, 'r') as ymlfile:
             logger.info("="*51)
             logger.info("Observable: {:11} Bins: {}".format(obsName, obsBin['bins']))
             if (args.step == 1):
-                border_msg("Running efficiencies step: "+ obsName)
+                border_msg_output = border_msg("Running efficiencies step: "+ obsName)
+                f.write("\n{}\n".format(border_msg_output))
                 for channel in args.channels:
                     logger.info("==> channel: {}".format(channel))
                     command = 'nohup python -u efficiencyFactors.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -c "{channel}" -y "{year}" >& log/effs_{obsName_log}_{channel}.log &'.format(
@@ -80,11 +84,13 @@ with open(InputYAMLFile, 'r') as ymlfile:
                         obsName = obsName, obsBins = obsBin['bins'], channel = channel, year = args.year, obsName_log = obsName.replace(" ","_")
                     )
                     logger.info("Command: {}".format(command))
+                    f.write("\n{}\n".format(command))
                     if (args.RunCommand): os.system(command)
                 # os.system('ps -t')
 
             if (args.step == 2):
-                border_msg("Running collect inputs: "+ obsName)
+                border_msg_output = border_msg("Running collect inputs: "+ obsName)
+                f.write("\n{}\n".format(border_msg_output))
                 collect(obsName, str(args.year))
                 logger.info("="*51)
 
@@ -95,36 +101,44 @@ with open(InputYAMLFile, 'r') as ymlfile:
                         obsName = obsName, obsBins = obsBin['bins'], inYAMLFile = args.inYAMLFile, obsToStudy = args.OneDOr2DObs, year = args.year
                     )
                     logger.info("Command: {}".format(command))
+                    f.write("\n{}\n".format(command))
                     if (args.RunCommand): os.system(command)
                 else:
                     logger.info("Not running `plot2dsigeffs.py` as either the choosen option is `mass4l` or `2D observables`.")
             if (args.step == 3 and (ObsToStudy != "2D_Observables")):  #  Don't run this step for 2D obs for now
-                border_msg("Running Interpolation to get acceptance for MH = 125. 38 GeV and obs " + obsName)
+                border_msg_output = border_msg("Running Interpolation to get acceptance for MH = 125. 38 GeV and obs " + obsName)
+                f.write("\n{}\n".format(border_msg_output))
                 command = 'python python/interpolate_differential_full.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
                         obsName = obsName, obsBins = obsBin['bins'], year = args.year
                 )
                 print("Command: {}".format(command))
+                f.write("\n{}\n".format(command))
                 if (args.RunCommand): os.system(command)
 
             if (args.step == 4):
-                border_msg("Running getUnc")
+                border_msg_output = border_msg("Running getUnc")
+                f.write("\n{}\n".format(border_msg_output))
                 # command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" >& log/unc_{obsName}.log &'.format(
                 command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -y "{year}"'.format(
                         obsName = obsName, obsBins = obsBin['bins'], year = args.year
                 )
                 logger.info("Command: {}".format(command))
+                f.write("\n{}\n".format(command))
                 if (args.RunCommand): os.system(command)
 
             if (args.step == 5 and (ObsToStudy != "2D_Observables")): #  Don't run this step for 2D obs for now
-                border_msg("Grab NNLOPS acc & unc for MH = 125.38 GeV using the powheg sample")
+                border_msg_output = border_msg("Grab NNLOPS acc & unc for MH = 125.38 GeV using the powheg sample")
+                f.write("\n{}\n".format(border_msg_output))
                 command = 'python python/interpolate_differential_pred.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
                         obsName = obsName, obsBins = obsBin['bins'], year = args.year
                 )
                 print("Command: {}".format(command))
+                f.write("\n{}\n".format(command))
                 if (args.RunCommand): os.system(command)
 
             if (args.step == 6):
-                border_msg("Running Background template maker: " + obsName)
+                border_msg_output = border_msg("Running Background template maker: " + obsName)
+                f.write("\n{}\n".format(border_msg_output))
                 # FIXME: Check if we need modelNames in step-4 or not
                 command = ''
                 if args.nohup: command = 'nohup '
@@ -133,10 +147,12 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 )
                 if args.nohup: command += ' >& log/step_6_nohup.log &'
                 logger.info("Command: {}".format(command))
+                f.write("\n{}\n".format(command))
                 if (args.RunCommand): os.system(command)
 
             if (args.step == 7):
-                border_msg("Running final measurement and plotters: " + obsName)
+                border_msg_output = border_msg("Running final measurement and plotters: " + obsName)
+                f.write("\n{}\n".format(border_msg_output))
                 # Copy model from model directory to combine path
                 CMSSW_BASE = os.getenv('CMSSW_BASE')
                 copyCommand = 'cp models/HZZ4L*.py {CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/python/'.format(CMSSW_BASE=CMSSW_BASE)
@@ -149,4 +165,7 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 )
                 if args.nohup: command += ' >& log/step_7_nohup.log &'
                 logger.info("Command: {}".format(command))
+                f.write("\n{}\n".format(command))
                 if (args.RunCommand): os.system(command)
+
+f.close()

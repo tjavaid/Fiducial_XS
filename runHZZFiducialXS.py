@@ -154,7 +154,7 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year):
     # FIXME: this directory name is hardcoded in fiducialXSTemplates.C
     # FIXME: Try to link the two automatically.
     # FIXME: Also, this name is passed as one of arguments of `main_fiducialXSTemplates()`
-    DirectoryToCreate = 'templatesXS/DTreeXS_' + obsName.replace(" ","_") + '/13TeV/'
+    DirectoryToCreate = 'templatesXS_'+str(year)+'/DTreeXS_' + obsName.replace(" ","_") + '/13TeV/'
     logger.debug('Create directory: {}'.format(DirectoryToCreate))
     logger.debug('compile the script inside the template directory')
     cmd = 'mkdir -p '+DirectoryToCreate; processCmd(cmd, get_linenumber(), os.path.basename(__file__), 1)
@@ -187,7 +187,7 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year):
         logger.info("observableBins: "+str(observableBins))
 
         if (" vs " not in obsName ):
-            cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[year][sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+obsName+' "'+opt.OBSBINS+'" "'+opt.OBSBINS+'" 13TeV templatesXS DTreeXS ' + fitTypeZ4l+ ' 0'
+            cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[year][sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+obsName+' "'+opt.OBSBINS+'" "'+opt.OBSBINS+'" 13TeV templatesXS_'+str(year)+' DTreeXS ' + fitTypeZ4l+ ' 0'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
             # FIXME: URGENT: Here previous command copies all the cout info in variable `output`
             #               then from the string it is going to extract useful information about bin fraction
@@ -218,7 +218,7 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year):
 
                 ListObsName = (''.join(obsName.split())).split('vs')
                 logger.info(ListObsName[0]+ ' : ' + str(bin0_)+"\t"+ListObsName[1] + ' : '+str(bin1_))
-                cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[year][sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+ListObsName[0]+' "'+bin0_+'" "'+bin0_ +'" 13TeV templatesXS DTreeXS ' + fitTypeZ4l+ ' 0' + ' '+ListObsName[1]+' "'+bin1_+'" "'+bin1_ +'"'
+                cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[year][sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+ListObsName[0]+' "'+bin0_+'" "'+bin0_ +'" 13TeV templatesXS_'+str(year)+' DTreeXS ' + fitTypeZ4l+ ' 0' + ' '+ListObsName[1]+' "'+bin1_+'" "'+bin1_ +'"'
                 output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
                 tmp_fracs = output.split("[Bin fraction: ")
                 logger.debug('tmp_fracs: {}'.format(tmp_fracs))

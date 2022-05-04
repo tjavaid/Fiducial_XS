@@ -10,7 +10,7 @@ import yaml
 from sample_shortnames import *
 from Input_Info import *
 from read_bins import read_bins
-from Utils import logger, border_msg
+from Utils import logger, border_msg, GetDirectory
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
