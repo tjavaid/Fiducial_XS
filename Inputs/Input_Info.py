@@ -4,6 +4,11 @@ necessary in this framework.
 
 For example: Directory name, etc.
 """
+################################
+# Mass 4l boundary
+INPUT_m4l_bins = 55
+INPUT_m4l_low = 105.0
+INPUT_m4l_high = 160.0
 
 ################################
 # Name of output directories

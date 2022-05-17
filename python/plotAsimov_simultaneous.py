@@ -290,7 +290,8 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     c.cd()
 
     #dummy = TH1D("","",1,105.6,140.6)
-    dummy = TH1D("","",1,105.0,140.0)
+    #dummy = TH1D("","",1,105.0,140.0)
+    dummy = TH1D("","",1,INPUT_m4l_low,INPUT_m4l_high)
     dummy.SetBinContent(1,2)
     dummy.SetFillColor(0)
     dummy.SetLineColor(0)

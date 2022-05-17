@@ -25,8 +25,11 @@ import logging
 logger.setLevel(logging.DEBUG)
 
 sys.path.append('./'+datacardInputs)
+m4l_bins = INPUT_m4l_bins
+m4l_low = INPUT_m4l_low
+m4l_high = INPUT_m4l_high
 
-def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel, year):
+def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel, year, obs_ifJES, obs_ifJES2):
     """Create workspace
     this script is called once for each reco bin (obsBin)
     in each reco bin there are (nBins) signals (one for each gen bin)
@@ -171,14 +174,14 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     m = w.var("CMS_zz4l_mass")
     # m = RooRealVar("CMS_zz4l_mass", "CMS_zz4l_mass", 105.0, 140.0)
     #logger.info("m.numBins()",m.numBins())
-    m.setMin(105.0)
-    m.setMax(140.0)
+    m.setMin(m4l_low)
+    m.setMax(m4l_high)
     #m.setBins(45)
     #m.Print("v")
 
-    mass4e = RooRealVar("mass4e", "mass4e", 105.0, 140.0)
-    mass4mu = RooRealVar("mass4mu", "mass4mu", 105.0, 140.0)
-    mass2e2mu = RooRealVar("mass2e2mu", "mass2e2mu",105.0, 140.0)
+    mass4e = RooRealVar("mass4e", "mass4e", m4l_low, m4l_high)
+    mass4mu = RooRealVar("mass4mu", "mass4mu", m4l_low, m4l_high)
+    mass2e2mu = RooRealVar("mass2e2mu", "mass2e2mu",m4l_low, m4l_high)
     if (not obsName=="mass4l"):
         # if (obsName=="rapidity4l" or obsName=="cosThetaStar" or obsName=="cosTheta1" or obsName=="cosTheta2" or obsName=="Phi" or obsName=="Phi1"):
             # observable = RooRealVar(obsName,obsName,-1.0*float(obs_bin_highest),float(obs_bin_highest))
@@ -355,7 +358,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     # nuisance describes the jet energy scale uncertainty
     JES = RooRealVar("JES","JES", 0, -5.0, 5.0)
-    if (obsName == "nJets"  or ("jet" in obsName)):
+    #if (obsName == "nJets"  or ("jet" in obsName)):
+    if (obs_ifJES):
         lambda_JES_sig = lambdajesup[modelName+"_"+channel+"_"+obsName+"_genbin"+str(obsBin)+""+"_"+recobin]
         lambda_JES_sig_var = RooRealVar("lambda_sig_"+modelName+"_"+channel+"_"+obsName+"_genbin"+str(obsBin)+""+"_"+recobin, "lambda_sig_"+modelName+"_"+channel+"_"+obsName+"_genbin"+str(obsBin)+""+"_"+recobin, lambda_JES_sig)
         JES_sig_rfv = RooFormulaVar("JES_rfv_sig_"+recobin+"_"+channel,"@0*@1", RooArgList(JES, lambda_JES_sig_var) )
@@ -369,7 +373,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         logger.info("model name is   {}".format(modelName))
         fideff_var[genbin] = RooRealVar("effBin"+str(genbin)+"_"+recobin+"_"+channel,"effBin"+str(genbin)+"_"+recobin+"_"+channel, fideff[genbin]);
 
-        if( not (obsName=='nJets' or ("jet" in obsName)) or (not doJES)) :
+        #if( not (obsName=='nJets' or ("jet" in obsName)) or (not doJES)) :
+        if( not (obs_ifJES) or (not doJES)) :
             trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1", RooArgList(fideff_var[genbin], lumi) );
         else :
             trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1*(1-@2)", RooArgList(fideff_var[genbin], lumi, JES_sig_rfv) );
@@ -409,7 +414,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             SigmaHBin['4e'+str(genbin)] = RooFormulaVar("Sigma4eBin"+str(genbin),"(@0*@1*@2)", RooArgList(SigmaBin[str(genbin)], fracSM4eBin[str(genbin)], K1Bin[str(genbin)]))
             SigmaHBin['4mu'+str(genbin)] = RooFormulaVar("Sigma4muBin"+str(genbin),"(@0*(1.0-@1*@2)*@3*@4/(1.0-@1))", RooArgList(SigmaBin[str(genbin)], fracSM4eBin[str(genbin)], K1Bin[str(genbin)], K2Bin[str(genbin)], fracSM4muBin[str(genbin)]))
             SigmaHBin['2e2mu'+str(genbin)] = RooFormulaVar("Sigma2e2muBin"+str(genbin),"(@0*(1.0-@1*@2)*(1.0-@3*@4/(1.0-@1)))", RooArgList(SigmaBin[str(genbin)], fracSM4eBin[str(genbin)], K1Bin[str(genbin)], K2Bin[str(genbin)], fracSM4muBin[str(genbin)]))
-            if (obsName == "nJets" or ("jet" in obsName)):
+            #if (obsName == "nJets" or ("jet" in obsName)):
+            if (obs_ifJES):
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2*(1-@3)" ,RooArgList(SigmaHBin[channel+str(genbin)],fideff_var[genbin],lumi,JES_sig_rfv))
             else:
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2" ,RooArgList(SigmaHBin[channel+str(genbin)],fideff_var[genbin],lumi))
@@ -422,7 +428,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             rBin[str(genbin)] = RooRealVar("rBin"+str(genbin),"rBin"+str(genbin), 1.0, 0.0, 10.0)
             rBin[str(genbin)].setConstant(True)
             #trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_final_norm","@0*@1*@2", RooArgList(rBin[str(genbin)], fracBin[channel+str(genbin)], trueH_norm[genbin]) );
-            if (obsName == "nJets" or ("jet" in obsName)):
+            #if (obsName == "nJets" or ("jet" in obsName)):
+            if (obs_ifJES):
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2*@3*(1-@4)" ,RooArgList(rBin[str(genbin)],fracBin[channel+str(genbin)],fideff_var[genbin],lumi,JES_sig_rfv))
             else:
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2*@3" ,RooArgList(rBin[str(genbin)],fracBin[channel+str(genbin)],fideff_var[genbin],lumi))
@@ -430,7 +437,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             rBin_channel[str(genbin)] = RooRealVar("r"+channel+"Bin"+str(genbin),"r"+channel+"Bin"+str(genbin), 1.0, 0.0, 10.0)
             rBin_channel[str(genbin)].setConstant(True)
             #trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_final_norm","@0*@1", RooArgList(rBin_channel[str(genbin)], trueH_norm[genbin]) );
-            if (obsName == "nJets" or ("jet" in obsName)):
+            #if (obsName == "nJets" or ("jet" in obsName)):
+            if (obs_ifJES):
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2*(1-@3)", RooArgList(rBin_channel[str(genbin)], fideff_var[genbin],lumi,JES_sig_rfv))
             else:
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2", RooArgList(rBin_channel[str(genbin)], fideff_var[genbin],lumi))
@@ -470,7 +478,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         obsBin = obsBin, frac_qqzz = frac_qqzz, frac_ggzz = frac_ggzz, frac_zjets = frac_zjets
     ))
 
-    if (obsName=="nJets" or ("jet" in obsName)):
+    #if (obsName=="nJets" or ("jet" in obsName)):
+    if (obs_ifJES):
         #######
         lambda_JES_qqzz = 0.0 #lambda_qqzz_jes[modelName+"_"+channel+"_nJets_"+recobin]
         lambda_JES_qqzz_var = RooRealVar("lambda_qqzz_"+recobin+"_"+channel,"lambda_"+recobin+"_"+channel, lambda_JES_qqzz)
@@ -548,7 +557,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     # bkg fractions in reco bin; implemented in terms of fractions
 
-    if( not (obsName=='nJets' or ("jet" in obsName) ) or (not doJES)) :
+    #if( not (obsName=='nJets' or ("jet" in obsName) ) or (not doJES)) :
+    if (obs_ifJES):
        qqzz_norm = RooFormulaVar("bkg_qqzz_norm", "@0", RooArgList(frac_qqzz_var) )
        ggzz_norm = RooFormulaVar("bkg_ggzz_norm", "@0", RooArgList(frac_ggzz_var) )
        zjets_norm = RooFormulaVar("bkg_zjets_norm", "@0", RooArgList(frac_zjets_var) )
@@ -571,20 +581,20 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     logger.info ("Obs name: {:11}  Bin (low, high) edge: ({}, {})".format(obsName,obsBin_low,obsBin_high))
     if (obsName == "nJets"): obsName = "njets_reco_pt30_eta4p7"
     if (channel=='4mu'):
-        if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu),"(mass4mu>105.0 && mass4mu<140.0)")
-        elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),"(mass4mu>105.0 && mass4mu<140.0 && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
-        elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable,observable2),"(mass4mu>105.0 && mass4mu<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsName+")<"+obsBin_high2+")")
-        else:                  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),                    "(mass4mu>105.0 && mass4mu<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
+        if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu),"(mass4mu>"+m4l_low+" && mass4mu<"+m4l_high+")")
+        elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),"(mass4mu>"+m4l_low+" && mass4mu<"+mass_high+" && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
+        elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable,observable2),"(mass4mu>"+m4l_low+" && mass4mu<"+m4l_high+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsName+")<"+obsBin_high2+")")
+        else:                  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),                    "(mass4mu>"+m4l_low+" && mass4mu<"+m4l_high+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
     if (channel=='4e'):
-        if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e),"(mass4e>105.0 && mass4e<140.0)")
-        elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>105.0 && mass4e<140.0 && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
-        elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable,observable2),"(mass4e>105.0 && mass4e<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsName+")<"+obsBin_high2+")")
-        else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>105.0 && mass4e<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
+        if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e),"(mass4e>"+m4l_low+" && mass4e<"+m4l_high+")")
+        elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>"+m4l_low+" && mass4e<"+m4l_high+" && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
+        elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable,observable2),"(mass4e>"+m4l_low+" && mass4e<"+m4l_high+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsName+")<"+obsBin_high2+")")
+        else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>"+m4l_low+" && mass4e<"+m4l_high+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
     if (channel=='2e2mu'):
-        if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu),"(mass2e2mu>105.0 && mass2e2mu<140.0)")
-        elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>105.0 && mass2e2mu<140.0 && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
-        elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable,observable2),"(mass2e2mu>105.0 && mass2e2mu<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsName+")<"+obsBin_high2+")")
-        else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>105.0 && mass2e2mu<140.0 && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
+        if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu),"(mass2e2mu>"+m4l_low+" && mass2e2mu<"+m4l_high+")")
+        elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>"+m4l_low+" && mass2e2mu<"+m4l_high+" && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
+        elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable,observable2),"(mass2e2mu>"+m4l_low+" && mass2e2mu<"+m4l_high+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsName+")<"+obsBin_high2+")")
+        else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>"+m4l_low+" && mass2e2mu<"+m4l_high+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
     #for event in range(data_obs.numEntries()):
     #    row = data_obs.get(event)
     #    row.Print("v")

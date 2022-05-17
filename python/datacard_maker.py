@@ -2,6 +2,7 @@ import yaml
 import io
 import argparse
 import os
+from Input_Info import *
 
 
 parser = argparse.ArgumentParser(description='Main input options')
@@ -76,7 +77,8 @@ def DataCardMaker(process_names, process_rate, nbins, current_bin, channel, obse
             f.write("observation {}".format(observation)+"\n")
 
             f.write("------------"+"\n")
-            f.write("## mass window [105.0,140.0]\n")
+            #f.write("## mass window [105.0,140.0]\n")
+            f.write("## mass window [{},{}]".format(INPUT_m4l_low, INPUT_m4l_high)+"\n")
             f.write("bin " + (bin_name+"_recobin{} ").format(current_bin)*(nbins + nprocesses - 1) +"\n")
 
             tmp_line = "process "

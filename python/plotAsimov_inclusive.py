@@ -208,7 +208,8 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
         sim.plotOn(mass, RooFit.LineColor(kOrange), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3,shapeBkg_bkg_ggzz_ch1,shapeBkg_bkg_ggzz_ch2,shapeBkg_bkg_ggzz_ch3,shapeBkg_bkg_qqzz_ch1,shapeBkg_bkg_qqzz_ch2,shapeBkg_bkg_qqzz_ch3,shapeBkg_fakeH_ch1,shapeBkg_fakeH_ch2,shapeBkg_fakeH_ch3"), RooFit.ProjWData(data,True))
         sim.plotOn(mass, RooFit.LineColor(kAzure-3), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3,shapeBkg_bkg_ggzz_ch1,shapeBkg_bkg_ggzz_ch2,shapeBkg_bkg_ggzz_ch3,shapeBkg_bkg_qqzz_ch1,shapeBkg_bkg_qqzz_ch2,shapeBkg_bkg_qqzz_ch3"), RooFit.ProjWData(data,True))
         sim.plotOn(mass, RooFit.LineColor(kGreen+3), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3"), RooFit.ProjWData(data,True))
-        datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,105,140))
+        #datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,105,140))
+        datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,INPUT_m4l_low,INPUT_m4l_high))
     else:
         sbin = "ch"+channel[fstate]
         data = data.reduce(RooFit.Cut("CMS_channel==CMS_channel::"+sbin))
@@ -218,7 +219,8 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
         pdfi.plotOn(mass, RooFit.LineColor(kOrange), RooFit.Components("shapeBkg_bkg_zjets_"+sbin+",shapeBkg_bkg_ggzz_"+sbin+",shapeBkg_bkg_qqzz_"+sbin+",shapeBkg_fakeH_"+sbin), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
         pdfi.plotOn(mass, RooFit.LineColor(kAzure-3), RooFit.Components("shapeBkg_bkg_zjets_"+sbin+",shapeBkg_bkg_ggzz_"+sbin+",shapeBkg_bkg_qqzz_"+sbin), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
         pdfi.plotOn(mass, RooFit.LineColor(kGreen+3), RooFit.Components("shapeBkg_bkg_zjets_"+sbin), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
-        datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,105,140))
+        #datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,105,140))
+        datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,INPUT_m4l_low,INPUT_m4l_high))
 
     gStyle.SetOptStat(0)
 
@@ -226,7 +228,8 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     c.cd()
 
     #dummy = TH1D("","",1,105.6,140.6)
-    dummy = TH1D("","",1,105.0,140.0)
+    #dummy = TH1D("","",1,105.0,140.0)
+    dummy = TH1D("","",1,INPUT_m4l_low,INPUT_m4l_high)
     dummy.SetBinContent(1,2)
     dummy.SetFillColor(0)
     dummy.SetLineColor(0)

@@ -19,6 +19,7 @@ from sample_shortnames import sample_shortnames, background_samples
 from Utils import  logging, logger, GetDirectory
 from Utils import  processCmd, get_linenumber
 from read_bins import read_bins
+import yaml
 
 
 
@@ -202,7 +203,8 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year):
                 tmpFrac = float(tmp_fracs[obsBin+1].split("][end fraction]")[0])
                 if not math.isnan(tmpFrac):
                     fractionBkg[sample_tag+'_'+bkg_samples_fStates[sample_tag]+'_'+obsName+'_recobin'+str(obsBin)] = tmpFrac
-                if (('jet' in obsName) and tmpFrac!=0 and not math.isnan(tmpFrac)):
+                #if (('jet' in obsName) and tmpFrac!=0 and not math.isnan(tmpFrac)):
+                if ((obs_ifJES) and tmpFrac!=0 and not math.isnan(tmpFrac)):
                     tmpFrac_up =float(tmp_fracs[obsBin+1].split("Bin fraction (JESup): ")[1].split("]")[0])
                     tmpFrac_dn =float(tmp_fracs[obsBin+1].split("Bin fraction (JESdn): ")[1].split("]")[0])
                     if not math.isnan(tmpFrac_up):
@@ -243,7 +245,8 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year):
                     logger.error('total entries in the current bin is isnan. Please check...')
                     #FIXME: should we exit program here or not???
 
-                if (('jet' in ListObsName[0] or 'jet' in ListObsName[1]) and tmpFrac!=0 and not math.isnan(tmpFrac)): # FIXME: this part will have issue when we have double differential obs.
+                #if (('jet' in ListObsName[0] or 'jet' in ListObsName[1]) and tmpFrac!=0 and not math.isnan(tmpFrac)): # FIXME: this part will have issue when we have double differential obs.
+                if ((obs_ifJES or obs_ifJES2) and tmpFrac!=0 and not math.isnan(tmpFrac)): # FIXME: this part will have issue when we have double differential obs.
                     # FIXME: Check jets information, if its passing correctly or not.
                     # FIXME: Again we are grabbing things from the log of `main_fiducialXSTemplates`. The next result depends on the couts of `main_fiducialXSTemplates`
                     logger.debug('tmp_fracs[1].split("Bin fraction (JESup): "): {}'.format(tmp_fracs[1].split("Bin fraction (JESup): ")))
@@ -334,16 +337,18 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel):
                     \tnBins = {}, obsBin = {},
                     \tobservableBins = {},
                     \tFalse = {}, True = {},
-                    \tmodelName = {}, physicalModel = {}
-                    """.format(ListObsName, fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel))
-                ndata = createXSworkspace(ListObsName, fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel, opt.ERA)
+                    \tmodelName = {}, physicalModel = {},
+                    \tobs_ifJES = {}, obs_ifJES2 = {}
+                    """.format(ListObsName, fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel, obs_ifJES, obs_ifJES2))
+                ndata = createXSworkspace(ListObsName, fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel, opt.ERA, obs_ifJES, obs_ifJES2)
                 CopyDataCardToOutputDir = "cp xs_125.0_"+str(nBins)+"bins/hzz4l_"+fState+"S_13TeV_xs_bin"+str(obsBin)+".txt "+combineOutputs+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
                 processCmd(CopyDataCardToOutputDir, get_linenumber(), os.path.basename(__file__))
                 UpdateObservationValue = "sed -i 's~observation [0-9]*~observation "+str(ndata)+"~g' "+combineOutputs+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
                 processCmd(UpdateObservationValue, get_linenumber(), os.path.basename(__file__))
                 UpdateDatabin = "sed -i 's~_xs.Databin"+str(obsBin)+"~_xs_"+modelName+"_"+obsName.replace(' ','_')+"_"+physicalModel+".Databin"+str(obsBin)+"~g' "+combineOutputs+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
                 os.system(UpdateDatabin)
-                if ("jet" in obsName.replace(' ','_')):
+                #if ("jet" in obsName.replace(' ','_')):
+                if (obs_ifJES):
                     os.system("sed -i 's~\#JES param~JES param~g' "+combineOutputs+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
 
                 os.system("sed -i 's~0.0 0.2~0.0 0.2 [-1,1]~g' "+combineOutputs+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
@@ -352,7 +357,7 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel):
             logger.debug("Running the datacard_maker.py...")
             os.system("python python/datacard_maker.py -c {} -b {}".format(fState, 1))
             logger.debug("Completed the datacard_maker.py...")
-            ndata = createXSworkspace(ListObsName,fState, nBins, 0, observableBins, False, True, modelName, physicalModel, opt.ERA)
+            ndata = createXSworkspace(ListObsName,fState, nBins, 0, observableBins, False, True, modelName, physicalModel, opt.ERA, obs_ifJES, obs_ifJES2)
             if obsName=='mass4l':
                 CopyDataCardToOutputDir = "cp xs_125.0_1bin/hzz4l_"+fState+"S_13TeV_xs_inclusive_bin0.txt "+combineOutputs+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin0_"+physicalModel+".txt"
                 processCmd(CopyDataCardToOutputDir, get_linenumber(), os.path.basename(__file__))
@@ -886,6 +891,31 @@ def runFiducialXS():
     if len(ListObsName) == 2:    # INFO: for 2D this list size == 2
         nBins = len(observableBins)
     logger.debug("nBins: = "+str(nBins))
+
+    obs_ifJES = ''
+    obs_ifJES2 = ''
+    ObsToStudy = "1D_Observables" if (len(ListObsName) == 1) else "2D_Observables"
+    with open(opt.inYAMLFile, 'r') as ymlfile:
+        cfg = yaml.load(ymlfile)
+        if ( ("Observables" not in cfg) or (ObsToStudy not in cfg['Observables']) ) :
+            print('''No section named 'observable' or sub-section name '1D-Observable' or '2D-Observable' found in file {}.
+                     Please check your YAML file format!!!'''.format(InputYAMLFile))
+    
+        ifJES = cfg['Observables'][ObsToStudy][opt.OBSNAME]['ifJES']
+        border_msg("Jes or not: {}".format(ifJES))
+
+    if 'vs' in opt.OBSNAME:
+        obs_ifJES = ifJES.split(" vs ")[0]
+        obs_ifJES2 = ifJES.split(" vs ")[1]
+    
+        print "obs1_ifJES: ", obs_ifJES, "obs2_ifJES: ", obs_ifJES2
+    
+    else:
+        obs_ifJES = ifJES
+        obs_ifJES2 = ''
+    
+        print "obs_ifJES: ", obs_ifJES
+
 
     # FIXME: Now we are extracing efficiencies separately. So, don't need below part.
     #        confirm and delete this
