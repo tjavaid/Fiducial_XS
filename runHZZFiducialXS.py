@@ -288,7 +288,7 @@ def extractUncertainties(obsName, observableBinDn, observableBinUp):
     #processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
 ### Produce datacards for given obs and bin, for all final states
-def produceDatacards(obsName, observableBins, modelName, physicalModel):
+def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJES, obs_ifJES2):
     """Produce workspace/datacards for the given observable and bins
 
     Args:
@@ -955,7 +955,7 @@ def runFiducialXS():
             asimovPhysicalModel = {}""".format(obsName, observableBins, asimovDataModelName, asimovPhysicalModel))
         logger.info("Going to produce datacards...")
         # INFO: Pass the updated bins information here
-        produceDatacards(obsName, observableBins, asimovDataModelName, asimovPhysicalModel)
+        produceDatacards(obsName, observableBins, asimovDataModelName, asimovPhysicalModel, obs_ifJES, obs_ifJES2)
         logger.info("Create the Asimov dataset...")
         resultsXS = createAsimov(obsName, observableBins, asimovDataModelName, resultsXS, asimovPhysicalModel)
         logger.debug("resultsXS: {}".format(resultsXS))
@@ -987,7 +987,7 @@ def runFiducialXS():
                     observableBins = {}
                     asimovDataModelName = {}
                     asimovPhysicalModel = {}""".format(obsName, observableBins, modelName, physicalModel))
-                produceDatacards(obsName, observableBins, modelName, physicalModel)
+                produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJES, obs_ifJES2)
                 logger.debug("Extract results for physicsModel - {}, and modelName - {}".format(physicalModel, modelName))
                 resultsXS = extractResults(obsName, observableBins, modelName, physicalModel, asimovDataModelName, asimovPhysicalModel, resultsXS)
                 # plot the fit results

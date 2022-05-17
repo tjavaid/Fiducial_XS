@@ -158,10 +158,10 @@ background_samples = {}
 #    'ggZZ_4e_MCFM67':'GluGluToContinToZZTo4e_M125_2018_slimmed.root'
 #}
 background_samples['2016'] = {
-        'ZX4l_CR':'',
-        'ZX4l_CR_4e':'',
-        'ZX4l_CR_4mu':'',
-        'ZX4l_CR_2e2mu':'',
+        'ZX4l_CR':'data_UL2016_postVFP_noDuplicates.root',
+        'ZX4l_CR_4e':'data_UL2016_postVFP_noDuplicates.root',
+        'ZX4l_CR_4mu':'data_UL2016_postVFP_noDuplicates.root',
+        'ZX4l_CR_2e2mu':'data_UL2016_postVFP_noDuplicates.root',
         'ZZTo2e2mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
         'ZZTo4e_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
         'ZZTo4mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
@@ -191,7 +191,7 @@ background_samples['2018'] = {
         'ZZTo2e2mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
         'ZZTo4e_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
         'ZZTo4mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
-        'ggZZ_2e2mu_MCFM67':'GluGluToContinToZZTo2e2mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5',
+        'ggZZ_2e2mu_MCFM67':'GluGluToContinToZZTo2e2mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
         'ggZZ_4e_MCFM67':'GluGluToContinToZZTo4e_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
         'ggZZ_4mu_MCFM67':'GluGluToContinToZZTo4mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
 }
