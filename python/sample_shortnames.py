@@ -145,26 +145,26 @@ sample_shortnames['2016'] = {
 
 background_samples = {}
 
-background_samples['2018'] = {
-    'ZX4l_CR':'2018_noDuplicates.root',
-    'ZX4l_CR_4e':'2018_noDuplicates.root',
-    'ZX4l_CR_4mu':'2018_noDuplicates.root',
-    'ZX4l_CR_2e2mu':'2018_noDuplicates.root',
-    'ZZTo2e2mu_powheg':'ZZTo4L_powheg_ext1_slimmed.root',
-    'ZZTo4e_powheg':'ZZTo4L_powheg_ext1_slimmed.root',
-    'ZZTo4mu_powheg':'ZZTo4L_powheg_ext1_slimmed.root',
-    'ggZZ_2e2mu_MCFM67':'GluGluToContinToZZTo2e2mu_M125_2018_slimmed.root',
-    'ggZZ_4mu_MCFM67':'GluGluToContinToZZTo4mu_M125_2018_slimmed.root',
-    'ggZZ_4e_MCFM67':'GluGluToContinToZZTo4e_M125_2018_slimmed.root'
-}
+#background_samples['2018'] = {
+#    'ZX4l_CR':'2018_noDuplicates.root',
+#    'ZX4l_CR_4e':'2018_noDuplicates.root',
+#    'ZX4l_CR_4mu':'2018_noDuplicates.root',
+#    'ZX4l_CR_2e2mu':'2018_noDuplicates.root',
+#    'ZZTo2e2mu_powheg':'ZZTo4L_powheg_ext1_slimmed.root',
+#    'ZZTo4e_powheg':'ZZTo4L_powheg_ext1_slimmed.root',
+#    'ZZTo4mu_powheg':'ZZTo4L_powheg_ext1_slimmed.root',
+#    'ggZZ_2e2mu_MCFM67':'GluGluToContinToZZTo2e2mu_M125_2018_slimmed.root',
+#    'ggZZ_4mu_MCFM67':'GluGluToContinToZZTo4mu_M125_2018_slimmed.root',
+#    'ggZZ_4e_MCFM67':'GluGluToContinToZZTo4e_M125_2018_slimmed.root'
+#}
 background_samples['2016'] = {
         'ZX4l_CR':'',
         'ZX4l_CR_4e':'',
         'ZX4l_CR_4mu':'',
         'ZX4l_CR_2e2mu':'',
-        'ZZTo2e2mu_powheg':'',
-        'ZZTo4e_powheg':'',
-        'ZZTo4mu_powheg':'',
+        'ZZTo2e2mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
+        'ZZTo4e_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
+        'ZZTo4mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
         'ggZZ_2e2mu_MCFM67':'GluGluToContinToZZTo2e2mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
         'ggZZ_4mu_MCFM67':'GluGluToContinToZZTo4mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
         'ggZZ_4e_MCFM67':'GluGluToContinToZZTo4e_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
@@ -183,15 +183,15 @@ background_samples['2017'] = {
         'ggZZ_4mu_MCFM67':'GluGluToContinToZZTo4mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
 }
 
-#background_samples['2018'] = {
-#        'ZX4l_CR':'DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5.root',
-#        'ZX4l_CR_4e':'DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5.root',
-#        'ZX4l_CR_4mu':'DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5.root',
-#        'ZX4l_CR_2e2mu':'DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5.root',
-#        'ZZTo2e2mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
-#        'ZZTo4e_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
-#        'ZZTo4mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
-#        'ggZZ_2e2mu_MCFM67':'GluGluToContinToZZTo2e2mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5',
-#        'ggZZ_4e_MCFM67':'GluGluToContinToZZTo4e_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
-#        'ggZZ_4mu_MCFM67':'GluGluToContinToZZTo4mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
-#}
+background_samples['2018'] = {
+        'ZX4l_CR':'DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5.root',
+        'ZX4l_CR_4e':'DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5.root',
+        'ZX4l_CR_4mu':'DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5.root',
+        'ZX4l_CR_2e2mu':'DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5.root',
+        'ZZTo2e2mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
+        'ZZTo4e_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
+        'ZZTo4mu_powheg':'ZZTo4L_TuneCP5_13TeV_powheg_pythia8_slimmed_newMuSF_add2p5.root',
+        'ggZZ_2e2mu_MCFM67':'GluGluToContinToZZTo2e2mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5',
+        'ggZZ_4e_MCFM67':'GluGluToContinToZZTo4e_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
+        'ggZZ_4mu_MCFM67':'GluGluToContinToZZTo4mu_TuneCP5_13TeV-mcfm701-pythia8_slimmed_newMuSF_add2p5.root',
+}

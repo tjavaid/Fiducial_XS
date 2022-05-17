@@ -125,7 +125,7 @@ def extractFiducialEfficiencies(obsName, observableBins, modelName):
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
 ### Extract the templates for given obs, for all bins and final states (differential)
-def extractBackgroundTemplatesAndFractions(obsName, observableBins, year):
+def extractBackgroundTemplatesAndFractions(obsName, observableBins, year, obs_ifJES, obs_ifJES2):
     global opt
 
     logger.debug("[INFO] Obs Name: {:15}\tBins: {}".format(obsName, observableBins))
@@ -902,7 +902,7 @@ def runFiducialXS():
                      Please check your YAML file format!!!'''.format(InputYAMLFile))
     
         ifJES = cfg['Observables'][ObsToStudy][opt.OBSNAME]['ifJES']
-        border_msg("Jes or not: {}".format(ifJES))
+        #border_msg("Jes or not: {}".format(ifJES))
 
     if 'vs' in opt.OBSNAME:
         obs_ifJES = ifJES.split(" vs ")[0]
@@ -935,7 +935,7 @@ def runFiducialXS():
 
     # FIXME: Understand why in step 4; runAllSteps is False, while in step 5 its True
     if (runAllSteps or opt.templatesOnly):
-        extractBackgroundTemplatesAndFractions(obsName, observableBins, opt.ERA)
+        extractBackgroundTemplatesAndFractions(obsName, observableBins, opt.ERA, obs_ifJES, obs_ifJES2)
 
     logger.debug("Options:\n\trunAllSteps: {}\n".format(runAllSteps))
     ## Create the asimov dataset
