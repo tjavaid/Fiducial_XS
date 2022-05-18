@@ -13,6 +13,7 @@ sample_shortnames = {}
 #}
 
 sample_shortnames['2018'] = {
+        'testGGH_nnlops_GENonly_slimmed'    :'ggH_NNLOPS_JHUgen_125',
         'GluGluHToZZTo4L_M120_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5' :'ggH_powheg_JHUgen_120',
         'GluGluHToZZTo4L_M124_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5' :'ggH_powheg_JHUgen_124',
         'GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5' :'ggH_powheg_JHUgen_125',
@@ -58,6 +59,7 @@ sample_shortnames['2018'] = {
 }
 
 sample_shortnames['2017'] = {
+        'testGGH_nnlops_GENonly_slimmed'    :'ggH_NNLOPS_JHUgen_125',
         'GluGluHToZZTo4L_M120_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5' :'ggH_powheg_JHUgen_120',
         'GluGluHToZZTo4L_M124_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5' :'ggH_powheg_JHUgen_124',
         'GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5' :'ggH_powheg_JHUgen_125',
@@ -103,6 +105,7 @@ sample_shortnames['2017'] = {
 }
 
 sample_shortnames['2016'] = {
+        'testGGH_nnlops_GENonly_slimmed'    :'ggH_NNLOPS_JHUgen_125',
         'GluGluHToZZTo4L_M120_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5' :'ggH_powheg_JHUgen_120',
         'GluGluHToZZTo4L_M124_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5' :'ggH_powheg_JHUgen_124',
         'GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5' :'ggH_powheg_JHUgen_125',

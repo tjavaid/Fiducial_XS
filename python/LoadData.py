@@ -20,6 +20,7 @@ SamplesMC = {}
 SamplesMC['2018'] = [
 #File missing or needs to be redirected (Vukasin)'GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8.root',   # path needs to be redirected
 ###
+'testGGH_nnlops_GENonly_slimmed',
 'GluGluHToZZTo4L_M120_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
 'GluGluHToZZTo4L_M124_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
 'GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
@@ -76,6 +77,7 @@ SamplesMC['2018'] = [
 ]
 
 SamplesMC['2017'] = [
+'testGGH_nnlops_GENonly_slimmed',
 'GluGluHToZZTo4L_M120_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
 'GluGluHToZZTo4L_M124_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
 'GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
@@ -121,6 +123,7 @@ SamplesMC['2017'] = [
 ]
 
 SamplesMC['2016'] = [
+'testGGH_nnlops_GENonly_slimmed',
 'GluGluHToZZTo4L_M120_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
 'GluGluHToZZTo4L_M124_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
 'GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
@@ -163,12 +166,21 @@ SamplesMC['2016'] = [
 
 SamplesData = {}
 
-SamplesData['2017'] = [
-'DoubleEG_Run2017B-17Nov2017-v1.root','DoubleEG_Run2017C-17Nov2017-v1.root','DoubleEG_Run2017D-17Nov2017-v1.root','DoubleEG_Run2017E-17Nov2017-v1.root','DoubleEG_Run2017F-17Nov2017-v1.root',
-'DoubleMuon_Run2017-17Nov2017-v1.root','DoubleMuon_Run2017B-17Nov2017-v1.root','DoubleMuon_Run2017C-17Nov2017-v1.root'
+#SamplesData['2017'] = [
+#'DoubleEG_Run2017B-17Nov2017-v1.root','DoubleEG_Run2017C-17Nov2017-v1.root','DoubleEG_Run2017D-17Nov2017-v1.root','DoubleEG_Run2017E-17Nov2017-v1.root','DoubleEG_Run2017F-17Nov2017-v1.root',
+#'DoubleMuon_Run2017-17Nov2017-v1.root','DoubleMuon_Run2017B-17Nov2017-v1.root','DoubleMuon_Run2017C-17Nov2017-v1.root'
+#]
+SamplesData['2016'] = [
+        'data_UL2016_postVFP_noDuplicates.root'
 ]
 
+SamplesData['2017'] = [
+        'DataUL2017_all_noDuplicates_slimmed_newMuSF_add2p5.root'
+]
 
+SamplesData['2018'] = [
+        'DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5.root'
+]
 
 
 def GrabMCTrees(era = '2018'):
