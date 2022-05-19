@@ -126,7 +126,7 @@ SamplesMC['2017'] = [
 
 SamplesMC['2016'] = [
 'testGGH_nnlops_GENonly_slimmed',
-#'ggH_amcatnloFXFX_2018_slimmed',
+'ggH_amcatnloFXFX_2018_slimmed',
 'GluGluHToZZTo4L_M120_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
 'GluGluHToZZTo4L_M124_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
 'GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8_slimmed_newMuSF_add2p5',
