@@ -271,16 +271,16 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
         stat_lo.append(0.0)
 
         for channel in ['4e','4mu','2e2mu']:
-            XH_fs = higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-            XH_fs += higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-            XH_fs += higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-            XH_fs += higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            XH_fs = higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            XH_fs += higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            XH_fs += higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            XH_fs += higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
 
             XH[obsBin]+=XH_fs
-            #XH_unc[obsBin]+= unc_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-            #XH_unc[obsBin]+= unc_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-            #XH_unc[obsBin]+= unc_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-            #XH_unc[obsBin]+= unc_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            #XH_unc[obsBin]+= unc_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            #XH_unc[obsBin]+= unc_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            #XH_unc[obsBin]+= unc_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            #XH_unc[obsBin]+= unc_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
 
             # branching ratio uncertainty
             XH_unc_fs = (unc_br*XH_fs)**2
@@ -288,20 +288,20 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
             XH_unc_fs += (unc_acc*XH_fs)**2
 
             # qcd scale
-            XH_qcdunc_fs = (unc_qcd_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            XH_qcdunc_fs += (unc_qcd_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            XH_qcdunc_fs += (unc_qcd_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            XH_qcdunc_fs += (unc_qcd_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            XH_qcdunc_fs = (unc_qcd_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            XH_qcdunc_fs += (unc_qcd_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            XH_qcdunc_fs += (unc_qcd_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            XH_qcdunc_fs += (unc_qcd_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
             XH_unc_fs += XH_qcdunc_fs
 
             # pdf
-            XH_qqpdfunc_fs = (unc_pdf_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-                              +unc_pdf_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-                              +unc_pdf_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            XH_qqpdfunc_fs = (unc_pdf_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+                              +unc_pdf_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+                              +unc_pdf_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
             XH_unc_fs += XH_qqpdfunc_fs
 
             # add pdf uncertainty for ttH to total XH uncertainty
-            XH_unc_fs += (unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            XH_unc_fs += (unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             # total XH uncertainty
             XH_unc[obsBin]+=sqrt(XH_unc_fs)
@@ -311,28 +311,28 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
             #print "ggH_xsBR",ggH_xsBR
             #print "ggH_xsBR_emutau",higgs_xs['ggH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_emutau']
 
-            ggH_powheg[obsBin]+=ggH_xsBR*acc['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
-            #ggH_minloHJ[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-            ggH_minloHJ[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            ggH_powheg[obsBin]+=ggH_xsBR*acc['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
+            #ggH_minloHJ[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            ggH_minloHJ[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
 
             ###try madgraph samples
-            ggH_mad[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            ggH_mad[obsBin]+=ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
 
             # for total uncertainty, correlate br and acc uncertainties across all channels (XH+ggH)
-            total_NNLOunc_fs_powheg_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_powheg_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_powheg_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_powheg_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_powheg_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_powheg_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_powheg_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_powheg_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
 
-            total_NNLOunc_fs_minloHJ_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_minloHJ_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_minloHJ_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_minloHJ_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_minloHJ_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_minloHJ_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_minloHJ_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_minloHJ_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
 
-            total_NNLOunc_fs_mad_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_mad_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_mad_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
-            total_NNLOunc_fs_mad_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_mad_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_mad_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_mad_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
+            total_NNLOunc_fs_mad_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]))**2
 
             # NLO and NNLO are the same at this point
             total_NLOunc_fs_powheg_hi = total_NNLOunc_fs_powheg_hi
@@ -352,61 +352,61 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
 
             total_NNLOunc_fs_powheg_hi += XH_qcdunc_fs
             total_NNLOunc_fs_powheg_lo += XH_qcdunc_fs
-            total_NNLOunc_fs_powheg_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NNLOunc_fs_powheg_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             total_NNLOunc_fs_minloHJ_hi += XH_qcdunc_fs
             total_NNLOunc_fs_minloHJ_lo += XH_qcdunc_fs
             if (obsName=="mass4l"):
                 total_NNLOunc_fs_minloHJ_hi += (unc_qcd_ggH_hi
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
                 total_NNLOunc_fs_minloHJ_lo += (unc_qcd_ggH_lo
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
             else:
-                total_NNLOunc_fs_minloHJ_hi += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-                total_NNLOunc_fs_minloHJ_lo += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                total_NNLOunc_fs_minloHJ_hi += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                total_NNLOunc_fs_minloHJ_lo += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             total_NNLOunc_fs_mad_hi += XH_qcdunc_fs
             total_NNLOunc_fs_mad_lo += XH_qcdunc_fs
             if (obsName=="mass4l"):
                 total_NNLOunc_fs_mad_hi += (unc_qcd_ggH_hi
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
                 total_NNLOunc_fs_mad_lo += (unc_qcd_ggH_lo
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
             else:
-                total_NNLOunc_fs_mad_hi += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-                total_NNLOunc_fs_mad_lo += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                                *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            ##total_NNLOunc_fs_mad_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            ##total_NNLOunc_fs_mad_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                total_NNLOunc_fs_mad_hi += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+                total_NNLOunc_fs_mad_lo += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                                *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            ##total_NNLOunc_fs_mad_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            ##total_NNLOunc_fs_mad_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
 
             #NLO
             total_NLOunc_fs_powheg_hi += XH_qcdunc_fs
             total_NLOunc_fs_powheg_lo += XH_qcdunc_fs
-            total_NLOunc_fs_powheg_hi += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NLOunc_fs_powheg_lo += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NLOunc_fs_powheg_hi += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NLOunc_fs_powheg_lo += (qcdunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             logger.debug("channel: {:5} total_NLOunc_fs_powheg_hi = {}".format(channel,total_NLOunc_fs_powheg_hi))
 
             total_NLOunc_fs_minloHJ_hi += XH_qcdunc_fs
             total_NLOunc_fs_minloHJ_lo += XH_qcdunc_fs
-            total_NLOunc_fs_minloHJ_hi += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                           *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NLOunc_fs_minloHJ_lo += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                           *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NLOunc_fs_minloHJ_hi += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                           *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NLOunc_fs_minloHJ_lo += (qcdunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                           *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             total_NLOunc_fs_mad_hi += XH_qcdunc_fs
             total_NLOunc_fs_mad_lo += XH_qcdunc_fs
-            total_NLOunc_fs_mad_hi += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                           *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NLOunc_fs_mad_lo += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                           *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NLOunc_fs_mad_hi += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                           *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NLOunc_fs_mad_lo += (qcdunc_ggH_powheg["ggH_amcatnloFXFX_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                           *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             # add pdf unc, anti correlate ggH and ttH
             #NNLO
@@ -414,62 +414,62 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
                 obsUnc_pdf_ggH_hi = unc_pdf_ggH_hi
                 obsUnc_pdf_ggH_lo = unc_pdf_ggH_lo
             else:
-                obsUnc_pdf_ggH_hi = pdfunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                obsUnc_pdf_ggH_lo = pdfunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                obsUnc_pdf_ggH_hi = pdfunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                obsUnc_pdf_ggH_lo = pdfunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
 
             total_NNLOunc_fs_powheg_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_powheg_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_powheg_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_powheg_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
 
             total_NNLOunc_fs_minloHJ_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_minloHJ_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_minloHJ_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_minloHJ_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_minloHJ_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_minloHJ_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
 
             total_NNLOunc_fs_mad_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_mad_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_mad_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_mad_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_mad_hi += (obsUnc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_mad_lo += (obsUnc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             #NLO
 
             #NLO
             total_NLOunc_fs_powheg_hi += XH_qqpdfunc_fs
             total_NLOunc_fs_powheg_lo += XH_qqpdfunc_fs
-            total_NLOunc_fs_powheg_hi += (pdfunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NLOunc_fs_powheg_lo += (pdfunc_ggH_powheg["ggH_powheg_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NLOunc_fs_powheg_hi += (pdfunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NLOunc_fs_powheg_lo += (pdfunc_ggH_powheg["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             total_NLOunc_fs_minloHJ_hi += XH_qqpdfunc_fs
             total_NLOunc_fs_minloHJ_lo += XH_qqpdfunc_fs
-            total_NLOunc_fs_minloHJ_hi += (pdfunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NLOunc_fs_minloHJ_lo += (pdfunc_ggH_powheg["ggH_NNLOPS_JHUgen_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NLOunc_fs_minloHJ_hi += (pdfunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NLOunc_fs_minloHJ_lo += (pdfunc_ggH_powheg["ggH_NNLOPS_JHUgen_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
 
             total_NLOunc_fs_mad_hi += XH_qqpdfunc_fs
             total_NLOunc_fs_mad_lo += XH_qqpdfunc_fs
-            total_NLOunc_fs_mad_hi += (pdfunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NLOunc_fs_mad_lo += (pdfunc_ggH_powheg["ggH_amcatnloFXFX_125_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
-                                          *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NLOunc_fs_mad_hi += (pdfunc_ggH_powheg["ggH_amcatnloFXFX_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerUp']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NLOunc_fs_mad_lo += (pdfunc_ggH_powheg["ggH_amcatnloFXFX_125.38_"+channel+"_"+obsName.replace('_reco','_gen')+"_genbin"+str(obsBin)]['uncerDn']
+                                          *ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                          -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             # finally total uncertainty (different final states are correlated)
             # NNLO
@@ -574,17 +574,17 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
             obsBin=0
 
             logger.debug("obsBin: {:3} acc = {}".format(obsBin,acc))
-            XH_fs = higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
-            XH_fs += higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
-            XH_fs += higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
-            XH_fs += higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
+            XH_fs = higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
+            XH_fs += higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
+            XH_fs += higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
+            XH_fs += higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
 
             XH[bin]+=XH_fs
 
-            #XH_unc[bin]+= unc_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_125_'+channel+'_'+obsName+'_genbin0_recobin0']
-            #XH_unc[bin]+= unc_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
-            #XH_unc[bin]+= unc_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
-            #XH_unc[bin]+= unc_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
+            #XH_unc[bin]+= unc_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
+            #XH_unc[bin]+= unc_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
+            #XH_unc[bin]+= unc_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
+            #XH_unc[bin]+= unc_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
 
             # branching ratio uncertainty
             XH_unc_fs = (unc_br*XH_fs)**2
@@ -592,20 +592,20 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
             XH_unc_fs += (unc_acc*XH_fs)**2
 
             # qcd scale
-            XH_qcdunc_fs = (unc_qcd_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
-            XH_qcdunc_fs += (unc_qcd_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
-            XH_qcdunc_fs += (unc_qcd_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
-            XH_qcdunc_fs += (unc_qcd_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
+            XH_qcdunc_fs = (unc_qcd_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
+            XH_qcdunc_fs += (unc_qcd_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
+            XH_qcdunc_fs += (unc_qcd_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
+            XH_qcdunc_fs += (unc_qcd_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
             XH_unc_fs += XH_qcdunc_fs
 
             # pdf
-            XH_qqpdfunc_fs = (unc_pdf_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
-                              +unc_pdf_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0']
-                              +unc_pdf_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
+            XH_qqpdfunc_fs = (unc_pdf_VBF*higgs_xs['VBF_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['VBF_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
+                              +unc_pdf_WH*higgs_xs['WH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['WH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0']
+                              +unc_pdf_ZH*higgs_xs['ZH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ZH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
             XH_unc_fs += XH_qqpdfunc_fs
 
             # add pdf uncertainty for ttH to total XH uncertainty
-            XH_unc_fs += (unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
+            XH_unc_fs += (unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0_recobin0'])**2
 
             # total XH uncertainty
             XH_unc[bin]+=sqrt(XH_unc_fs)
@@ -613,65 +613,65 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
             # ggH cross sections
             ggH_xsBR = higgs_xs['ggH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]
 
-            ggH_powheg[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-            ggH_minloHJ[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-            ggH_mad[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            ggH_powheg[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            ggH_minloHJ[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+            ggH_mad[bin]+=ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
 
              # for total uncertainty, correlate br and acc uncertainties across all channels (XH+ggH)
-            total_NNLOunc_fs_powheg_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_powheg_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_powheg_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_powheg_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_powheg_hi =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_powheg_lo =  (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_powheg_hi +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_powheg_lo +=  (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
 
-            total_NNLOunc_fs_minloHJ_hi = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_minloHJ_lo = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_minloHJ_hi += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_minloHJ_lo += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_minloHJ_hi = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_minloHJ_lo = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_minloHJ_hi += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_minloHJ_lo += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin0']))**2
 
-            total_NNLOunc_fs_mad_hi = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_mad_lo = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_mad_hi += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin0']))**2
-            total_NNLOunc_fs_mad_lo += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_mad_hi = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_mad_lo = (unc_br*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_mad_hi += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin0']))**2
+            total_NNLOunc_fs_mad_lo += (unc_acc*(XH_fs+ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin0']))**2
 
             # add ggH qcd uncertainties (uncorrelated with anything else)
             #NNLO
             total_NNLOunc_fs_powheg_hi += XH_qcdunc_fs
             total_NNLOunc_fs_powheg_lo += XH_qcdunc_fs
-            total_NNLOunc_fs_powheg_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NNLOunc_fs_powheg_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             total_NNLOunc_fs_minloHJ_hi += XH_qcdunc_fs
             total_NNLOunc_fs_minloHJ_lo += XH_qcdunc_fs
-            total_NNLOunc_fs_minloHJ_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NNLOunc_fs_minloHJ_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_minloHJ_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_minloHJ_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             total_NNLOunc_fs_mad_hi += XH_qcdunc_fs
             total_NNLOunc_fs_mad_lo += XH_qcdunc_fs
-            total_NNLOunc_fs_mad_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
-            total_NNLOunc_fs_mad_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_mad_hi += (unc_qcd_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
+            total_NNLOunc_fs_mad_lo += (unc_qcd_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)])**2
 
             # add pdf unc, anti correlate ggH and ttH
             #NNLO
             total_NNLOunc_fs_powheg_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_powheg_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_powheg_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_powheg_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_powheg_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             total_NNLOunc_fs_minloHJ_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_minloHJ_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_minloHJ_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_minloHJ_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_minloHJ_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_minloHJ_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_NNLOPS_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             total_NNLOunc_fs_mad_hi += XH_qqpdfunc_fs
             total_NNLOunc_fs_mad_lo += XH_qqpdfunc_fs
-            total_NNLOunc_fs_mad_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
-            total_NNLOunc_fs_mad_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
-                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_mad_hi += (unc_pdf_ggH_hi*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
+            total_NNLOunc_fs_mad_lo += (unc_pdf_ggH_lo*ggH_xsBR*acc_ggH_powheg['ggH_amcatnloFXFX_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)]
+                                           -unc_pdf_ttH*higgs_xs['ttH_'+opt.THEORYMASS]*higgs4l_br[opt.THEORYMASS+'_'+channel]*acc['ttH_powheg_JHUgen_125.38_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)])**2
 
             # finally total uncertainty (different final states are correlated)
 
@@ -1375,7 +1375,7 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
     legend . AddEntry(g_ggH_powheg , "gg#rightarrowH (POWHEG) + XH", "lf")
     #legend . AddEntry(g_XH , "XH = VBF + VH + ttH", "l")
     legend . AddEntry(h_XH , "XH = VBF + VH + ttH (POWHEG)", "f")
-    legend . AddEntry(dummy, "(LHC HXSWG YR4, m_{H}=125.09 GeV)", "")
+    legend . AddEntry(dummy, "(LHC HXSWG YR4, m_{H}=125.38 GeV)", "")
 
     legend.SetShadowColor(0);
     legend.SetFillColor(0);

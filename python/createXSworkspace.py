@@ -311,12 +311,12 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         p2_3_8 = RooFormulaVar("CMS_fakeH_p2_3_8","p2_3_8","0.72*@0-@1",RooArgList(p1_3_8,p3_3_8))
         fakeH = RooLandau("fakeH", "landau", m, p1_3_8, p2_3_8)
     if (addfakeH):
-        inc_wrongfrac_ggH=inc_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        #inc_wrongfrac_ggH=inc_wrongfrac["ggH_HRes_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_qqH=inc_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_WH=inc_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_ZH=inc_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_ttH=inc_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ggH=inc_wrongfrac["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        #inc_wrongfrac_ggH=inc_wrongfrac["ggH_HRes_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_qqH=inc_wrongfrac["VBF_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_WH=inc_wrongfrac["WH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ZH=inc_wrongfrac["ZH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ttH=inc_wrongfrac["ttH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
     else:
         inc_wrongfrac_ggH=0.0
         inc_wrongfrac_qqH=0.0
@@ -324,12 +324,12 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         inc_wrongfrac_ZH=0.0
         inc_wrongfrac_ttH=0.0
 
-    binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    #binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_HRes_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_qqH=binfrac_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_WH=binfrac_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_ZH=binfrac_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_ttH=binfrac_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    #binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_HRes_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_qqH=binfrac_wrongfrac["VBF_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_WH=binfrac_wrongfrac["WH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ZH=binfrac_wrongfrac["ZH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ttH=binfrac_wrongfrac["ttH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
 
     if (channel=='4e'):
         # FIXME: Check these values
@@ -396,12 +396,12 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             fidxs = {}
             for fState in ['4e','4mu', '2e2mu']:
                 fidxs[fState] = 0
-                fidxs[fState] += higgs_xs['ggH_125.0']*higgs4l_br['125.0_'+fState]*acc['ggH_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                #fidxs[fState] += acc['ggH_HRes_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                fidxs[fState] += higgs_xs['VBF_125.0']*higgs4l_br['125.0_'+fState]*acc['VBF_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                fidxs[fState] += higgs_xs['WH_125.0']*higgs4l_br['125.0_'+fState]*acc['WH_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                fidxs[fState] += higgs_xs['ZH_125.0']*higgs4l_br['125.0_'+fState]*acc['ZH_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                fidxs[fState] += higgs_xs['ttH_125.0']*higgs4l_br['125.0_'+fState]*acc['ttH_powheg_JHUgen_125_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['ggH_125.38']*higgs4l_br['125.38_'+fState]*acc['ggH_powheg_JHUgen_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                #fidxs[fState] += acc['ggH_HRes_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['VBF_125.38']*higgs4l_br['125.38_'+fState]*acc['VBF_powheg_JHUgen_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['WH_125.38']*higgs4l_br['125.38_'+fState]*acc['WH_powheg_JHUgen_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['ZH_125.38']*higgs4l_br['125.38_'+fState]*acc['ZH_powheg_JHUgen_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
+                fidxs[fState] += higgs_xs['ttH_125.38']*higgs4l_br['125.38_'+fState]*acc['ttH_powheg_JHUgen_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
             fidxs['4l'] = fidxs['4e'] + fidxs['4mu'] + fidxs['2e2mu']
 
             fracSM4eBin[str(genbin)] = RooRealVar('fracSM4eBin'+str(genbin), 'fracSM4eBin'+str(genbin), fidxs['4e']/fidxs['4l'])

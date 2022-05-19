@@ -251,21 +251,21 @@ for fState in fStates:
 
     for recobin in range(binSize):
 
-        jesSM = ggHxs*(1.0+lambdajesup['ggH_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        #jesSM = ggHxs*(1.0+lambdajesup['ggH_HRes125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        jesSM += VBFxs*(1.0+lambdajesup['VBF_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        jesSM += WHxs*(1.0+lambdajesup['WH_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        jesSM += ZHxs*(1.0+lambdajesup['ZH_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        jesSM += ttHxs*(1.0+lambdajesup['ttH_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM = ggHxs*(1.0+lambdajesup['ggH_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        #jesSM = ggHxs*(1.0+lambdajesup['ggH_HRes_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM += VBFxs*(1.0+lambdajesup['VBF_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM += WHxs*(1.0+lambdajesup['WH_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM += ZHxs*(1.0+lambdajesup['ZH_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM += ttHxs*(1.0+lambdajesup['ttH_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
         jesSM = jesSM-1.0
         lambdajesup['SM_125_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(recobin)+'_recobin'+str(recobin)] = jesSM
 
-        jesSM_ = ggHxs*(1.0+lambdajesdn['ggH_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        #jesSM_ = ggHxs*(1.0+lambdajesdn['ggH_HRes125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        jesSM_ += VBFxs*(1.0+lambdajesdn['VBF_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        jesSM_ += WHxs*(1.0+lambdajesdn['WH_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        jesSM_ += ZHxs*(1.0+lambdajesdn['ZH_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
-        jesSM_ += ttHxs*(1.0+lambdajesdn['ttH_powheg_JHUgen125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM_ = ggHxs*(1.0+lambdajesdn['ggH_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        #jesSM_ = ggHxs*(1.0+lambdajesdn['ggH_HRes_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM_ += VBFxs*(1.0+lambdajesdn['VBF_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM_ += WHxs*(1.0+lambdajesdn['WH_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM_ += ZHxs*(1.0+lambdajesdn['ZH_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
+        jesSM_ += ttHxs*(1.0+lambdajesdn['ttH_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(genbin)+'_recobin'+str(recobin)])/(ggHxs+VBFxs+WHxs+ZHxs+ttHxs)
         jesSM_ = jesSM_-1.0
         lambdajesdn['SM_125_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(recobin)+'_recobin'+str(recobin)] = jesSM_
 
