@@ -65,7 +65,7 @@ def CreateCMSSWTarFile(OutputPath_):
     print "copying the " + CMSSWRel + ".tgz  file to eos path: " + OutputPath_ + "\n"
     os.system('mv ' + CMSSWRel + ".tgz" + ' ' + OutputPath_ + '/' + CMSSWRel + ".tgz")
 
-def GetArgumentTextFile(InputYAMLFile = "", OneDOr2DObs = "", fileName = "test",):
+def GetArgumentTextFile(InputYAMLFile = "", OneDOr2DObs = "", fileName = "test", year = "2018"):
     ObsToStudy = "1D_Observables" if OneDOr2DObs == 1 else "2D_Observables"
 
     with open(InputYAMLFile, 'r') as ymlfile:
@@ -80,9 +80,10 @@ def GetArgumentTextFile(InputYAMLFile = "", OneDOr2DObs = "", fileName = "test",
             for obsName, obsBin in cfg['Observables'][ObsToStudy].items():
                 print("Observable: {:11} Bins: {}".format(obsName, obsBin['bins']))
                 for channel in ["4mu", "4e", "2e2mu", "4l"]:
-                        # arguments.append('\\"{}\\" \\"{}\\" \\"{}\\"'.format(obsName.replace(' ','#'), channel.replace(' ','#'), obsBin["bins"].replace(' ','#')))
-                        arguments.append('{} {} {}'.format(obsName.replace(' ','=='), channel.replace(' ','=='), obsBin["bins"].replace(' ','==')))
-                        # arguments.append("'{}' {} '{}'".format(obsName, channel, obsBin["bins"]))
+                    """For 2D observables there is space in between the observable name. And condor argument unable to take it
+                    as one argument. So, replacing spaces with "==". And we need to undo this before running the efficiency module"
+                    """
+                    arguments.append('{} {} {} {}'.format(obsName.replace(' ','=='), channel.replace(' ','=='), obsBin["bins"].replace(' ','=='), year))
 
             with open(fileName+".txt", "w") as args:
                 args.write("\n".join(arguments))
@@ -117,19 +118,23 @@ def condorSHFile(fileName = "test",
     outSHFile.write('\n'+'obsName=$1')
     outSHFile.write('\n'+'channel=$2')
     outSHFile.write('\n'+'obsBins=$3')
+    outSHFile.write('\n'+'year=$4')
     outSHFile.write('\n'+'echo "Input arguments: "')
     outSHFile.write('\n'+'echo "obsName: ${obsName}"')
     outSHFile.write('\n'+'echo "channel: ${channel}"')
     outSHFile.write('\n'+'echo "obsBins: ${obsBins}"')
+    outSHFile.write('\n'+'echo "year: ${year}"')
     outSHFile.write('\n'+'')
     outSHFile.write('\n'+'obsName=$(echo ${obsName} | sed "s/==/ /g")')
     outSHFile.write('\n'+'channel=$(echo ${channel} | sed "s/==/ /g")')
     outSHFile.write('\n'+'obsBins=$(echo ${obsBins} | sed "s/==/ /g")')
+    outSHFile.write('\n'+'year=$(echo ${year} | sed "s/==/ /g")')
     outSHFile.write('\n'+'')
     outSHFile.write('\n'+'echo "Input arguments: "')
     outSHFile.write('\n'+'echo "obsName: ${obsName}"')
     outSHFile.write('\n'+'echo "channel: ${channel}"')
     outSHFile.write('\n'+'echo "obsBins: ${obsBins}"')
+    outSHFile.write('\n'+'echo "year: ${year}"')
     outSHFile.write('\n'+'')
     outSHFile.write('\n'+'cp '+EOSPath+'/'+CMSSW+'.tgz .')
     outSHFile.write('\n'+'echo "==============="')
@@ -164,7 +169,7 @@ def condorSHFile(fileName = "test",
     outSHFile.write('\n'+'echo "Start of efficiency script"')
     outSHFile.write('\n'+'date')
     outSHFile.write('\n'+'echo "==============="')
-    outSHFile.write('\n'+'python -u efficiencyFactors.py -l -q -b --obsName="${obsName}" --obsBins="${obsBins}" -c "${channel}"')
+    outSHFile.write('\n'+'python -u efficiencyFactors.py -l -q -b --obsName="${obsName}" --obsBins="${obsBins}" -c "${channel}" -y "${year}"')
     outSHFile.write('\n'+'echo "==============="')
     outSHFile.write('\n'+'date')
     outSHFile.write('\n'+'echo "==============="')
@@ -193,7 +198,8 @@ if __name__ == "__main__":
         CreateCMSSWTarFile(args.OutputPath)
     GetArgumentTextFile(InputYAMLFile = args.inYAMLFile,
                                 fileName = args.CondorFileName,
-                                OneDOr2DObs = args.OneDOr2DObs)
+                                OneDOr2DObs = args.OneDOr2DObs,
+                                year = args.year)
     condorJDLFile(fileName = args.CondorFileName,
                             JobFlavour = args.condorQueue,
                             logFilePath=args.log)

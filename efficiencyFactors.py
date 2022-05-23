@@ -13,6 +13,7 @@ from LoadData import *
 from sample_shortnames import *
 from Utils import *
 from read_bins import *
+import yaml
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -45,6 +46,8 @@ def parseOptions():
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
+    parser.add_option('', '--obs', dest='OneDOr2DObs', default=1, type=int, help="1 for 1D obs, 2 for 2D observable")
+    parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
 
     # store options and arguments as global variables
     global opt, args
@@ -105,6 +108,36 @@ deffanyreco = {}
 folding = {}
 dfolding = {}
 
+gen = ''
+obs_ifJES = ''
+obs_ifJES2 = ''
+ObsToStudy = "1D_Observables" if opt.OneDOr2DObs == 1 else "2D_Observables"
+with open(opt.inYAMLFile, 'r') as ymlfile:
+    cfg = yaml.load(ymlfile)
+    if ( ("Observables" not in cfg) or (ObsToStudy not in cfg['Observables']) ) :
+        print('''No section named 'observable' or sub-section name '1D-Observable' or '2D-Observable' found in file {}.
+                 Please check your YAML file format!!!'''.format(InputYAMLFile))
+
+    gen = cfg['Observables'][ObsToStudy][opt.OBSNAME]['gen']
+    ifJES = cfg['Observables'][ObsToStudy][opt.OBSNAME]['ifJES']
+    border_msg("Label name: {}".format(gen))
+
+print gen
+
+if 'vs' in opt.OBSNAME:
+    obs_ifJES = ifJES.split(" vs ")[0]
+    obs_ifJES2 = ifJES.split(" vs ")[1]
+
+    print obs_ifJES, obs_ifJES2
+
+else:
+    obs_ifJES = ifJES
+    obs_ifJES2 = ''
+
+    print obs_ifJES
+
+####
+
 def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, genbin, obs_reco2 = '', obs_gen2 = ''):
     gSystem.AddIncludePath("-I$CMSSW_BASE/src/ ")
     gSystem.Load("$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so")
@@ -114,7 +147,8 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
     #if ("NNLOPS" in sample or "nnlops" in sample):
     #    print ("Will skip: "+ sample)
 
-    recoweight = "genWeight*pileupWeight*dataMCWeight"
+    #recoweight = "genWeight*pileupWeight*dataMCWeight"
+    recoweight = "genWeight*pileupWeight*dataMCWeight_new*prefiringWeight"
 
 
     obs_reco_low = -1
@@ -212,7 +246,9 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             #recoweight = "genWeight*pileupWeight*dataMCWeight"
             continue
         else:
-            recoweight = "genWeight*pileupWeight*dataMCWeight"
+            #recoweight = "genWeight*pileupWeight*dataMCWeight"
+            recoweight = "genWeight*pileupWeight*dataMCWeight_new*prefiringWeight"
+
 
         if (not Sample in Tree): continue
         if (not Tree[Sample]): continue
@@ -225,7 +261,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             processBin = shortname+'_'+channel+'_'+opt.OBSNAME.replace(" ","_")+'_genbin'+str(genbin)+'_recobin'+str(recobin)
 
         ### FIXME: Why is this part here?
-        if ((not "jet" in opt.OBSNAME) and abs(genbin-recobin)>1 and obs_reco2 == ''):
+        if ((not obs_ifJES) and abs(genbin-recobin)>1 and obs_reco2 == ''):
             acceptance[processBin] = 0.0
             dacceptance[processBin] = 0.0
             acceptance_4l[processBin] = 0.0
@@ -298,11 +334,11 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
 
         # Reco observable cut - if using the _jesup/down variations
 
-        if (("jet" in obs_reco.lower()) or ("jet" in obs_reco2.lower())):
+        if (obs_ifJES or obs_ifJES2):
             cutobs_reco_jesup = ''
             cutobs_reco_jesdn = ''
 
-            if ("jet" in obs_reco.lower()):
+            if (obs_ifJES):
                 cutobs_reco_jesup = "("+obs_reco+"_jesup"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesup"+"<"+str(obs_reco_high)+")"
                 cutobs_reco_jesdn = "("+obs_reco+"_jesdn"+">="+str(obs_reco_low)+" && "+obs_reco+"_jesdn"+"<"+str(obs_reco_high)+")"
 
@@ -314,7 +350,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             tmp_up = ''
             tmp_dn = ''
 
-            if (not (obs_reco2 == '')) and ("jet" in obs_reco2.lower()) :
+            if ((not (obs_reco2 == '')) and obs_ifJES2) :
                 tmp_up = " && ("+obs_reco2+"_jesup"+">="+str(obs_reco2_low)+" && "+obs_reco2+"_jesup"+"<"+str(obs_reco2_high)+")"
                 tmp_dn = " && ("+obs_reco2+"_jesdn"+">="+str(obs_reco2_low)+" && "+obs_reco2+"_jesdn"+"<"+str(obs_reco2_high)+")"
 
@@ -422,7 +458,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
         Histos[processBin+"reconoth4l"].Sumw2()
         Histos[processBin+"reconoth4l_inc"] = TH1D(processBin+"reconoth4l_inc", processBin+"reconoth4l_inc", m4l_bins, m4l_low, m4l_high)
         Histos[processBin+"reconoth4l_inc"].Sumw2()
-        if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME)):
+        if obs_ifJES:
             Histos[processBin+"recoh4l_jesup"] = TH1D(processBin+"recoh4l_jesup", processBin+"recoh4l_jesup", m4l_bins, m4l_low, m4l_high)
             Histos[processBin+"recoh4l_jesup"].Sumw2()
             Histos[processBin+"recoh4l_jesdn"] = TH1D(processBin+"recoh4l_jesdn", processBin+"recoh4l_jesdn", m4l_bins, m4l_low, m4l_high)
@@ -460,7 +496,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
         Tree[Sample].Draw("mass4l >> "+processBin+"reco","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1)","goff")
         Tree[Sample].Draw("mass4l >> "+processBin+"reco_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1)","goff")
         Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+")","goff")
-        if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME)):
+        if obs_ifJES:
             Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l_jesup","("+recoweight+"*passedFullSelection)*(passedFullSelection==1 && "+cutm4l_reco+" && "+cutobs_reco_jesup+" && "+cuth4l_reco+")","goff")
             Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l_jesdn","("+recoweight+"*passedFullSelection)*( passedFullSelection==1 && "+cutm4l_reco+" && "+cutobs_reco_jesdn+" && "+cuth4l_reco+")","goff")
         Tree[Sample].Draw("mass4l >> "+processBin+"reconoth4l_inc","("+recoweight+")*(passedFullSelection==1 && "+cutm4l_reco+" &&  "+cutnoth4l_reco+")","goff")
@@ -575,7 +611,7 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             doutinratio[processBin] = -1.0
 
         # NOTE: Should it be .contains for double diff measurement?
-        if (opt.OBSNAME == "nJets" or opt.OBSNAME.startswith("njets") or ("jet" in opt.OBSNAME)):
+        if (opt.OBSNAME == "nJets" or opt.OBSNAME.startswith("njets") or obs_ifJES):
 
             if (Histos[processBin+"recoh4l"].Integral()>0):
                 lambdajesup[processBin] = (Histos[processBin+"recoh4l_jesup"].Integral()-Histos[processBin+"recoh4l"].Integral())/Histos[processBin+"recoh4l"].Integral()
@@ -855,9 +891,9 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
             c.SaveAs("plots/"+processBin+"_effs_"+recoweight+".pdf")
 
 border_msg("Start of 'efficiencyFactors.py' program...")
-m4l_bins = 35
-m4l_low = 105.0
-m4l_high = 140.0
+m4l_bins = INPUT_m4l_bins
+m4l_low = INPUT_m4l_low
+m4l_high = INPUT_m4l_high
 
 # INFO: Get reco and gen observable names
 
@@ -869,17 +905,22 @@ obs_gen2 = ''
 
 label = ''
 
+
 if 'vs' in opt.OBSNAME:
     obs_reco = opt.OBSNAME.split(" vs ")[0]
-    obs_gen = "GEN" + obs_reco
+    obs_gen = gen.split(" vs ")[0]
 
     obs_reco2 = opt.OBSNAME.split(" vs ")[1]
-    obs_gen2 = "GEN" + obs_reco2
+    obs_gen2 = gen.split(" vs ")[1]
+
+    print obs_gen, obs_gen2
 
     label = obs_reco + "_vs_"+obs_reco2
 else:
     obs_reco = opt.OBSNAME
-    obs_gen = "GEN"+opt.OBSNAME
+    #obs_gen = "GEN"+opt.OBSNAME
+    obs_gen = gen
+    print obs_gen
 
     obs_reco2 = ''
     obs_gen2 = ''

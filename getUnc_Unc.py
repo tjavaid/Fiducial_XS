@@ -3,13 +3,14 @@ import os
 import sys
 from decimal import *
 from math import *
+import yaml
 
 # INFO: Following items are imported from either python directory or Inputs
 from LoadData import *
 from sample_shortnames import *
 from Utils import *
 from read_bins import *
-from Input_Info import datacardInputs
+from Input_Info import *
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -35,6 +36,8 @@ def parseOptions():
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
+    parser.add_option('', '--obs', dest='OneDOr2DObs', default=1, type=int, help="1 for 1D obs, 2 for 2D observable")
+    parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
 
     # store options and arguments as global variables
     global opt, args, datacardInputs
@@ -67,6 +70,36 @@ Histos = {}
 acceptance = {}
 qcdUncert = {}
 pdfUncert = {}
+
+gen = ''
+obs_ifJES = ''
+obs_ifJES2 = ''
+ObsToStudy = "1D_Observables" if opt.OneDOr2DObs == 1 else "2D_Observables"
+with open(opt.inYAMLFile, 'r') as ymlfile:
+    cfg = yaml.load(ymlfile)
+    if ( ("Observables" not in cfg) or (ObsToStudy not in cfg['Observables']) ) :
+        print('''No section named 'observable' or sub-section name '1D-Observable' or '2D-Observable' found in file {}.
+                 Please check your YAML file format!!!'''.format(InputYAMLFile))
+
+    gen = cfg['Observables'][ObsToStudy][opt.OBSNAME]['gen']
+    ifJES = cfg['Observables'][ObsToStudy][opt.OBSNAME]['ifJES']
+    border_msg("Label name: {}".format(gen))
+
+print gen
+
+if 'vs' in opt.OBSNAME:
+    obs_ifJES = ifJES.split(" vs ")[0]
+    obs_ifJES2 = ifJES.split(" vs ")[1]
+
+    print obs_ifJES, obs_ifJES2
+
+else:
+    obs_ifJES = ifJES
+    obs_ifJES2 = ''
+
+    print obs_ifJES
+
+####
 
 def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, genbin, obs_reco_2 = '', obse_gen2 = ''):
 
@@ -293,17 +326,17 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
             print(processBin,acceptance[processBin],accerrstat,qcderrup,qcderrdn,pdferr)
             print("accerrup",accerrup,"accerrdn",accerrdn)
 
-m4l_bins = 35
-m4l_low = 105.0
-m4l_high = 140.0
+m4l_bins = INPUT_m4l_bins
+m4l_low = INPUT_m4l_low
+m4l_high = INPUT_m4l_high
 
 # Default to inclusive cross section
 obs_reco = 'mass4l'
 obs_gen = 'GENmass4l'
-obs_reco_low = 105.0
-obs_reco_high = 140.0
-obs_gen_low = 105.0
-obs_gen_high = 140.0
+obs_reco_low = INPUT_m4l_low
+obs_reco_high = INPUT_m4l_high
+obs_gen_low = INPUT_m4l_low
+obs_gen_high = INPUT_m4l_high
 
 obs_reco2 = ''
 obs_gen2 = ''
@@ -314,14 +347,14 @@ obs_gen2_high = -1
 
 if 'vs' in opt.OBSNAME:
     obs_reco = opt.OBSNAME.split(" vs ")[0]
-    obs_gen = "GEN" + obs_reco
+    obs_gen = gen.split(" vs ")[0]
 
     obs_reco2 = opt.OBSNAME.split(" vs ")[1]
-    obs_gen2 = "GEN" + obs_reco2
+    obs_gen2 = gen.split(" vs ")[1]
 
 else:
     obs_reco = opt.OBSNAME
-    obs_gen = "GEN"+opt.OBSNAME
+    obs_gen = gen
 
     obs_reco2 = ''
     obs_gen2 = ''

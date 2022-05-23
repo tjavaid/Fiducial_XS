@@ -180,7 +180,7 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     int njets_pt30_eta4p7=0, njets_pt30_eta4p7_jesdn=0, njets_pt30_eta4p7_jesup=0;
     int njets_pt30_eta2p5=0, njets_pt30_eta2p5_jesdn=0, njets_pt30_eta2p5_jesup=0;
     int finalState;
-    float eventWeight, genWeight, crossSection, dataMCWeight;
+    float eventWeight, genWeight, crossSection, dataMCWeight, dataMCWeight_new;
     // double etaElCut = CUT_ELETA;
     // double etaMuCut = CUT_MUETA;
     long int Run, LumiSect, Event;
@@ -207,6 +207,7 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     tree->SetBranchAddress("k_ggZZ",&k_ggZZ);
     tree->SetBranchAddress("crossSection",&crossSection);
     if (tree->GetBranch("dataMCWeight")) {tree->SetBranchAddress("dataMCWeight",&dataMCWeight);}
+    if (tree->GetBranch("dataMCWeight_new")) {tree->SetBranchAddress("dataMCWeight_new",&dataMCWeight_new);}
     tree->SetBranchAddress("passedFullSelection",&passedFullSelection);
     tree->SetBranchAddress("passedZ4lSelection",&passedZ4lSelection);
     tree->SetBranchAddress("passedZXCRSelection",&passedZXCRSelection);
@@ -324,8 +325,9 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
         if(iEvt%50000==0) cout << "   event: " << iEvt << "/" << nentries << endl;
 
         // weight
-        if (dataMCWeight==0) dataMCWeight = 1;
-        float weight = (scale)? genWeight*crossSection*dataMCWeight: 1.;
+        //if (dataMCWeight==0) dataMCWeight = 1;
+        if (dataMCWeight_new==0 || dataMCWeight_new==-1) dataMCWeight_new = 1;
+        float weight = (scale)? genWeight*crossSection*dataMCWeight_new: 1.;
         if (processNameTag == "qqZZ") {
             weight *= k_qqZZ_qcd_M*k_qqZZ_ewk;
         }
