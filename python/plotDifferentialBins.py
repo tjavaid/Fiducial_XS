@@ -299,7 +299,7 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     latex2.SetTextFont(42)
     latex2.SetTextSize(0.45*c.GetTopMargin())
     #latex2.DrawLatex(0.19,0.75,"105 GeV < m("+fstate.replace('mu','#mu')+") < 140 GeV")
-    latex2.DrawLatex(0.19,0.75,INPUT_m4l_low+" GeV < m("+fstate.replace('mu','#mu')+") < "+INPUT_m4l_high" GeV")
+    latex2.DrawLatex(0.19,0.75,str(INPUT_m4l_low)+" GeV < m("+fstate.replace('mu','#mu')+") < "+str(INPUT_m4l_high)+" GeV")
     legend = TLegend(.6,.70,.9,.90)
     if (not opt.UNBLIND):
         legend.AddEntry(h_data,"Asimov Data (SM)","ep")
