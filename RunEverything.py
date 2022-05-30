@@ -33,7 +33,7 @@ parser.add_argument( '-c', dest='channels', nargs="+",  default=["4mu", "4e", "2
 parser.add_argument( '-model', dest='modelNames', default="SM_125",
                         help='Names of models for unfolding, separated by , (comma) . Default is "SM_125"')
 parser.add_argument( '-p', dest='NtupleDir', default="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/", help='Path of ntuples')
-parser.add_argument( '-m', dest='HiggsMass', default=125.0, type=float, help='Higgs mass')
+parser.add_argument( '-m', dest='HiggsMass', default=125.38, type=float, help='Higgs mass')
 parser.add_argument( '-y', dest='year', default=2018, type=int, help='dataset year')
 parser.add_argument( '-r', dest='RunCommand', default=0, type=int, choices=[0, 1], help="if 1 then it will run the commands else it will just print the commands")
 parser.add_argument( '-obs', dest='OneDOr2DObs', default=1, type=int, choices=[1, 2], help="1 for 1D obs, 2 for 2D observable")
@@ -108,9 +108,12 @@ with open(InputYAMLFile, 'r') as ymlfile:
             if (args.step == 3 and (ObsToStudy != "2D_Observables")):  #  Don't run this step for 2D obs for now
                 border_msg_output = border_msg("Running Interpolation to get acceptance for MH = 125. 38 GeV and obs " + obsName)
                 f.write("\n{}\n".format(border_msg_output))
-                command = 'python python/interpolate_differential_full3.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
+                command = ''
+                if args.nohup: command = 'nohup '
+                command += 'python python/interpolate_differential_full3.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
                         obsName = obsName, obsBins = obsBin['bins'], year = args.year
                 )
+                if args.nohup: command += ' >& log_{year}/step_3_{obsName}.log &'.format(obsName = obsName, year = args.year)
                 print("Command: {}".format(command))
                 f.write("\n{}\n".format(command))
                 if (args.RunCommand): os.system(command)

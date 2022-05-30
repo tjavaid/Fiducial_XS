@@ -150,8 +150,7 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year, obs_if
     # Here, rm command is mandatory, just to ensure that make works. If make command files
     #   then this can pick older executable. So, to avoid this we first delete the executable
     logger.info("==> Remove the executable and Compile the package main_fiducialXSTemplates...")
-    #cmd = 'rm main_fiducialXSTemplates; make';
-    cmd = 'pwd';
+    cmd = 'rm main_fiducialXSTemplates; make';
     processCmd(cmd, get_linenumber(), os.path.basename(__file__))
     # FIXME: this directory name is hardcoded in fiducialXSTemplates.C
     # FIXME: Try to link the two automatically.
@@ -763,6 +762,7 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
             processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.FIXMASS.rstrip('.0')+'.root '+combineOutputs+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_result.root', get_linenumber(), os.path.basename(__file__), 1)
         cmd = cmd + ' --algo=singles --cl=0.68 --robustFit=1'
         output=processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+        processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.root '+combineOutputs+'/', get_linenumber(), os.path.basename(__file__))
 
     # parse the results for all the bins
     logger.debug("resultsXS: {}".format(resultsXS))
@@ -794,6 +794,7 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
         cmd = cmd + ' --freezeParameters allConstrainedNuisances'
 
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+        processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.root '+combineOutputs+'/higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'_FreezAllConstrainedNuisances.root ', get_linenumber(), os.path.basename(__file__))
         # parse the results
         for obsBin in range(nBins):
             if (physicalModel=="v3"):
@@ -1031,38 +1032,46 @@ def runFiducialXS():
             # FIXME: hardcoded higgs mass value to 125.38
             cmd = 'combine -n mass4l_SigmaBin0'+'_'+str(opt.ERA)+' -M MultiDimFit '+combineOutputs+'/SM_125_all_13TeV_xs_mass4l_bin_v3_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P SigmaBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:SigmaBin0=0.0,5.0 --redefineSignalPOI SigmaBin0 --algo=grid --points=100'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+            processCmd("mv higgsCombinemass4l_SigmaBin0_2018.MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
             # no systematics
             cmd = 'combine -n mass4l_SigmaBin0_NoSys'+'_'+str(opt.ERA)+' -M MultiDimFit -d '+combineOutputs+'/SM_125_all_13TeV_xs_mass4l_bin_v3_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P SigmaBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:SigmaBin0=0.0,5.0 --redefineSignalPOI SigmaBin0 --algo=grid --points=100  --freezeParameters allConstrainedNuisances'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+            processCmd("mv higgsCombinemass4l_SigmaBin0_NoSys_2018.MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
             #### These commands for observed data
             # 4e
             # with systematics
             cmd = 'combine -n mass4l_r4eBin0'+'_'+str(opt.ERA)+' -M MultiDimFit '+combineOutputs+'/SM_125_all_13TeV_xs_mass4l_bin_v2_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4eBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4eBin0=0.0,5.0 --redefineSignalPOI r4eBin0 --algo=grid --points=100'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+            processCmd("mv higgsCombinemass4l_r4eBin0_2018.MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
             # no systematics
             cmd = 'combine -n mass4l_r4eBin0_NoSys'+'_'+str(opt.ERA)+' -M MultiDimFit -d '+combineOutputs+'/SM_125_all_13TeV_xs_mass4l_bin_v2_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4eBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4eBin0=0.0,5.0 --redefineSignalPOI r4eBin0 --algo=grid --points=100  --freezeParameters allConstrainedNuisances'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+            processCmd("mv higgsCombinemass4l_r4eBin0_NoSys_2018.MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
             # 4mu
             # with systematics
             cmd = 'combine -n mass4l_r4muBin0'+'_'+str(opt.ERA)+' -M MultiDimFit '+combineOutputs+'/SM_125_all_13TeV_xs_mass4l_bin_v2_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4muBin0=0.0,5.0 --redefineSignalPOI r4muBin0 --algo=grid --points=100'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+            processCmd("mv higgsCombinemass4l_r4muBin0_2018.MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
             # no systematics
             cmd = 'combine -n mass4l_r4muBin0_NoSys'+'_'+str(opt.ERA)+' -M MultiDimFit -d '+combineOutputs+'/SM_125_all_13TeV_xs_mass4l_bin_v2_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4muBin0=0.0,5.0 --redefineSignalPOI r4muBin0 --algo=grid --points=100  --freezeParameters allConstrainedNuisances'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+            processCmd("mv higgsCombinemass4l_r4muBin0_NoSys_2018.MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
             # 2e2mu
             # with systematics
             cmd = 'combine -n mass4l_r2e2muBin0'+'_'+str(opt.ERA)+' -M MultiDimFit '+combineOutputs+'/SM_125_all_13TeV_xs_mass4l_bin_v2_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r2e2muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r2e2muBin0=0.0,5.0 --redefineSignalPOI r2e2muBin0 --algo=grid --points=100'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+            processCmd("mv higgsCombinemass4l_r2e2muBin0_2018.MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
             # no systematics
             cmd = 'combine -n mass4l_r2e2muBin0_NoSys'+'_'+str(opt.ERA)+' -M MultiDimFit -d '+combineOutputs+'/SM_125_all_13TeV_xs_mass4l_bin_v2_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r2e2muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r2e2muBin0=0.0,5.0 --redefineSignalPOI r2e2muBin0 --algo=grid --points=100  --freezeParameters allConstrainedNuisances'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+            processCmd("mv higgsCombinemass4l_r2e2muBin0_NoSys_2018.MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
         else:
             for obsBin in range(0,nBins):
@@ -1080,9 +1089,11 @@ def runFiducialXS():
                 if (obsName=='njets_pt30_eta2p5' or obsName=='pt_leadingjet_pt30_eta2p5' and str(obsBin)=='4'): cmd = cmd.replace('0.0,3.0','0.0,1.0')
 
                 output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+                processCmd("mv higgsCombine"+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+'_'+str(opt.ERA)+".MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
                 cmd = "combine -n "+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+"_NoSys"+'_'+str(opt.ERA)+" -M MultiDimFit -d "+combineOutputs+"/SM_125_all_13TeV_xs_"+obsName.replace(' ','_')+"_bin_"+physicalModel+"_result.root -w w --snapshotName \"MultiDimFit\" -m 125.38 -D toy_asimov --setParameters MH=125.38 -P SigmaBin"+str(obsBin)+" --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:SigmaBin"+str(obsBin)+"=0.0,3.0 --redefineSignalPOI SigmaBin"+str(obsBin)+" --algo=grid --points=50 --autoRange 4 --freezeParameters allConstrainedNuisances "
                 output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+                processCmd("mv higgsCombine"+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+"_NoSys"+'_'+str(opt.ERA)+".MultiDimFit.mH125.38.root "+ combineOutputs + '/', get_linenumber(), os.path.basename(__file__))
 
         cmd = 'python python/plotLHScans.py -l -q -b --obsName="{}" --obsBins="{}" --year="{}"'.format(
             obsName.replace(' ','_'),  opt.OBSBINS, opt.ERA
