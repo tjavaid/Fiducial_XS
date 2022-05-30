@@ -94,21 +94,21 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 collect(obsName, str(args.year))
                 logger.info("="*51)
 
-                # FIXME: Currently the plotter is only working for 1D vars.
-                if ((not obsName.startswith("mass4l") ) and (ObsToStudy != "2D_Observables")):
-                    border_msg("Running plotter to plot 2D signal efficiencies")
-                    command = 'python python/plot2dsigeffs.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" --inYAMLFile="{inYAMLFile}" --obs="{obsToStudy}" --year={year}'.format(
-                        obsName = obsName, obsBins = obsBin['bins'], inYAMLFile = args.inYAMLFile, obsToStudy = args.OneDOr2DObs, year = args.year
-                    )
-                    logger.info("Command: {}".format(command))
-                    f.write("\n{}\n".format(command))
-                    if (args.RunCommand): os.system(command)
-                else:
-                    logger.info("Not running `plot2dsigeffs.py` as either the choosen option is `mass4l` or `2D observables`.")
+                #### FIXME: Currently the plotter is only working for 1D vars.
+                ###if ((not obsName.startswith("mass4l") ) and (ObsToStudy != "2D_Observables")):
+                ###    border_msg("Running plotter to plot 2D signal efficiencies")
+                ###    command = 'python python/plot2dsigeffs.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" --inYAMLFile="{inYAMLFile}" --obs="{obsToStudy}" --year={year}'.format(
+                ###        obsName = obsName, obsBins = obsBin['bins'], inYAMLFile = args.inYAMLFile, obsToStudy = args.OneDOr2DObs, year = args.year
+                ###    )
+                ###    logger.info("Command: {}".format(command))
+                ###    f.write("\n{}\n".format(command))
+                ###    if (args.RunCommand): os.system(command)
+                ###else:
+                ###    logger.info("Not running `plot2dsigeffs.py` as either the choosen option is `mass4l` or `2D observables`.")
             if (args.step == 3 and (ObsToStudy != "2D_Observables")):  #  Don't run this step for 2D obs for now
                 border_msg_output = border_msg("Running Interpolation to get acceptance for MH = 125. 38 GeV and obs " + obsName)
                 f.write("\n{}\n".format(border_msg_output))
-                command = 'python python/interpolate_differential_full.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
+                command = 'python python/interpolate_differential_full3.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
                         obsName = obsName, obsBins = obsBin['bins'], year = args.year
                 )
                 print("Command: {}".format(command))
@@ -119,9 +119,12 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 border_msg_output = border_msg("Running getUnc")
                 f.write("\n{}\n".format(border_msg_output))
                 # command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" >& log/unc_{obsName}.log &'.format(
-                command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -y "{year}"'.format(
+                command = ''
+                if args.nohup: command = 'nohup '
+                command += 'python -u getUnc_Unc2.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -y "{year}"'.format(
                         obsName = obsName, obsBins = obsBin['bins'], year = args.year
                 )
+                if args.nohup: command += ' >& log_{year}/step_4_{obsName}.log &'.format(obsName = obsName, year = args.year)
                 logger.info("Command: {}".format(command))
                 f.write("\n{}\n".format(command))
                 if (args.RunCommand): os.system(command)
@@ -129,7 +132,7 @@ with open(InputYAMLFile, 'r') as ymlfile:
             if (args.step == 5 and (ObsToStudy != "2D_Observables")): #  Don't run this step for 2D obs for now
                 border_msg_output = border_msg("Grab NNLOPS acc & unc for MH = 125.38 GeV using the powheg sample")
                 f.write("\n{}\n".format(border_msg_output))
-                command = 'python python/interpolate_differential_pred.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
+                command = 'python python/interpolate_differential_pred33.py --obsName="{obsName}" --obsBins="{obsBins}" --year={year}'.format(
                         obsName = obsName, obsBins = obsBin['bins'], year = args.year
                 )
                 print("Command: {}".format(command))
@@ -145,7 +148,7 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 command += 'python -u runHZZFiducialXS.py --dir="{NtupleDir}" --obsName="{obsName}" --obsBins="{obsBins}" --modelNames {modelNames} --year="{year}" --redoTemplates --templatesOnly '.format(
                         obsName = obsName, obsBins = obsBin['bins'], NtupleDir = args.NtupleDir, modelNames= args.modelNames, year = args.year
                 )
-                if args.nohup: command += ' >& log/step_6_nohup.log &'
+                if args.nohup: command += ' >& log_{year}/step_6_{obsName}.log &'.format(obsName = obsName, year = args.year)
                 logger.info("Command: {}".format(command))
                 f.write("\n{}\n".format(command))
                 if (args.RunCommand): os.system(command)
@@ -163,7 +166,7 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 command += 'python -u runHZZFiducialXS.py --obsName="{obsName}" --obsBins="{obsBins}"  --calcSys --asimovMass {HiggsMass} --modelNames {modelNames} --year="{year}"'.format(
                         obsName = obsName, obsBins = obsBin['bins'], HiggsMass = args.HiggsMass, modelNames= args.modelNames, year = args.year
                 )
-                if args.nohup: command += ' >& log/step_7_nohup.log &'
+                if args.nohup: command += ' >& log_{year}/step_7_{obsName}.log &'.format(obsName = obsName, year = args.year)
                 logger.info("Command: {}".format(command))
                 f.write("\n{}\n".format(command))
                 if (args.RunCommand): os.system(command)

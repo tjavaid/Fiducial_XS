@@ -38,7 +38,7 @@ def parseOptions():
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
     parser.add_option('', '--obs', dest='OneDOr2DObs', default=1, type=int, help="1 for 1D obs, 2 for 2D observable")
-    parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
+    parser.add_option('-i',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
 
     # store options and arguments as global variables
     global opt, args, datacardInputs
@@ -99,6 +99,26 @@ else:
     obs_ifJES2 = ''
 
     print obs_ifJES
+
+####
+m4l_bins = INPUT_m4l_bins
+m4l_low = INPUT_m4l_low
+m4l_high = INPUT_m4l_high
+
+# Default to inclusive cross section
+obs_reco = 'mass4l'
+obs_gen = 'GENmass4l'
+obs_reco_low = INPUT_m4l_low
+obs_reco_high = INPUT_m4l_high
+obs_gen_low = INPUT_m4l_low
+obs_gen_high = INPUT_m4l_high
+
+obs_reco2 = ''
+obs_gen2 = ''
+obs_reco2_low = -1
+obs_reco2_high = -1
+obs_gen2_low = -1
+obs_gen2_high = -1
 
 ####
 
@@ -162,10 +182,11 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
         if (obs_reco.startswith("njets") and obs_reco2 == '') or (obs_gen_high == "inf"):
             cutobs_gen = "("+obs_gen+">="+str(obs_gen_low)+")"
 
-            if (obs_gen2_high == "inf"):
-                cutobs_gen  += "&& ("+obs_gen2+">="+str(obs_gen2_low)+")"
-            else:
-                cutobs_gen += "&& ("+obs_gen2+">="+str(obs_gen2_low)+" && "+obs_gen2+"<"+str(obs_gen2_high)+")"
+            if not (obs_reco2 == ''):
+                if (obs_gen2_high == "inf"):
+                    cutobs_gen  += "&& ("+obs_gen2+">="+str(obs_gen2_low)+")"
+                else:
+                    cutobs_gen += "&& ("+obs_gen2+">="+str(obs_gen2_low)+" && "+obs_gen2+"<"+str(obs_gen2_high)+")"
         else:
             cutobs_gen = "("+obs_gen+">="+str(obs_gen_low)+" && "+obs_gen+"<"+str(obs_gen_high)+")"
 
@@ -327,24 +348,24 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
             print(processBin,acceptance[processBin],accerrstat,qcderrup,qcderrdn,pdferr)
             print("accerrup",accerrup,"accerrdn",accerrdn)
 
-m4l_bins = INPUT_m4l_bins
-m4l_low = INPUT_m4l_low
-m4l_high = INPUT_m4l_high
-
-# Default to inclusive cross section
-obs_reco = 'mass4l'
-obs_gen = 'GENmass4l'
-obs_reco_low = INPUT_m4l_low
-obs_reco_high = INPUT_m4l_high
-obs_gen_low = INPUT_m4l_low
-obs_gen_high = INPUT_m4l_high
-
-obs_reco2 = ''
-obs_gen2 = ''
-obs_reco2_low = -1
-obs_reco2_high = -1
-obs_gen2_low = -1
-obs_gen2_high = -1
+#m4l_bins = INPUT_m4l_bins
+#m4l_low = INPUT_m4l_low
+#m4l_high = INPUT_m4l_high
+#
+## Default to inclusive cross section
+#obs_reco = 'mass4l'
+#obs_gen = 'GENmass4l'
+#obs_reco_low = INPUT_m4l_low
+#obs_reco_high = INPUT_m4l_high
+#obs_gen_low = INPUT_m4l_low
+#obs_gen_high = INPUT_m4l_high
+#
+#obs_reco2 = ''
+#obs_gen2 = ''
+#obs_reco2_low = -1
+#obs_reco2_high = -1
+#obs_gen2_low = -1
+#obs_gen2_high = -1
 
 if 'vs' in opt.OBSNAME:
     obs_reco = opt.OBSNAME.split(" vs ")[0]

@@ -240,7 +240,8 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
         else:
             border_msg("Sample: "+Sample+"\t Observable: "+str(obs_reco)+"\trecobin: "+str(recobin)+"\tgenbin: "+str(genbin))
 
-        if ("NNLOPS" in Sample or "nnlops" in Sample):
+        #if ("NNLOPS" in Sample or "nnlops" in Sample):
+        if ("NNLOPS" in Sample or "nnlops" in Sample or "ggH_amcatnloFXFX" in Sample):
             print ("Skipping: "+ Sample)
             #VM: For discussion: This can be removed as it is gonna continue anyway
             #recoweight = "genWeight*pileupWeight*dataMCWeight"

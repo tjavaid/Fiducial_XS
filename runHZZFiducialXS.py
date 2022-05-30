@@ -60,7 +60,7 @@ def parseOptions():
     # Calculate Systematic Uncertainties
     parser.add_option('',   '--calcSys', action='store_true', dest='SYS', default=False, help='Calculate Systematic Uncertainties (in addition to stat+sys)')
     parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
-    parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
+    parser.add_option('-i',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
     parser.add_option("-l", "--logLevel", action="store", dest="logLevel", help="Change log verbosity(WARNING: 0, INFO: 1, DEBUG: 2)")
     parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
 
@@ -150,7 +150,8 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year, obs_if
     # Here, rm command is mandatory, just to ensure that make works. If make command files
     #   then this can pick older executable. So, to avoid this we first delete the executable
     logger.info("==> Remove the executable and Compile the package main_fiducialXSTemplates...")
-    cmd = 'rm main_fiducialXSTemplates; make';
+    #cmd = 'rm main_fiducialXSTemplates; make';
+    cmd = 'pwd';
     processCmd(cmd, get_linenumber(), os.path.basename(__file__))
     # FIXME: this directory name is hardcoded in fiducialXSTemplates.C
     # FIXME: Try to link the two automatically.
