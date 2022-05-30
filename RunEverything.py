@@ -121,7 +121,7 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 # command = 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" >& log/unc_{obsName}.log &'.format(
                 command = ''
                 if args.nohup: command = 'nohup '
-                command += 'python -u getUnc_Unc2.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -y "{year}"'.format(
+                command += 'python -u getUnc_Unc.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" -y "{year}"'.format(
                         obsName = obsName, obsBins = obsBin['bins'], year = args.year
                 )
                 if args.nohup: command += ' >& log_{year}/step_4_{obsName}.log &'.format(obsName = obsName, year = args.year)

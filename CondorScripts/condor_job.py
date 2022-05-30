@@ -45,6 +45,7 @@ parser.add_argument('--log', type=str,
                     help='output path, where the CMSSW tar file and the datacard dict will be stored')
 parser.add_argument('--tar', dest="ifTar", action='store_true', help='if want to run using nohup')
 parser.add_argument( '-y', dest='year', default=2018, type=int, help='dataset year')
+parser.add_argument( '-j', dest='jobType', default="eff", choices=['eff','unc'], help='dataset year')
 args = parser.parse_args()
 
 datacardInputs = datacardInputs.format(year = args.year)
@@ -194,7 +195,11 @@ if __name__ == "__main__":
     if not os.path.isdir(args.OutputPath): os.mkdir(args.OutputPath)
     if not os.path.isdir(args.OutputPath + "/{}".format(datacardInputs)): os.makedirs(args.OutputPath + "/{}".format(datacardInputs))
 
-    if args.ifTar:
+    if args.jobType = "unc":
+        # Step-1: Check if the efficiency dict exists?
+        # Step-2: Check if the collect input run or not?
+        pass
+    if args.ifTar or  args.jobType = "unc":
         CreateCMSSWTarFile(args.OutputPath)
     GetArgumentTextFile(InputYAMLFile = args.inYAMLFile,
                                 fileName = args.CondorFileName,
