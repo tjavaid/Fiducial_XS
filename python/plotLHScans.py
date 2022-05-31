@@ -33,10 +33,11 @@ def parseOptions():
     parser.add_option("-b",action="callback",callback=callback_rootargs)
 
     # store options and arguments as global variables
-    global opt, args, datacardInputs
+    global opt, args, datacardInputs, combineOutputs
     (opt, args) = parser.parse_args()
 
     datacardInputs = datacardInputs.format(year = opt.ERA)
+    combineOutputs = combineOutputs.format(year = opt.ERA)
 
 # parse the arguments and options
 global opt, args, runAllSteps
@@ -77,7 +78,9 @@ for obsName in observables:
         # FIXME: Why continue for `cosTheta1`
         if (obsName=="cosTheta1" and obsbin=="0"): continue
 
-        f = TFile("higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+".MultiDimFit.mH125.38.root","READ")
+        inFile = combineOutputs + "/higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_"+opt.ERA+".MultiDimFit.mH125.38.root"
+        logger.info("File to read: {}".format(inFile))
+        f = TFile(inFile,"READ")
         if (f==0): continue
 
         limit = f.Get("limit")
@@ -98,7 +101,7 @@ for obsName in observables:
             if point>0 and len(deltanll)>0:
                 if deltanll[len(deltanll)-1]>5.0 and sigma[len(sigma)-1]>bestfit: break
 
-        fstat = TFile("higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_NoSys.MultiDimFit.mH125.38.root","READ")
+        fstat = TFile(combineOutputs + "/higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_NoSys"+"_"+opt.ERA+".MultiDimFit.mH125.38.root","READ")
         if (fstat==0): continue
 
         limitstat = fstat.Get("limit")
