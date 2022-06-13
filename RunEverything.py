@@ -34,7 +34,7 @@ parser.add_argument( '-model', dest='modelNames', default="SM_125",
                         help='Names of models for unfolding, separated by , (comma) . Default is "SM_125"')
 parser.add_argument( '-p', dest='NtupleDir', default="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/", help='Path of ntuples')
 parser.add_argument( '-m', dest='HiggsMass', default=125.38, type=float, help='Higgs mass')
-parser.add_argument( '-y', dest='year', default=2018, type=int, help='dataset year')
+parser.add_argument( '-y', dest='year', default=2018, type=str, help='dataset year')
 parser.add_argument( '-r', dest='RunCommand', default=0, type=int, choices=[0, 1], help="if 1 then it will run the commands else it will just print the commands")
 parser.add_argument( '-obs', dest='OneDOr2DObs', default=1, type=int, choices=[1, 2], help="1 for 1D obs, 2 for 2D observable")
 parser.add_argument( '-test', dest='TestVar', default="", type=str, help="Name of test variables to run over. For example: mass4l")

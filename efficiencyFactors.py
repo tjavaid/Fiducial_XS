@@ -985,9 +985,10 @@ if (not opt.CHAN==''):
 
 datacardInputs = datacardInputs.format(year = opt.ERA)
 GetDirectory(datacardInputs)
+os.system('touch __init__.py')
+os.system('mv __init__.py '+datacardInputs+'/')
 
 output_file_name = datacardInputs+'/inputs_sig_'+label+ext+'.py'
-
 
 with open(output_file_name, 'w') as f:
     f.write('acc = '+str(acceptance)+' \n')
