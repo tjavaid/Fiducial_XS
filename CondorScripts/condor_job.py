@@ -195,11 +195,12 @@ if __name__ == "__main__":
     if not os.path.isdir(args.OutputPath): os.mkdir(args.OutputPath)
     if not os.path.isdir(args.OutputPath + "/{}".format(datacardInputs)): os.makedirs(args.OutputPath + "/{}".format(datacardInputs))
 
-    if args.jobType = "unc":
-        # Step-1: Check if the efficiency dict exists?
-        # Step-2: Check if the collect input run or not?
-        pass
-    if args.ifTar or  args.jobType = "unc":
+    # if args.jobType = "unc":
+    #     # Step-1: Check if the efficiency dict exists?
+    #     # Step-2: Check if the collect input run or not?
+    #     pass
+    # if args.ifTar or  args.jobType = "unc":
+    if args.ifTar:
         CreateCMSSWTarFile(args.OutputPath)
     GetArgumentTextFile(InputYAMLFile = args.inYAMLFile,
                                 fileName = args.CondorFileName,

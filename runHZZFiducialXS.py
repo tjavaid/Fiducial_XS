@@ -91,7 +91,7 @@ def parseOptions():
     #        The directory `combineOutputs` is used to keep the generated workspaces
     GetDirectory(combineOutputs.format(year = opt.ERA))
 
-    dirToExist = ['templates', datacardInputs.format(year = opt.ERA), '125.0', combineOutputs.format(year = opt.ERA)]
+    dirToExist = ['templates', datacardInputs.format(year = opt.ERA), combineOutputs.format(year = opt.ERA)]
     for dir in dirToExist:
         if not os.path.isdir(os.getcwd()+'/'+dir+'/'):
             parser.error(os.getcwd()+'/'+dir+'/ is not a directory. Exiting...')
@@ -365,6 +365,7 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
             processCmd(UpdateObservationValue, get_linenumber(), os.path.basename(__file__))
             UpdateDatabin = "sed -i 's~_xs.Databin0~_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin0~g' "+combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin0_"+physicalModel+".txt"
             processCmd(UpdateDatabin, get_linenumber(), os.path.basename(__file__))
+
 def createAsimov_161718_checkIssue(obsName, observableBins, modelName, physicalModel, years = ['2016', '2017', '2018']):
     logger.warning("inside function: createAsimov_161718_checkIssue")
     if years == "allYear":  years = ['2016', '2017', '2018']
@@ -383,7 +384,8 @@ def createAsimov_161718_checkIssue(obsName, observableBins, modelName, physicalM
         nBins = len(observableBins)
     logger.debug("nBins: = "+str(nBins))
 
-    fStates = ['2e2mu','4mu','4e']
+    # fStates = ['2e2mu','4mu','4e']
+    fStates = ['4e']
 
     cmd = 'combineCards.py '
     for year in years:
@@ -395,7 +397,7 @@ def createAsimov_161718_checkIssue(obsName, observableBins, modelName, physicalM
 
     # text-to-workspace
     if (physicalModel=="v2"):
-        cmd = 'text2workspace.py xs_125.0_allYear/hzz4l_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'.txt -P HiggsAnalysis.CombinedLimit.HZZ4L_Fiducial_v2:differentialFiducialV2 --PO higgsMassRange=115,135 --PO nBin='+str(nBins-1)+' -o hzz4l_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'.root '
+        cmd = 'text2workspace.py xs_125.0_allYear/hzz4l_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'.txt -P HiggsAnalysis.CombinedLimit.HZZ4L_Fiducial_v2:differentialFiducialV2 --PO higgsMassRange=115,135 --PO nBin='+str(nBins)+' -o hzz4l_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'.root '
         processCmd(cmd, get_linenumber(),  os.path.basename(__file__), 1)
 
     logger.error("Done")
@@ -417,6 +419,7 @@ def createAsimov_161718(obsName, observableBins, modelName, physicalModel, years
 
     GetDirectory(combineOutputs.format(year = 'allYear'))
 
+    fStates = ['2e2mu','4mu','4e']
     AllChannelCombinedDataCards = 'hzz4l_all_13TeV_xs_{obsName}_bin_{physicalModel}.txt '
     cmd = 'combineCards.py '
     for year in years:
@@ -440,6 +443,7 @@ def createAsimov_161718(obsName, observableBins, modelName, physicalModel, years
     cmd = 'mv ' + combineOutputs.format(year = 'allYear') + '/' +(AllChannelCombinedDataCards.format(obsName = obsName.replace(' ','_'), physicalModel = physicalModel)).replace('.txt', '.root') + ' ' + combineOutputs.format(year = 'allYear') + '/' +modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root'
     processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
+
     # Run the Combine
     logger.info("Going to run the combine commands...")
     cmd = ''
@@ -451,7 +455,7 @@ def createAsimov_161718(obsName, observableBins, modelName, physicalModel, years
                 fidxs = 0
                 for year in years:
                     # import acc factors
-                    _temp = __import__(str(year) + '.' + datacardInputs.format(year = year) + '.' + 'inputs_sig_'+obsName.replace(' ','_'), globals(), locals(), ['acc'], -1)
+                    _temp = __import__((datacardInputs.format(year = year)).replace('/','.') + '.' + 'inputs_sig_'+obsName.replace(' ','_'), globals(), locals(), ['acc'], -1)
                     acc = _temp.acc
                     fidxs += higgs_xs['ggH_'+opt.ASIMOVMASS]*higgs4l_br[opt.ASIMOVMASS+'_'+fState]*acc['ggH_powheg_JHUgen_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
                     #fidxs += acc['ggH_HRes_125.38_'+fState+'_'+obsName.replace(' ','_')+'_genbin'+str(obsBin)+'_recobin'+str(obsBin)]
@@ -542,7 +546,6 @@ def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, y
         processCmd(cmd, get_linenumber(),  os.path.basename(__file__), 1)
 
     # combine 3 final state cards
-    # cmd = 'combineCards.py hzz4l_4muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt hzz4l_4eS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt hzz4l_2e2muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt > hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
     cmd = 'combineCards.py ' + obsName + '_4muS_'+year + '=hzz4l_4muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt '+ obsName + '_4eS_'+year +'=hzz4l_4eS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt ' + obsName + '_2e2muS_'+year + '=hzz4l_2e2muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt > hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
     processCmd(cmd, get_linenumber(), os.path.basename(__file__), 1)
     if (not opt.LUMISCALE=="1.0"):
@@ -552,10 +555,7 @@ def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, y
 
     # text-to-workspace
     if (physicalModel=="v2"):
-        # if (opt.FIXMASS=="False"):
         cmd = 'text2workspace.py hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt -P HiggsAnalysis.CombinedLimit.HZZ4L_Fiducial_v2:differentialFiducialV2 --PO higgsMassRange=115,135 --PO nBin='+str(nBins)+' -o hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root'
-        # else:
-        # cmd = 'text2workspace.py hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt -P HiggsAnalysis.CombinedLimit.HZZ4L_Fiducial_v2:differentialFiducialV2 --PO higgsMassRange='+opt.ASIMOVMASS+','+opt.ASIMOVMASS+' --PO nBin='+str(nBins)+' -o hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root'
         processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
     # FIXME: Can we improve this?
@@ -730,13 +730,17 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
     fStates = ['2e2mu','4mu','4e']
 
     for fState in fStates:
+        """Combine cards for all bins corresponding to each final state.
+        """
+        # if (nBins>1):
         cmd = 'combineCards.py '
-        for bin in range(nBins):
-            cmd = cmd+'hzz4l_'+fState+'S_13TeV_xs_'+obsName.replace(' ','_')+'_bin'+str(bin)+'_'+physicalModel+'.txt '
-        cmd = cmd + '> hzz4l_'+fState+'S_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
-        processCmd(cmd, get_linenumber(), os.path.basename(__file__), 1)
+        for obsBin in range(nBins):
+            cmd +=   obsName + '_' + fState + 'S_'+str(obsBin)+'_'+year + '=' +'hzz4l_'+fState+'S_13TeV_xs_'+obsName.replace(' ','_')+'_bin'+str(obsBin)+'_'+physicalModel+'.txt '
+        cmd += ' > hzz4l_'+fState+'S_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt' # Output combine card name
+        processCmd(cmd, get_linenumber(),  os.path.basename(__file__), 1)
 
-    cmd = 'combineCards.py hzz4l_4muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt hzz4l_4eS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt hzz4l_2e2muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt > hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
+    # combine 3 final state cards
+    cmd = 'combineCards.py ' + obsName + '_4muS_'+year + '=hzz4l_4muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt '+ obsName + '_4eS_'+year +'=hzz4l_4eS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt ' + obsName + '_2e2muS_'+year + '=hzz4l_2e2muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt > hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
     processCmd(cmd, get_linenumber(), os.path.basename(__file__), 1)
 
     if (not opt.LUMISCALE=="1.0"):
@@ -1077,7 +1081,8 @@ def runFiducialXS():
         logger.info("Choose the option for combination of all year...")
         asimovDataModelName = "SM_125" # FIXME: Is it fine if the model name is hardcoded here. Since model (ASIMOVMODEL) is also an input argument
         asimovPhysicalModel = "v2" # FIXME: Same above message.
-        resultsXS = createAsimov_161718_checkIssue(obsName, observableBins, asimovDataModelName, asimovPhysicalModel,  ['2016', '2017', '2018'])
+        # resultsXS = createAsimov_161718_checkIssue(obsName, observableBins, asimovDataModelName, asimovPhysicalModel,  ['2016', '2017', '2018'])
+        resultsXS = createAsimov_161718(obsName, observableBins, asimovDataModelName, asimovPhysicalModel,  ['2016', '2017', '2018'])
         logger.info("Combination done")
         sys.exit()
 
