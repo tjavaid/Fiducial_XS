@@ -10,7 +10,10 @@ from LoadData import *
 from sample_shortnames import *
 from Utils import *
 from read_bins import *
+from Input_Info import datacardInputs
 from Input_Info import *
+import yaml
+
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -37,7 +40,7 @@ def parseOptions():
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
     parser.add_option('', '--obs', dest='OneDOr2DObs', default=1, type=int, help="1 for 1D obs, 2 for 2D observable")
-    parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
+    parser.add_option('-i',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
 
     # store options and arguments as global variables
     global opt, args, datacardInputs
@@ -88,10 +91,12 @@ with open(opt.inYAMLFile, 'r') as ymlfile:
 print gen
 
 if 'vs' in opt.OBSNAME:
-    obs_ifJES = ifJES.split(" vs ")[0]
-    obs_ifJES2 = ifJES.split(" vs ")[1]
 
-    print obs_ifJES, obs_ifJES2
+    obs_ifJES = eval(ifJES.split(" vs ")[0])
+    obs_ifJES2 = eval(ifJES.split(" vs ")[1])
+
+    print "obs_ifJES: ", obs_ifJES, "; obs_ifJES2: ", obs_ifJES2
+
 
 else:
     obs_ifJES = ifJES
@@ -99,7 +104,7 @@ else:
 
     print obs_ifJES
 
-####
+
 
 def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, genbin, obs_reco_2 = '', obse_gen2 = ''):
 
@@ -145,7 +150,8 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
         print ("Chosen Gen Bin is: {}, Low geb bin value is: {}, High gen bin value is: {}, Lowest value is: {}, Highest value is: {}".format(genbin, obs_gen2_low, obs_gen2_high, obs_gen2_lowest, obs_gen2_highest))
 
 
-    if (obs_reco.startswith("mass4l")):
+    #if (obs_reco.startswith("mass4l")):
+    if (obs_reco=="mass4l"):
         m4l_low = float(obs_gen_low)
         m4l_high = float(obs_gen_high)
         m4l_bins = int((m4l_high-m4l_low)/2)
@@ -161,10 +167,11 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
         if (obs_reco.startswith("njets") and obs_reco2 == '') or (obs_gen_high == "inf"):
             cutobs_gen = "("+obs_gen+">="+str(obs_gen_low)+")"
 
-            if (obs_gen2_high == "inf"):
-                cutobs_gen  += "&& ("+obs_gen2+">="+str(obs_gen2_low)+")"
-            else:
-                cutobs_gen += "&& ("+obs_gen2+">="+str(obs_gen2_low)+" && "+obs_gen2+"<"+str(obs_gen2_high)+")"
+            if not (obs_reco2 == ''):
+                if (obs_gen2_high == "inf"):
+                    cutobs_gen  += "&& ("+obs_gen2+">="+str(obs_gen2_low)+")"
+                else:
+                    cutobs_gen += "&& ("+obs_gen2+">="+str(obs_gen2_low)+" && "+obs_gen2+"<"+str(obs_gen2_high)+")"
         else:
             cutobs_gen = "("+obs_gen+">="+str(obs_gen_low)+" && "+obs_gen+"<"+str(obs_gen_high)+")"
 
@@ -325,6 +332,7 @@ def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bi
 
             print(processBin,acceptance[processBin],accerrstat,qcderrup,qcderrdn,pdferr)
             print("accerrup",accerrup,"accerrdn",accerrdn)
+
 
 m4l_bins = INPUT_m4l_bins
 m4l_low = INPUT_m4l_low

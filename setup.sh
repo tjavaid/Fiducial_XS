@@ -11,3 +11,12 @@ export PYTHONPATH=$PYTHONPATH:$(pwd)/Inputs
 # following line we can uncomment if we use python3
 # export PYTHON3PATH=$PYTHON3PATH:$(pwd)/python
 # export PYTHON3PATH=$PYTHON3PATH:$(pwd)/Inputs
+
+# Compile the template maker
+cd $(pwd)/templates
+echo "Remove the executable main_fiducialXSTemplates if exists"
+rm main_fiducialXSTemplates
+echo "Compile fiducialXSTemplates"
+make
+echo "Done."
+cd ..

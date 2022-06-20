@@ -125,8 +125,8 @@ with open(opt.inYAMLFile, 'r') as ymlfile:
 print gen
 
 if 'vs' in opt.OBSNAME:
-    obs_ifJES = ifJES.split(" vs ")[0]
-    obs_ifJES2 = ifJES.split(" vs ")[1]
+    obs_ifJES = eval(ifJES.split(" vs ")[0])
+    obs_ifJES2 = eval(ifJES.split(" vs ")[1])
 
     print obs_ifJES, obs_ifJES2
 
@@ -224,7 +224,8 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
         print ("Chosen reco/gen Bin is: {} / {}, Low reco bin value is: {}, High reco bin value is: {}, Lowest value is: {}, Highest value is: {}".format(recobin, genbin, obs_reco2_low, obs_reco2_high, obs_gen2_lowest, obs_gen2_highest))
 
 
-    if (obs_reco.startswith("mass4l")):
+    #if (obs_reco.startswith("mass4l")):
+    if (obs_reco=="mass4l"):
         m4l_low = float(obs_reco_low)
         m4l_high = float(obs_reco_high)
         m4l_bins = int((m4l_high-m4l_low)/2)
@@ -240,7 +241,8 @@ def geteffs(channel, SampleList, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen,
         else:
             border_msg("Sample: "+Sample+"\t Observable: "+str(obs_reco)+"\trecobin: "+str(recobin)+"\tgenbin: "+str(genbin))
 
-        if ("NNLOPS" in Sample or "nnlops" in Sample):
+        #if ("NNLOPS" in Sample or "nnlops" in Sample):
+        if ("NNLOPS" in Sample or "nnlops" in Sample or "ggH_amcatnloFXFX" in Sample):
             print ("Skipping: "+ Sample)
             #VM: For discussion: This can be removed as it is gonna continue anyway
             #recoweight = "genWeight*pileupWeight*dataMCWeight"

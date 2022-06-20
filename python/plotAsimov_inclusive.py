@@ -27,7 +27,7 @@ def parseOptions():
     # input options
     parser.add_option('-d', '--dir',    dest='SOURCEDIR',  type='string',default='./', help='run from the SOURCEDIR as working area, skip if SOURCEDIR is an empty string')
     parser.add_option('',   '--asimovModel',dest='ASIMOV',type='string',default='ggH_powheg15_JHUgen_125', help='Name of the asimov data mode')
-    parser.add_option('',   '--asimovMass',dest='ASIMOVMASS',type='string',default='125.0', help='Asimov Mass')
+    parser.add_option('',   '--asimovMass',dest='ASIMOVMASS',type='string',default='125.38', help='Asimov Mass')
     parser.add_option('',   '--unfoldModel',dest='UNFOLD',type='string',default='ggH_powheg15_JHUgen_125', help='Name of the unfolding model')
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "inclusive", "pT", "eta", "Njets"')
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
@@ -208,7 +208,8 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
         sim.plotOn(mass, RooFit.LineColor(kOrange), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3,shapeBkg_bkg_ggzz_ch1,shapeBkg_bkg_ggzz_ch2,shapeBkg_bkg_ggzz_ch3,shapeBkg_bkg_qqzz_ch1,shapeBkg_bkg_qqzz_ch2,shapeBkg_bkg_qqzz_ch3,shapeBkg_fakeH_ch1,shapeBkg_fakeH_ch2,shapeBkg_fakeH_ch3"), RooFit.ProjWData(data,True))
         sim.plotOn(mass, RooFit.LineColor(kAzure-3), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3,shapeBkg_bkg_ggzz_ch1,shapeBkg_bkg_ggzz_ch2,shapeBkg_bkg_ggzz_ch3,shapeBkg_bkg_qqzz_ch1,shapeBkg_bkg_qqzz_ch2,shapeBkg_bkg_qqzz_ch3"), RooFit.ProjWData(data,True))
         sim.plotOn(mass, RooFit.LineColor(kGreen+3), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3"), RooFit.ProjWData(data,True))
-        datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,105,140))
+        #datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,105,140))
+        datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,INPUT_m4l_low,INPUT_m4l_high))
     else:
         sbin = "ch"+channel[fstate]
         data = data.reduce(RooFit.Cut("CMS_channel==CMS_channel::"+sbin))
@@ -218,7 +219,8 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
         pdfi.plotOn(mass, RooFit.LineColor(kOrange), RooFit.Components("shapeBkg_bkg_zjets_"+sbin+",shapeBkg_bkg_ggzz_"+sbin+",shapeBkg_bkg_qqzz_"+sbin+",shapeBkg_fakeH_"+sbin), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
         pdfi.plotOn(mass, RooFit.LineColor(kAzure-3), RooFit.Components("shapeBkg_bkg_zjets_"+sbin+",shapeBkg_bkg_ggzz_"+sbin+",shapeBkg_bkg_qqzz_"+sbin), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
         pdfi.plotOn(mass, RooFit.LineColor(kGreen+3), RooFit.Components("shapeBkg_bkg_zjets_"+sbin), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
-        datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,105,140))
+        #datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,105,140))
+        datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,INPUT_m4l_low,INPUT_m4l_high))
 
     gStyle.SetOptStat(0)
 
@@ -226,7 +228,8 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     c.cd()
 
     #dummy = TH1D("","",1,105.6,140.6)
-    dummy = TH1D("","",1,105.0,140.0)
+    #dummy = TH1D("","",1,105.0,140.0)
+    dummy = TH1D("","",1,INPUT_m4l_low,INPUT_m4l_high)
     dummy.SetBinContent(1,2)
     dummy.SetFillColor(0)
     dummy.SetLineColor(0)
@@ -270,7 +273,7 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     dummy_zx.SetLineWidth(2)
 
     legend = TLegend(.20,.41,.53,.89)
-    legend.AddEntry(dummy_data,"Asimov Data (SM m(H) = 125.0 GeV)","ep")
+    legend.AddEntry(dummy_data,"Asimov Data (SM m(H) = 125.38 GeV)","ep")
     legend.AddEntry(dummy_fid,"N_{fid.}^{fit} = %.2f (exp. = %.2f)"%(n_trueH_modelfit[fstate],n_trueH_asimov[fstate]), "l")
     legend.AddEntry(dummy_out, "N_{out}^{fit} = %.2f (exp. = %.2f)"%(n_out_trueH_modelfit[fstate],n_out_trueH_asimov[fstate]), "l")
     legend.AddEntry(dummy_fake, "N_{wrong}^{fit} = %.2f (exp. = %.2f)"%(n_fakeH_modelfit[fstate],n_fakeH_asimov[fstate]), "l")

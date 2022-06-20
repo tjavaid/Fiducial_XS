@@ -10,7 +10,7 @@ import yaml
 from sample_shortnames import *
 from Input_Info import *
 from read_bins import read_bins
-from Utils import logger, border_msg
+from Utils import logger, border_msg, GetDirectory
 
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
@@ -29,7 +29,7 @@ def parseOptions():
     parser.add_option('-d', '--dir',    dest='SOURCEDIR',  type='string',default='./', help='run from the SOURCEDIR as working area, skip if SOURCEDIR is an empty string')
     parser.add_option('',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
     parser.add_option('',   '--asimovModel',dest='ASIMOV',type='string',default='ggH_powheg15_JHUgen_125', help='Name of the asimov data mode')
-    parser.add_option('',   '--asimovMass',dest='ASIMOVMASS',type='string',default='125.0', help='Asimov MAss')
+    parser.add_option('',   '--asimovMass',dest='ASIMOVMASS',type='string',default='125.38', help='Asimov MAss')
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observable, supported: "inclusive", "pT", "eta", "Njets"')
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
     parser.add_option('',   '--unblind', action='store_true', dest='UNBLIND', default=False, help='Use real data')
@@ -298,7 +298,8 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     latex2.DrawLatex(0.23, 0.8, "Preliminary")
     latex2.SetTextFont(42)
     latex2.SetTextSize(0.45*c.GetTopMargin())
-    latex2.DrawLatex(0.19,0.75,"105 GeV < m("+fstate.replace('mu','#mu')+") < 140 GeV")
+    #latex2.DrawLatex(0.19,0.75,"105 GeV < m("+fstate.replace('mu','#mu')+") < 140 GeV")
+    latex2.DrawLatex(0.19,0.75,str(INPUT_m4l_low)+" GeV < m("+fstate.replace('mu','#mu')+") < "+str(INPUT_m4l_high)+" GeV")
     legend = TLegend(.6,.70,.9,.90)
     if (not opt.UNBLIND):
         legend.AddEntry(h_data,"Asimov Data (SM)","ep")

@@ -153,7 +153,7 @@ Observables:
      ifJES: True
 
     pT4ljj:
-     bins: "|0|20|40|60|110|inf|"
+     bins: "|-2|0|20|60|inf|"
      label: "p_{T}(Hjj) p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
      unit: "GeV"
      gen: "GENpT4ljj"
@@ -161,7 +161,7 @@ Observables:
      ifJES: True
 
     pT4ljj_2p5:
-     bins: "|0|20|40|60|110|inf|"
+     bins: "|-2|0|20|60|inf|"
      label: "p_{T}(Hjj) p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
      unit: "GeV"
      gen: "GENpT4ljj_2p5"
@@ -267,7 +267,7 @@ Observables:
      bins: "|0|0.7|0.8|0.9|0.95|1|"
      label: "D_{int}^{dec}"
      unit: ""
-     gen: "GEND_0int"
+     gen: "GEND_int"
      ifAbs: False
      ifJES: False
  
@@ -307,22 +307,54 @@ Observables:
   2D_Observables:
 
       "massZ1 vs massZ2":
-        bins: "|50|80| vs |10|30| / |50|80| vs |30|60| / |80|110| vs |10|25| / |80|110| vs |25|30|"
+        bins: "|40|85| vs |12|35| / |40|70| vs |35|65| / |70|120| vs |35|65| / |85|120| vs |30|35| / |85|120| vs |24|30| / |85|120| vs |12|24|"
         label: ["m(Z_{1})", "m(Z_{2})"]
         unit: ["GeV", "GeV"]
         gen: "GENmassZ1 vs GENmassZ2"
         ifJES: "False vs False"
 
-      "njets_pt30_eta2p5 vs pT4l":
-        bins: '|0|1|2|3|20| vs |0|15|30|120|350| / |0|15|30|120|350| / |0|120|350| / |0|120|350|'
-        label: ["N(jets) |#eta|<2.5", "p_{T}(H)"]
+
+##      "njets_pt30_eta2p5 vs pT4l":
+##        bins: "|0|1| vs |0|15|30|inf| / |1|2| vs |0|60|80|120|inf| / |2|10| vs |0|100|170|250|inf|"
+##        label: ["N(jets) |#eta|<2.5", "p_{T}(H)"]
+##        unit: ["", "GeV"]
+##        gen: "GENnjets_pt30_eta2p5 vs GENpT4l"
+##        ifJES: "True vs False"
+
+
+      "njets_pt30_eta4p7 vs pT4l":
+        bins: "|0|1| vs |0|15|30|inf| / |1|2| vs |0|60|80|120|inf| / |2|10| vs |0|100|170|250|inf|"
+        label: ["N(jets) |#eta|<4.7", "p_{T}(H)"]
         unit: ["", "GeV"]
-        gen: "GENnjets_pt30_eta2p5 vs GENpT4l"
+        gen: "GENnjets_pt30_eta4p7 vs GENpT4l"
         ifJES: "True vs False"
 
       "rapidity4l vs pT4l":
-        bins: '|0.0|0.5| vs |0|40| / |0.0|0.5| vs |40|80| / |0.0|0.5| vs |80|150| / |0.0|0.5| vs |150|1300| / |0.5|1.0| vs |0|45| / |0.5|1.0| vs |45|120| / |0.5|1.0| vs |120|1300| / |1.0|2.5| vs |0|45| / |1.0|2.5| vs |45|120| / |1.0|2.5| vs |120|1300|'
+        bins: "|0.0|0.5| vs |0|40| / |0.0|0.5| vs |40|80| / |0.0|0.5| vs |80|150| / |0.0|0.5| vs |150|inf| / |0.5|1.0| vs |0|45| / |0.5|1.0| vs |45|120| / |0.5|1.0| vs |120|inf| / |1.0|2.5| vs |0|45| / |1.0|2.5| vs |45|120| / |1.0|2.5| vs |120|inf|"
         label: ["|y(H)|", "p_{T}(H)"]
         unit: ["", "GeV"]
         gen: "GENrapidity4l vs GENpT4l"
         ifJES: "False vs False"
+
+      "pt_leadingjet_pt30_eta4p7 vs pTj2":
+        bins: "|-2.0|30.0| vs |-11|30| / |30|60| vs |30|60| / |60|350| vs |30|60| / |60|350| vs |60|350|"
+        label: ["p_{T}(jet1) |#eta|<4.7", "p_{T}(jet2) |#eta|<4.7"]
+        unit: ["GeV", "GeV"]
+        gen: "GENpt_leadingjet_pt30_eta4p7 vs GENpTj2"
+        ifJES: "True vs True"
+
+      "TauC_Inc_0j_EnergyWgt vs pT4l":
+        bins: "|-10000|15| vs |0|15|30|45|70|120|inf| / |15|25| vs |0|120|inf| / |25|40| vs |0|120|inf| / |40|inf| vs |0|200|inf|"
+        label: ["TCjmax", "p_{T}(H)"]
+        unit: ["GeV", "GeV"]
+        gen: "GEN_TauC_Inc_0j_EnergyWgt vs GENpT4l"
+        ifJES: "True vs False"
+
+      "pT4l vs pT4lj":
+        bins: "|0|inf| vs |-2|0| / |0|85| vs |0|30| / |85|350| vs |0|45| / |0|85| vs |30|350| / |85|350| vs |45|350|"
+        label: ["p_{T}(H)", "p_{T}(Hj) p_{T}_{j}>30 GeV |#eta_{j}|<4.7"]
+        unit: ["GeV", "GeV"]
+        gen: "GENpT4l vs GENpT4lj"
+        ifJES: " False vs True"
+
+

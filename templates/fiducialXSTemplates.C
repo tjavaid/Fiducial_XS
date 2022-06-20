@@ -41,7 +41,7 @@ const double CUT_MZ1HIGH = 120.;
 const double CUT_MZ2LOW = 12.;
 const double CUT_MZ2HIGH = 120.;
 double CUT_M4LLOW = 105;
-double CUT_M4LHIGH = 140;
+double CUT_M4LHIGH = 160;
 const double CUT_M4LLOW_FULL = 0.;
 const double CUT_M4LHIGH_FULL = 1000.;
 // directory names
@@ -80,10 +80,13 @@ const unsigned int outNwidth = 16;
 TString PROCESSING_TYPE = "XSTree";// "XSTreeZ4l"
 
 void templatesXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
-                 TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit, TString obsName2, TString obsBinDn2, TString obsBinUp2);
+                 TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit, bool obs_ifJES, 
+                 TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2);
 
 int getTemplateXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
-                  TString obsName, TString obsBinDn, TString obsBinUp, TString obsName2, TString obsBinDn2, TString obsBinUp2, TString fitTypeZ4l, bool useRefit,
+                  TString obsName, TString obsBinDn, TString obsBinUp, bool obs_ifJES, 
+                  TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2, 
+                  TString fitTypeZ4l, bool useRefit,
                   double elpT = CUT_ELPT, double mupT = CUT_MUPT, double mZ2_low = CUT_MZ2LOW,
                   double mZ1_low = CUT_MZ1LOW, double m4l_low = CUT_M4LLOW, double m4l_high = CUT_M4LHIGH);
 
@@ -94,8 +97,8 @@ void loadFakeRateHists();
 TString strRandom(unsigned int rndmMax = 100000);
 void smoothAndNormaliseTemplate(TH2D* &h2D, bool silent = true);
 void smoothAndNormaliseTemplate1D(TH1D* &h1D, double norm = 1.);
-void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit);
-void storeTreeAndTemplatesXS(TTree *TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit, TString obsName2, TString obsBinDn2, TString obsBinUp2);
+void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit, bool obs_ifJES);
+void storeTreeAndTemplatesXS(TTree *TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit, bool obs_ifJES, TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2);
 int normaliseHist(TH2D* &h2D, double norm = 1.);
 int normaliseHist(TH1D* &h1D, double norm = 1.);
 int fillEmptyBinsHist2D(TH2D* &h2D, double floor = .00001);
@@ -112,7 +115,7 @@ double nEvents = -1;
 
 
 //_______________________________________________________________________________________________________________________________________________
-void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileName = "ZZTo2e2mu_mZZ95-160.root", TString sfinalState = "4l", TString obsName = "massZ1", TString obsBinDn = "0", TString obsBinUp = "120", TString sqrtsTag = "8TeV", TString baseDirXS = "templatesXS", TString sProcessingType = "DTreeXS", TString fitTypeZ4l = "none", bool useRefit = false,  TString obsName2 = "", TString obsBinDn2 = "", TString obsBinUp2 = "")
+void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileName = "ZZTo2e2mu_mZZ95-160.root", TString sfinalState = "4l", TString obsName = "massZ1", TString obsBinDn = "0", TString obsBinUp = "120", TString sqrtsTag = "8TeV", TString baseDirXS = "templatesXS", TString sProcessingType = "DTreeXS", TString fitTypeZ4l = "none", bool useRefit = false, bool obs_ifJES = false, TString obsName2 = "", TString obsBinDn2 = "", TString obsBinUp2 = "", bool obs_ifJES2 = false)
 {
     // prepare XS templates for given parameters
     PROCESSING_TYPE = sProcessingType;
@@ -123,7 +126,7 @@ void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileNam
     }
     else if (fitTypeZ4l=="doRatio") {
         CUT_M4LLOW = 50;
-        CUT_M4LHIGH = 140;
+        CUT_M4LHIGH = 160;
         nbinsX=45;
     }
     else if (fitTypeZ4l=="doHighMass") {
@@ -136,7 +139,8 @@ void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileNam
         nbinsX=15;
     }
     cout<<"Begin templatesXS"<<endl;
-    templatesXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit, obsName2, obsBinDn2, obsBinUp2);
+    cout<<"obs_ifJES: "<<obs_ifJES<<endl;
+    templatesXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2);
 }
 
 //_______________________________________________________________________________________________________________________________________________
@@ -147,7 +151,8 @@ void analysisInit() {
 
 //_______________________________________________________________________________________________________________________________________________
 void templatesXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
-                 TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit, TString obsName2, TString obsBinDn2, TString obsBinUp2)
+                 TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit, bool obs_ifJES,  
+                 TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2)
 {
     analysisInit();
 
@@ -158,13 +163,13 @@ void templatesXS(TString processNameTag, TString processFileName, TString sqrtsT
     cout<<"[INFO] fitType: "<<fitTypeZ4l<<" templatesXS using refit? "<<useRefit<<endl;
 
     if (sfinalState == "4l") {
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, "2e2mu", obsName, obsBinDn, obsBinUp, obsName2, obsBinDn2, obsBinUp2, fitTypeZ4l, useRefit);
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4e", obsName, obsBinDn, obsBinUp, obsName2, obsBinDn2, obsBinUp2, fitTypeZ4l, useRefit);
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4mu", obsName, obsBinDn, obsBinUp, obsName2, obsBinDn2, obsBinUp2, fitTypeZ4l, useRefit);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, "2e2mu", obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4e", obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4mu", obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit);
     }
     else
     {
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, obsName2, obsBinDn2, obsBinUp2, fitTypeZ4l, useRefit);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit);
     }
 }
 
@@ -192,6 +197,71 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     float k_qqZZ_qcd_M, k_qqZZ_ewk, k_ggZZ;
     float pt_leadingjet_pt30_eta4p7, pt_leadingjet_pt30_eta4p7_jesdn, pt_leadingjet_pt30_eta4p7_jesup;
     float pt_leadingjet_pt30_eta2p5, pt_leadingjet_pt30_eta2p5_jesdn, pt_leadingjet_pt30_eta2p5_jesup;
+    
+    // new obs.
+    float pT4lj; float pT4ljj;
+    float pT4lj_2p5; float pT4ljj_2p5;
+    float mass4lj; float mass4ljj;
+    float mass4lj_2p5;
+    float pTj1; float mj1; float yj1; float etaj1; float phij1;
+    float pTj2; float yj2; float mj2; float etaj2; float phij2;
+    float pTj1_2p5; float mj1_2p5; float yj1_2p5; float etaj1_2p5; float phij1_2p5;
+    float pTj2_2p5; float yj2_2p5; float mj2_2p5; float etaj2_2p5; float phij2_2p5;
+    float mj1j2; float dEtaj1j2;
+    float dPhiHj1; float dyHj1;
+    float dPhij1j2; float dPhiHj1j2;
+    float dPhij1j2_VBF ;
+    
+    float dPhiHj1_2p5; float dyHj1_2p5;
+    float mj1j2_2p5; float dEtaj1j2_2p5;
+    float dPhij1j2_2p5; float dPhiHj1j2_2p5;
+    float pTj1_VBF; float dPhiHj1j2_VBF;
+    //new obs. JES dn. reco
+    float pTj1_jesdn; float mj1_jesdn; float yj1_jesdn; float etaj1_jesdn; float phij1_jesdn;
+    float pTj2_jesdn; float yj2_jesdn; float mj2_jesdn; float etaj2_jesdn; float phij2_jesdn;
+
+    float pTj1_2p5_jesdn; float mj1_2p5_jesdn; float yj1_2p5_jesdn; float etaj1_2p5_jesdn; float phij1_2p5_jesdn;
+    float pTj2_2p5_jesdn; float yj2_2p5_jesdn; float mj2_2p5_jesdn; float etaj2_2p5_jesdn; float phij2_2p5_jesdn;
+
+    float mj1j2_jesdn; float dEtaj1j2_jesdn;
+
+    float dPhiHj1_jesdn; float dyHj1_jesdn;
+    float dPhij1j2_jesdn; float dPhiHj1j2_jesdn;
+
+    float dPhiHj1_2p5_jesdn; float dyHj1_2p5_jesdn;
+    float mj1j2_2p5_jesdn; float dEtaj1j2_2p5_jesdn;
+    float dPhij1j2_2p5_jesdn; float dPhiHj1j2_2p5_jesdn;
+    float pTj1_VBF_jesdn; float dPhij1j2_VBF_jesdn; float dPhiHj1j2_VBF_jesdn;
+    float mass4lj_jesdn; float mass4ljj_jesdn; float pT4lj_jesdn; float pT4ljj_jesdn;
+    float mass4lj_2p5_jesdn;
+    float pT4lj_2p5_jesdn; float pT4ljj_2p5_jesdn;
+    // JES up reco
+    float pTj1_jesup; float mj1_jesup; float yj1_jesup; float etaj1_jesup; float phij1_jesup;
+    float pTj2_jesup; float yj2_jesup; float mj2_jesup; float etaj2_jesup; float phij2_jesup;
+
+    float pTj1_2p5_jesup; float mj1_2p5_jesup; float yj1_2p5_jesup; float etaj1_2p5_jesup; float phij1_2p5_jesup;
+    float pTj2_2p5_jesup; float yj2_2p5_jesup; float mj2_2p5_jesup; float etaj2_2p5_jesup; float phij2_2p5_jesup;
+
+
+    float mj1j2_jesup; float dEtaj1j2_jesup;
+
+    float dPhiHj1_jesup; float dyHj1_jesup;
+    float dPhij1j2_jesup; float dPhiHj1j2_jesup;
+
+    float dPhiHj1_2p5_jesup; float dyHj1_2p5_jesup;
+    float mj1j2_2p5_jesup; float dEtaj1j2_2p5_jesup;
+    float dPhij1j2_2p5_jesup; float dPhiHj1j2_2p5_jesup;
+    float pTj1_VBF_jesup; float dPhij1j2_VBF_jesup; float dPhiHj1j2_VBF_jesup;
+    float mass4lj_jesup; float mass4ljj_jesup;
+    float mass4lj_2p5_jesup; 
+    float pT4lj_jesup; float pT4ljj_jesup;
+    float pT4lj_2p5_jesup; float pT4ljj_2p5_jesup;
+
+    // KD based new observables
+    float D_bkg_kin, D_bkg, D_g4, D_g1g4, D_0m, D_CP, D_0hp, D_int, D_L1, D_L1_int, D_L1Zg, D_L1Zgint;
+
+    // Tau variables
+    float TauC_Inc_0j_EnergyWgt, TauB_Inc_0j_pTWgt;
 
     // load ggZZ k-graphs
     loadKFactorGraphs();
@@ -259,6 +329,191 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     if (tree->GetBranch("pt_leadingjet_pt30_eta2p5_jesdn")) {tree->SetBranchAddress("pt_leadingjet_pt30_eta2p5_jesdn",&pt_leadingjet_pt30_eta2p5_jesdn);}
     if (tree->GetBranch("pTj1_2p5_jesdn")) {tree->SetBranchAddress("pTj1_2p5_jesdn",&pt_leadingjet_pt30_eta2p5_jesdn);}
 
+    // new obs.
+    if (tree->GetBranch("mass4lj")){tree->SetBranchAddress("mass4lj",&mass4lj);}
+    if (tree->GetBranch("mass4lj_jesdn")){tree->SetBranchAddress("mass4lj_jesdn",&mass4lj_jesdn);}
+    if (tree->GetBranch("mass4lj_jesup")){tree->SetBranchAddress("mass4lj_jesup",&mass4lj_jesup);}
+    if (tree->GetBranch("mass4lj_2p5")){tree->SetBranchAddress("mass4lj_2p5",&mass4lj_2p5);}
+    if (tree->GetBranch("mass4lj_2p5_jesdn")){tree->SetBranchAddress("mass4lj_2p5_jesdn",&mass4lj_2p5_jesdn);}
+    if (tree->GetBranch("mass4lj_2p5_jesup")){tree->SetBranchAddress("mass4lj_2p5_jesup",&mass4lj_2p5_jesup);}
+    if (tree->GetBranch("pTj2")){tree->SetBranchAddress("pTj2",&pTj2);}
+    if (tree->GetBranch("pTj2_jesdn")){tree->SetBranchAddress("pTj2_jesdn",&pTj2_jesdn);}
+    if (tree->GetBranch("pTj2_jesup")){tree->SetBranchAddress("pTj2_jesup",&pTj2_jesup);}
+    if (tree->GetBranch("mj1j2")){tree->SetBranchAddress("mj1j2",&mj1j2);}
+    if (tree->GetBranch("mj1j2_jesdn")){tree->SetBranchAddress("mj1j2_jesdn",&mj1j2_jesdn);}
+    if (tree->GetBranch("mj1j2_jesup")){tree->SetBranchAddress("mj1j2_jesup",&mj1j2_jesup);}
+
+    //   leading jet (eta 4p7) 
+    if (tree->GetBranch("pTj1")) {tree->SetBranchAddress("pTj1",&pTj1);}
+    if (tree->GetBranch("yj1")) {tree->SetBranchAddress("yj1",&yj1);}
+    if (tree->GetBranch("etaj1")) {tree->SetBranchAddress("etaj1",&etaj1);}
+    if (tree->GetBranch("phij1")) {tree->SetBranchAddress("phij1",&phij1);}
+    if (tree->GetBranch("mj1")) {tree->SetBranchAddress("mj1",&mj1);}
+    //   leading jet JES dn (eta 4p7) 
+    if (tree->GetBranch("pTj1_jesdn")) {tree->SetBranchAddress("pTj1_jesdn",&pTj1_jesdn);}
+    if (tree->GetBranch("yj1_jesdn")) {tree->SetBranchAddress("yj1_jesdn",&yj1_jesdn);}
+    if (tree->GetBranch("etaj1_jesdn")) {tree->SetBranchAddress("etaj1_jesdn",&etaj1_jesdn);}
+    if (tree->GetBranch("phij1_jesdn")) {tree->SetBranchAddress("phij1_jesdn",&phij1_jesdn);}
+    if (tree->GetBranch("mj1_jesdn")) {tree->SetBranchAddress("mj1_jesdn",&mj1_jesdn);}
+    //   leading jet JES up(eta 4p7) 
+    if (tree->GetBranch("pTj1_jesup")) {tree->SetBranchAddress("pTj1_jesup",&pTj1_jesup);}
+    if (tree->GetBranch("yj1_jesup")) {tree->SetBranchAddress("yj1_jesup",&yj1_jesup);}
+    if (tree->GetBranch("etaj1_jesup")) {tree->SetBranchAddress("etaj1_jesup",&etaj1_jesup);}
+    if (tree->GetBranch("phij1_jesup")) {tree->SetBranchAddress("phij1_jesup",&phij1_jesup);}
+    if (tree->GetBranch("mj1_jesup")) {tree->SetBranchAddress("mj1_jesup",&mj1_jesup);}
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //   sub-leading jet (eta 4p7) 
+    if (tree->GetBranch("pTj2")) {tree->SetBranchAddress("pTj2",&pTj2);}
+    if (tree->GetBranch("yj2")) {tree->SetBranchAddress("yj2",&yj2);}
+    if (tree->GetBranch("etaj2")) {tree->SetBranchAddress("etaj2",&etaj2);}
+    if (tree->GetBranch("phij2")) {tree->SetBranchAddress("phij2",&phij2);}
+    if (tree->GetBranch("mj2")) {tree->SetBranchAddress("mj2",&mj2);}
+    //   sub-leading jet JES dn (eta 4p7) 
+    if (tree->GetBranch("pTj2_jesdn")) {tree->SetBranchAddress("pTj2_jesdn",&pTj2_jesdn);}
+    if (tree->GetBranch("yj2_jesdn")) {tree->SetBranchAddress("yj2_jesdn",&yj2_jesdn);}
+    if (tree->GetBranch("etaj2_jesdn")) {tree->SetBranchAddress("etaj2_jesdn",&etaj2_jesdn);}
+    if (tree->GetBranch("phij2_jesdn")) {tree->SetBranchAddress("phij2_jesdn",&phij2_jesdn);}
+    if (tree->GetBranch("mj2_jesdn")) {tree->SetBranchAddress("mj2_jesdn",&mj2_jesdn);}
+    //   sub-leading jet JES up (eta 4p7) 
+    if (tree->GetBranch("pTj2_jesup")) {tree->SetBranchAddress("pTj2_jesup",&pTj2_jesup);}
+    if (tree->GetBranch("yj2_jesup")) {tree->SetBranchAddress("yj2_jesup",&yj2_jesup);}
+    if (tree->GetBranch("etaj2_jesup")) {tree->SetBranchAddress("etaj2_jesup",&etaj2_jesup);}
+    if (tree->GetBranch("phij2_jesup")) {tree->SetBranchAddress("phij2_jesup",&phij2_jesup);}
+    if (tree->GetBranch("mj2_jesup")) {tree->SetBranchAddress("mj2_jesup",&mj2_jesup);}
+    //////////////////////////////////////////////////////////////////////////////////////////////          
+    //   leading jet (eta 2p5) 
+    if (tree->GetBranch("pTj1_2p5")) {tree->SetBranchAddress("pTj1_2p5",&pTj1_2p5);}
+    if (tree->GetBranch("yj1_2p5")) {tree->SetBranchAddress("yj1_2p5",&yj1_2p5);}
+    if (tree->GetBranch("etaj1_2p5")) {tree->SetBranchAddress("etaj1_2p5",&etaj1_2p5);}
+    if (tree->GetBranch("phij1_2p5")) {tree->SetBranchAddress("phij1_2p5",&phij1_2p5);}
+    if (tree->GetBranch("mj1_2p5")) {tree->SetBranchAddress("mj1_2p5",&mj1_2p5);}
+    //   leading jet JES dn (eta 2p5) 
+    if (tree->GetBranch("pTj1_2p5_jesdn")) {tree->SetBranchAddress("pTj1_2p5_jesdn",&pTj1_2p5_jesdn);}
+    if (tree->GetBranch("yj1_2p5_jesdn")) {tree->SetBranchAddress("yj1_2p5_jesdn",&yj1_2p5_jesdn);}
+    if (tree->GetBranch("etaj1_2p5_jesdn")) {tree->SetBranchAddress("etaj1_2p5_jesdn",&etaj1_2p5_jesdn);}
+    if (tree->GetBranch("phij1_2p5_jesdn")) {tree->SetBranchAddress("phij1_2p5_jesdn",&phij1_2p5_jesdn);}
+    if (tree->GetBranch("mj1_2p5_jesdn")) {tree->SetBranchAddress("mj1_2p5_jesdn",&mj1_2p5_jesdn);}
+    //   leading jet JES up (eta 2p5) 
+    if (tree->GetBranch("pTj1_2p5_jesup")) {tree->SetBranchAddress("pTj1_2p5_jesup",&pTj1_2p5_jesup);}
+    if (tree->GetBranch("yj1_2p5_jesup")) {tree->SetBranchAddress("yj1_2p5_jesup",&yj1_2p5_jesup);}
+    if (tree->GetBranch("etaj1_2p5_jesup")) {tree->SetBranchAddress("etaj1_2p5_jesup",&etaj1_2p5_jesup);}
+    if (tree->GetBranch("phij1_2p5_jesup")) {tree->SetBranchAddress("phij1_2p5_jesup",&phij1_2p5_jesup);}
+    if (tree->GetBranch("mj1_2p5_jesup")) {tree->SetBranchAddress("mj1_2p5_jesup",&mj1_2p5_jesup);}
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    //   sub-leading jet (eta 2p5) 
+    if (tree->GetBranch("pTj2_2p5")) {tree->SetBranchAddress("pTj2_2p5",&pTj2_2p5);}
+    if (tree->GetBranch("yj2_2p5")) {tree->SetBranchAddress("yj2_2p5",&yj2_2p5);}
+    if (tree->GetBranch("etaj2_2p5")) {tree->SetBranchAddress("etaj2_2p5",&etaj2_2p5);}
+    if (tree->GetBranch("phij2_2p5")) {tree->SetBranchAddress("phij2_2p5",&phij2_2p5);}
+    if (tree->GetBranch("mj2_2p5")) {tree->SetBranchAddress("mj2_2p5",&mj2_2p5);}
+    //   sub-leading jet JES dn (eta 2p5) 
+    if (tree->GetBranch("pTj2_2p5_jesdn")) {tree->SetBranchAddress("pTj2_2p5_jesdn",&pTj2_2p5_jesdn);}
+    if (tree->GetBranch("yj2_2p5_jesdn")) {tree->SetBranchAddress("yj2_2p5_jesdn",&yj2_2p5_jesdn);}
+    if (tree->GetBranch("etaj2_2p5_jesdn")) {tree->SetBranchAddress("etaj2_2p5_jesdn",&etaj2_2p5_jesdn);}
+    if (tree->GetBranch("phij2_2p5_jesdn")) {tree->SetBranchAddress("phij2_2p5_jesdn",&phij2_2p5_jesdn);}
+    if (tree->GetBranch("mj2_2p5_jesdn")) {tree->SetBranchAddress("mj2_2p5_jesdn",&mj2_2p5_jesdn);}
+    //   sub-leading jet JES up (eta 2p5) 
+    if (tree->GetBranch("pTj2_2p5_jesup")) {tree->SetBranchAddress("pTj2_2p5_jesup",&pTj2_2p5_jesup);}
+    if (tree->GetBranch("yj2_2p5_jesup")) {tree->SetBranchAddress("yj2_2p5_jesup",&yj2_2p5_jesup);}
+    if (tree->GetBranch("etaj2_2p5_jesup")) {tree->SetBranchAddress("etaj2_2p5_jesup",&etaj2_2p5_jesup);}
+    if (tree->GetBranch("phij2_2p5_jesup")) {tree->SetBranchAddress("phij2_2p5_jesup",&phij2_2p5_jesup);}
+    if (tree->GetBranch("mj2_2p5_jesup")) {tree->SetBranchAddress("mj2_2p5_jesup",&mj2_2p5_jesup);}
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    // other Higgs plus jet system variables
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    if (tree->GetBranch("mass4lj")){tree->SetBranchAddress("mass4lj",&mass4lj);}
+    if (tree->GetBranch("mass4lj_2p5")){tree->SetBranchAddress("mass4lj_2p5",&mass4lj_2p5);}
+    if (tree->GetBranch("mass4ljj")){tree->SetBranchAddress("mass4ljj",&mass4ljj);}
+    if (tree->GetBranch("pT4lj")){tree->SetBranchAddress("pT4lj",&pT4lj);}
+    if (tree->GetBranch("pT4lj_2p5")){tree->SetBranchAddress("pT4lj_2p5",&pT4lj_2p5);}
+    if (tree->GetBranch("pT4ljj")){tree->SetBranchAddress("pT4ljj",&pT4ljj);}
+    if (tree->GetBranch("pT4ljj_2p5")){tree->SetBranchAddress("pT4ljj_2p5",&pT4ljj_2p5);}
+    if (tree->GetBranch("dPhiHj1")){tree->SetBranchAddress("dPhiHj1",&dPhiHj1);}
+    if (tree->GetBranch("dyHj1")){tree->SetBranchAddress("dyHj1",&dyHj1);}
+    if (tree->GetBranch("mj1j2")){tree->SetBranchAddress("mj1j2",&mj1j2);}
+    if (tree->GetBranch("dEtaj1j2")){tree->SetBranchAddress("dEtaj1j2",&dEtaj1j2);}
+    if (tree->GetBranch("dPhij1j2")){tree->SetBranchAddress("dPhij1j2",&dPhij1j2);}
+    if (tree->GetBranch("dPhiHj1j2")){tree->SetBranchAddress("dPhiHj1j2",&dPhiHj1j2);}
+    if (tree->GetBranch("dPhij1j2_VBF")){tree->SetBranchAddress("dPhij1j2_VBF",&dPhij1j2_VBF);}
+    if (tree->GetBranch("dPhiHj1j2_VBF")){tree->SetBranchAddress("dPhiHj1j2_VBF",&dPhiHj1j2_VBF);}
+  
+    // other Higgs plus jet system variables    JES dn
+    if (tree->GetBranch("mass4lj_jesdn")){tree->SetBranchAddress("mass4lj_jesdn",&mass4lj_jesdn);}
+    if (tree->GetBranch("mass4lj_2p5_jesdn")){tree->SetBranchAddress("mass4lj_2p5_jesdn",&mass4lj_2p5_jesdn);}
+    if (tree->GetBranch("mass4ljj_jesdn")){tree->SetBranchAddress("mass4ljj_jesdn",&mass4ljj_jesdn);}
+    if (tree->GetBranch("pT4lj_jesdn")){tree->SetBranchAddress("pT4lj_jesdn",&pT4lj_jesdn);}
+    if (tree->GetBranch("pT4lj_2p5_jesdn")){tree->SetBranchAddress("pT4lj_2p5_jesdn",&pT4lj_2p5_jesdn);}
+    if (tree->GetBranch("pT4ljj_jesdn")){tree->SetBranchAddress("pT4ljj_jesdn",&pT4ljj_jesdn);}
+    if (tree->GetBranch("pT4ljj_2p5_jesdn")){tree->SetBranchAddress("pT4ljj_2p5_jesdn",&pT4ljj_2p5_jesdn);}
+    if (tree->GetBranch("dPhiHj1_jesdn")){tree->SetBranchAddress("dPhiHj1_jesdn",&dPhiHj1_jesdn);}
+    if (tree->GetBranch("dyHj1_jesdn")){tree->SetBranchAddress("dyHj1_jesdn",&dyHj1_jesdn);}
+    if (tree->GetBranch("mj1j2_jesdn")){tree->SetBranchAddress("mj1j2_jesdn",&mj1j2_jesdn);}
+    if (tree->GetBranch("dEtaj1j2_jesdn")){tree->SetBranchAddress("dEtaj1j2_jesdn",&dEtaj1j2_jesdn);}
+    if (tree->GetBranch("dPhij1j2_jesdn")){tree->SetBranchAddress("dPhij1j2_jesdn",&dPhij1j2_jesdn);}
+    if (tree->GetBranch("dPhiHj1j2_jesdn")){tree->SetBranchAddress("dPhiHj1j2_jesdn",&dPhiHj1j2_jesdn);}
+    if (tree->GetBranch("dPhij1j2_VBF_jesdn")){tree->SetBranchAddress("dPhij1j2_VBF_jesdn",&dPhij1j2_VBF_jesdn);}
+    if (tree->GetBranch("dPhiHj1j2_VBF_jesdn")){tree->SetBranchAddress("dPhiHj1j2_VBF_jesdn",&dPhiHj1j2_VBF_jesdn);}
+    // other Higgs plus jet system variables    JES up
+    if (tree->GetBranch("mass4lj_jesup")){tree->SetBranchAddress("mass4lj_jesup",&mass4lj_jesup);}
+    if (tree->GetBranch("mass4lj_2p5_jesup")){tree->SetBranchAddress("mass4lj_2p5_jesup",&mass4lj_2p5_jesup);}
+    if (tree->GetBranch("mass4ljj_jesup")){tree->SetBranchAddress("mass4ljj_jesup",&mass4ljj_jesup);}
+    if (tree->GetBranch("pT4lj_jesup")){tree->SetBranchAddress("pT4lj_jesup",&pT4lj_jesup);}
+    if (tree->GetBranch("pT4lj_2p5_jesup")){tree->SetBranchAddress("pT4lj_2p5_jesup",&pT4lj_2p5_jesup);}
+    if (tree->GetBranch("pT4ljj_jesup")){tree->SetBranchAddress("pT4ljj_jesup",&pT4ljj_jesup);}
+    if (tree->GetBranch("pT4ljj_2p5_jesup")){tree->SetBranchAddress("pT4ljj_2p5_jesup",&pT4ljj_2p5_jesup);}
+    if (tree->GetBranch("dPhiHj1_jesup")){tree->SetBranchAddress("dPhiHj1_jesup",&dPhiHj1_jesup);}
+    if (tree->GetBranch("dyHj1_jesup")){tree->SetBranchAddress("dyHj1_jesup",&dyHj1_jesup);}
+    if (tree->GetBranch("mj1j2_jesup")){tree->SetBranchAddress("mj1j2_jesup",&mj1j2_jesup);}
+    if (tree->GetBranch("dEtaj1j2_jesup")){tree->SetBranchAddress("dEtaj1j2_jesup",&dEtaj1j2_jesup);}
+    if (tree->GetBranch("dPhij1j2_jesup")){tree->SetBranchAddress("dPhij1j2_jesup",&dPhij1j2_jesup);}
+    if (tree->GetBranch("dPhiHj1j2_jesup")){tree->SetBranchAddress("dPhiHj1j2_jesup",&dPhiHj1j2_jesup);}
+    if (tree->GetBranch("dPhij1j2_VBF_jesup")){tree->SetBranchAddress("dPhij1j2_VBF_jesup",&dPhij1j2_VBF_jesup);}
+    if (tree->GetBranch("dPhiHj1j2_VBF_jesup")){tree->SetBranchAddress("dPhiHj1j2_VBF_jesup",&dPhiHj1j2_VBF_jesup);}
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    // other Higgs plus jet system variables (eta 2p5)
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    if (tree->GetBranch("dPhiHj1_2p5")){tree->SetBranchAddress("dPhiHj1_2p5",&dPhiHj1_2p5);}
+    if (tree->GetBranch("dyHj1_2p5")){tree->SetBranchAddress("dyHj1_2p5",&dyHj1_2p5);}
+    if (tree->GetBranch("mj1j2_2p5")){tree->SetBranchAddress("mj1j2_2p5",&mj1j2_2p5);}
+    if (tree->GetBranch("dEtaj1j2_2p5")){tree->SetBranchAddress("dEtaj1j2_2p5",&dEtaj1j2_2p5);}
+    if (tree->GetBranch("dPhij1j2_2p5")){tree->SetBranchAddress("dPhij1j2_2p5",&dPhij1j2_2p5);}
+    if (tree->GetBranch("dPhiHj1j2_2p5")){tree->SetBranchAddress("dPhiHj1j2_2p5",&dPhiHj1j2_2p5);}
+    // other Higgs plus jet system variables JES dn  (eta 2p5)
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    if (tree->GetBranch("dPhiHj1_2p5_jesdn")){tree->SetBranchAddress("dPhiHj1_2p5_jesdn",&dPhiHj1_2p5_jesdn);}
+    if (tree->GetBranch("dyHj1_2p5_jesdn")){tree->SetBranchAddress("dyHj1_2p5_jesdn",&dyHj1_2p5_jesdn);}
+    if (tree->GetBranch("mj1j2_2p5_jesdn")){tree->SetBranchAddress("mj1j2_2p5_jesdn",&mj1j2_2p5_jesdn);}
+    if (tree->GetBranch("dEtaj1j2_2p5_jesdn")){tree->SetBranchAddress("dEtaj1j2_2p5_jesdn",&dEtaj1j2_2p5_jesdn);}
+    if (tree->GetBranch("dPhij1j2_2p5_jesdn")){tree->SetBranchAddress("dPhij1j2_2p5_jesdn",&dPhij1j2_2p5_jesdn);}
+    if (tree->GetBranch("dPhiHj1j2_2p5_jesdn")){tree->SetBranchAddress("dPhiHj1j2_2p5_jesdn",&dPhiHj1j2_2p5_jesdn);}
+    // other Higgs plus jet system variables JES up (eta 2p5)
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    if (tree->GetBranch("dPhiHj1_2p5_jesup")){tree->SetBranchAddress("dPhiHj1_2p5_jesup",&dPhiHj1_2p5_jesup);}
+    if (tree->GetBranch("dyHj1_2p5_jesup")){tree->SetBranchAddress("dyHj1_2p5_jesup",&dyHj1_2p5_jesup);}
+    if (tree->GetBranch("mj1j2_2p5_jesup")){tree->SetBranchAddress("mj1j2_2p5_jesup",&mj1j2_2p5_jesup);}
+    if (tree->GetBranch("dEtaj1j2_2p5_jesup")){tree->SetBranchAddress("dEtaj1j2_2p5_jesup",&dEtaj1j2_2p5_jesup);}
+    if (tree->GetBranch("dPhij1j2_2p5_jesup")){tree->SetBranchAddress("dPhij1j2_2p5_jesup",&dPhij1j2_2p5_jesup);}
+    if (tree->GetBranch("dPhiHj1j2_2p5_jesup")){tree->SetBranchAddress("dPhiHj1j2_2p5_jesup",&dPhiHj1j2_2p5_jesup);}
+
+    // KD based obs.
+    if (tree->GetBranch("D_bkg")){tree->SetBranchAddress("D_bkg",&D_bkg);}
+    if (tree->GetBranch("D_bkg_kin")){tree->SetBranchAddress("D_bkg_kin",&D_bkg_kin);}
+    if (tree->GetBranch("D_g4")){tree->SetBranchAddress("D_g4",&D_g4);}
+    if (tree->GetBranch("D_g1g4")){tree->SetBranchAddress("D_g1g4",&D_g1g4);}
+    if (tree->GetBranch("D_0m")){tree->SetBranchAddress("D_0m",&D_0m);}
+    if (tree->GetBranch("D_CP")){tree->SetBranchAddress("D_CP",&D_CP);}
+    if (tree->GetBranch("D_0hp")){tree->SetBranchAddress("D_0hp",&D_0hp);}
+    if (tree->GetBranch("D_int")){tree->SetBranchAddress("D_int",&D_int);}
+    if (tree->GetBranch("D_L1")){tree->SetBranchAddress("D_L1",&D_L1);}
+    if (tree->GetBranch("D_L1_int")){tree->SetBranchAddress("D_L1_int",&D_L1_int);}
+    if (tree->GetBranch("D_L1Zg")){tree->SetBranchAddress("D_L1Zg",&D_L1Zg);}
+    if (tree->GetBranch("D_L1Zgint")){tree->SetBranchAddress("D_L1Zgint",&D_L1Zgint);}
+
+    // Tau variables
+    if (tree->GetBranch("TauB_Inc_0j_pTWgt")){tree->SetBranchAddress("TauB_Inc_0j_pTWgt",&TauB_Inc_0j_pTWgt);}
+    if (tree->GetBranch("TauC_Inc_0j_EnergyWgt")){tree->SetBranchAddress("TauC_Inc_0j_EnergyWgt",&TauC_Inc_0j_EnergyWgt);}
+
 
     // prepare tree for a set of discriminants and variables (for templates)
     float selectedWeight;
@@ -297,6 +552,171 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     TT->Branch("pt_leadingjet_pt30_eta2p5_jesdn",&pt_leadingjet_pt30_eta2p5_jesdn,"pt_leadingjet_pt30_eta2p5_jesdn/F");
     TT->Branch("kfactor_ggZZ",&kfactor_ggZZ,"kfactor_ggZZ/F");
     TT->Branch("kfactor_qqZZ",&kfactor_qqZZ,"kfactor_qqZZ/F");
+
+
+    // new obs.
+    // Jet obs. reco, nominal
+    TT->Branch("pTj1",&pTj1,"pTj1/F");
+    TT->Branch("phij1",&phij1,"phij1/F");
+    TT->Branch("pTj1_VBF",&pTj1_VBF,"pTj1_VBF/F");
+    TT->Branch("etaj1",&etaj1,"etaj1/F");
+    TT->Branch("yj1",&yj1,"yj1/F");
+    TT->Branch("mj1",&mj1,"mj1/F");
+
+    TT->Branch("pTj2",&pTj2,"pTj2/F");
+    TT->Branch("etaj2",&etaj2,"etaj2/F");
+    TT->Branch("yj2",&yj2,"yj2/F");
+    TT->Branch("mj2",&mj2,"mj2/F");
+    TT->Branch("phij2",&phij2,"phij2/F");
+
+    TT->Branch("dPhiHj1",&dPhiHj1,"dPhiHj1/F");
+    TT->Branch("dyHj1",&dyHj1,"dyHj1/F");
+    TT->Branch("mj1j2",&mj1j2,"mj1j2/F");
+    TT->Branch("dEtaj1j2",&dEtaj1j2,"dEtaj1j2/F");
+    TT->Branch("dPhij1j2",&dPhij1j2,"dPhij1j2/F");
+    TT->Branch("dPhiHj1j2",&dPhiHj1j2,"dPhiHj1j2/F");
+    TT->Branch("dPhij1j2_VBF",&dPhij1j2_VBF,"dPhij1j2_VBF/F");
+    TT->Branch("dPhiHj1j2_VBF",&dPhiHj1j2_VBF,"dPhiHj1j2_VBF/F");
+    TT->Branch("pT4lj",&pT4lj,"pT4lj/F");
+    TT->Branch("pT4lj_2p5",&pT4lj_2p5,"pT4lj_2p5/F");
+    TT->Branch("pT4ljj",&pT4ljj,"pT4ljj/F");
+    TT->Branch("pT4ljj_2p5",&pT4ljj_2p5,"pT4ljj_2p5/F");
+    TT->Branch("mass4lj",&mass4lj,"mass4lj/F");
+    TT->Branch("mass4lj_2p5",&mass4lj_2p5,"mass4lj_2p5/F");
+    TT->Branch("mass4ljj",&mass4ljj,"mass4ljj/F");
+
+    TT->Branch("pTj1_2p5",&pTj1_2p5,"pTj1_2p5/F");
+    TT->Branch("yj1_2p5",&yj1_2p5,"yj1_2p5/F");
+    TT->Branch("mj1_2p5",&mj1_2p5,"mj1_2p5/F");
+    TT->Branch("phij1_2p5",&phij1_2p5,"phij1_2p5/F");
+    TT->Branch("etaj1_2p5",&etaj1_2p5,"etaj1_2p5/F");
+
+    TT->Branch("pTj2_2p5",&pTj2_2p5,"pTj2_2p5/F");
+    TT->Branch("yj2_2p5",&yj2_2p5,"yj2_2p5/F");
+    TT->Branch("mj2_2p5",&mj2_2p5,"mj2_2p5/F");
+    TT->Branch("etaj2_2p5",&etaj2_2p5,"etaj2_2p5/F");
+    TT->Branch("phij2_2p5",&phij2_2p5,"phij2_2p5/F");
+
+    TT->Branch("dPhiHj1_2p5",&dPhiHj1_2p5,"dPhiHj1_2p5/F");
+    TT->Branch("dyHj1_2p5",&dyHj1_2p5,"dyHj1_2p5/F");
+    TT->Branch("mj1j2_2p5",&mj1j2_2p5,"mj1j2_2p5/F");
+    TT->Branch("dEtaj1j2_2p5",&dEtaj1j2_2p5,"dEtaj1j2_2p5/F");
+    TT->Branch("dPhij1j2_2p5",&dPhij1j2_2p5,"dPhij1j2_2p5/F");
+    TT->Branch("dPhiHj1j2_2p5",&dPhiHj1j2_2p5,"dPhiHj1j2_2p5/F");
+
+    // JES down reco    
+    TT->Branch("pTj1_jesdn",&pTj1_jesdn,"pTj1_jesdn/F");
+    TT->Branch("pTj1_VBF_jesdn",&pTj1_VBF_jesdn,"pTj1_VBF_jesdn/F");
+    TT->Branch("etaj1_jesdn",&etaj1_jesdn,"etaj1_jesdn/F");
+    TT->Branch("yj1_jesdn",&yj1_jesdn,"yj1_jesdn/F");
+    TT->Branch("mj1_jesdn",&mj1_jesdn,"mj1_jesdn/F");
+    TT->Branch("phij1_jesdn",&phij1_jesdn,"phij1_jesdn/F");
+
+    TT->Branch("pTj2_jesdn",&pTj2_jesdn,"pTj2_jesdn/F");
+    TT->Branch("etaj2_jesdn",&etaj2_jesdn,"etaj2_jesdn/F");
+    TT->Branch("yj2_jesdn",&yj2_jesdn,"yj2_jesdn/F");
+    TT->Branch("mj2_jesdn",&mj2_jesdn,"mj2_jesdn/F");
+    TT->Branch("phij2_jesdn",&phij2_jesdn,"phij2_jesdn/F");
+
+    TT->Branch("dPhiHj1_jesdn",&dPhiHj1_jesdn,"dPhiHj1_jesdn/F");
+    TT->Branch("dyHj1_jesdn",&dyHj1_jesdn,"dyHj1_jesdn/F");
+    TT->Branch("mj1j2_jesdn",&mj1j2_jesdn,"mj1j2_jesdn/F");
+    TT->Branch("dEtaj1j2_jesdn",&dEtaj1j2_jesdn,"dEtaj1j2_jesdn/F");
+    TT->Branch("dPhij1j2_jesdn",&dPhij1j2_jesdn,"dPhij1j2_jesdn/F");
+    TT->Branch("dPhiHj1j2_jesdn",&dPhiHj1j2_jesdn,"dPhiHj1j2_jesdn/F");
+    TT->Branch("dPhij1j2_VBF_jesdn",&dPhij1j2_VBF_jesdn,"dPhij1j2_VBF_jesdn/F");
+    TT->Branch("dPhiHj1j2_VBF_jesdn",&dPhiHj1j2_VBF_jesdn,"dPhiHj1j2_VBF_jesdn/F");
+
+    TT->Branch("pTj1_2p5_jesdn",&pTj1_2p5_jesdn,"pTj1_2p5_jesdn/F");
+    TT->Branch("yj1_2p5_jesdn",&yj1_2p5_jesdn,"yj1_2p5_jesdn/F");
+    TT->Branch("mj1_2p5_jesdn",&mj1_2p5_jesdn,"mj1_2p5_jesdn/F");
+    TT->Branch("etaj1_2p5_jesdn",&etaj1_2p5_jesdn,"etaj1_2p5_jesdn/F");
+    TT->Branch("phij1_2p5_jesdn",&phij1_2p5_jesdn,"phij1_2p5_jesdn/F");
+
+    TT->Branch("pTj2_2p5_jesdn",&pTj2_2p5_jesdn,"pTj2_2p5_jesdn/F");
+    TT->Branch("yj2_2p5_jesdn",&yj2_2p5_jesdn,"yj2_2p5_jesdn/F");
+    TT->Branch("mj2_2p5_jesdn",&mj2_2p5_jesdn,"mj2_2p5_jesdn/F");
+    TT->Branch("etaj2_2p5_jesdn",&etaj2_2p5_jesdn,"etaj2_2p5_jesdn/F");
+    TT->Branch("phij2_2p5_jesdn",&phij2_2p5_jesdn,"phij2_2p5_jesdn/F");
+
+    TT->Branch("dPhiHj1_2p5_jesdn",&dPhiHj1_2p5_jesdn,"dPhiHj1_2p5_jesdn/F");
+    TT->Branch("dyHj1_2p5_jesdn",&dyHj1_2p5_jesdn,"dyHj1_2p5_jesdn/F");
+    TT->Branch("mj1j2_2p5_jesdn",&mj1j2_2p5_jesdn,"mj1j2_2p5_jesdn/F");
+    TT->Branch("dEtaj1j2_2p5_jesdn",&dEtaj1j2_2p5_jesdn,"dEtaj1j2_2p5_jesdn/F");
+    TT->Branch("dPhij1j2_2p5_jesdn",&dPhij1j2_2p5_jesdn,"dPhij1j2_2p5_jesdn/F");
+    TT->Branch("dPhiHj1j2_2p5_jesdn",&dPhiHj1j2_2p5_jesdn,"dPhiHj1j2_2p5_jesdn/F");
+    TT->Branch("mass4lj_jesdn",&mass4lj_jesdn,"mass4lj_jesdn/F");
+    TT->Branch("mass4lj_2p5_jesdn",&mass4lj_2p5_jesdn,"mass4lj_2p5_jesdn/F");
+    TT->Branch("mass4ljj_jesdn",&mass4ljj_jesdn,"mass4ljj_jesdn/F");
+    TT->Branch("pT4lj_jesdn",&pT4lj_jesdn,"pT4lj_jesdn/F");
+    TT->Branch("pT4lj_2p5_jesdn",&pT4lj_2p5_jesdn,"pT4lj_2p5_jesdn/F");
+    TT->Branch("pT4ljj_jesdn",&pT4ljj_jesdn,"pT4ljj_jesdn/F");
+    TT->Branch("pT4ljj_2p5_jesdn",&pT4ljj_2p5_jesdn,"pT4ljj_2p5_jesdn/F");
+
+    // JES up reco
+    TT->Branch("pTj1_jesup",&pTj1_jesup,"pTj1_jesup/F");
+    TT->Branch("pTj1_VBF_jesup",&pTj1_VBF_jesup,"pTj1_VBF_jesup/F");
+    TT->Branch("etaj1_jesup",&etaj1_jesup,"etaj1_jesup/F");
+    TT->Branch("yj1_jesup",&yj1_jesup,"yj1_jesup/F");
+    TT->Branch("mj1_jesup",&mj1_jesup,"mj1_jesup/F");
+    TT->Branch("phij1_jesup",&phij1_jesup,"phij1_jesup/F");
+
+    TT->Branch("pTj2_jesup",&pTj2_jesup,"pTj2_jesup/F");
+    TT->Branch("etaj2_jesup",&etaj2_jesup,"etaj2_jesup/F");
+    TT->Branch("yj2_jesup",&yj2_jesup,"yj2_jesup/F");
+    TT->Branch("mj2_jesup",&mj2_jesup,"mj2_jesup/F");
+    TT->Branch("phij2_jesup",&phij2_jesup,"phij2_jesup/F");
+
+    TT->Branch("dPhiHj1_jesup",&dPhiHj1_jesup,"dPhiHj1_jesup/F");
+    TT->Branch("dyHj1_jesup",&dyHj1_jesup,"dyHj1_jesup/F");
+    TT->Branch("mj1j2_jesup",&mj1j2_jesup,"mj1j2_jesup/F");
+    TT->Branch("dEtaj1j2_jesup",&dEtaj1j2_jesup,"dEtaj1j2_jesup/F");
+    TT->Branch("dPhij1j2_jesup",&dPhij1j2_jesup,"dPhij1j2_jesup/F");
+    TT->Branch("dPhiHj1j2_jesup",&dPhiHj1j2_jesup,"dPhiHj1j2_jesup/F");
+    TT->Branch("dPhij1j2_VBF_jesup",&dPhij1j2_VBF_jesup,"dPhij1j2_VBF_jesup/F");
+    TT->Branch("dPhiHj1j2_VBF_jesup",&dPhiHj1j2_VBF_jesup,"dPhiHj1j2_VBF_jesup/F");
+
+    TT->Branch("pTj1_2p5_jesup",&pTj1_2p5_jesup,"pTj1_2p5_jesup/F");
+    TT->Branch("yj1_2p5_jesup",&yj1_2p5_jesup,"yj1_2p5_jesup/F");
+    TT->Branch("mj1_2p5_jesup",&mj1_2p5_jesup,"mj1_2p5_jesup/F");
+    TT->Branch("etaj1_2p5_jesup",&etaj1_2p5_jesup,"etaj1_2p5_jesup/F");
+    TT->Branch("phij1_2p5_jesup",&phij1_2p5_jesup,"phij1_2p5_jesup/F");
+
+    TT->Branch("pTj2_2p5_jesup",&pTj2_2p5_jesup,"pTj2_2p5_jesup/F");
+    TT->Branch("yj2_2p5_jesup",&yj2_2p5_jesup,"yj2_2p5_jesup/F");
+    TT->Branch("mj2_2p5_jesup",&mj2_2p5_jesup,"mj2_2p5_jesup/F");
+    TT->Branch("etaj2_2p5_jesup",&etaj2_2p5_jesup,"etaj2_2p5_jesup/F");
+    TT->Branch("phij2_2p5_jesup",&phij2_2p5_jesup,"phij2_2p5_jesup/F");
+
+    TT->Branch("dPhiHj1_2p5_jesup",&dPhiHj1_2p5_jesup,"dPhiHj1_2p5_jesup/F");
+    TT->Branch("dyHj1_2p5_jesup",&dyHj1_2p5_jesup,"dyHj1_2p5_jesup/F");
+    TT->Branch("mj1j2_2p5_jesup",&mj1j2_2p5_jesup,"mj1j2_2p5_jesup/F");
+    TT->Branch("dEtaj1j2_2p5_jesup",&dEtaj1j2_2p5_jesup,"dEtaj1j2_2p5_jesup/F");
+    TT->Branch("dPhij1j2_2p5_jesup",&dPhij1j2_2p5_jesup,"dPhij1j2_2p5_jesup/F");
+    TT->Branch("dPhiHj1j2_2p5_jesup",&dPhiHj1j2_2p5_jesup,"dPhiHj1j2_2p5_jesup/F");
+    TT->Branch("mass4lj_jesup",&mass4lj_jesup,"mass4lj_jesup/F");
+    TT->Branch("mass4lj_2p5_jesup",&mass4lj_2p5_jesup,"mass4lj_2p5_jesup/F");
+    TT->Branch("mass4ljj_jesup",&mass4ljj_jesup,"mass4ljj_jesup/F");
+    TT->Branch("pT4lj_jesup",&pT4lj_jesup,"pT4lj_jesup/F");
+    TT->Branch("pT4lj_2p5_jesup",&pT4lj_2p5_jesup,"pT4lj_2p5_jesup/F");
+    TT->Branch("pT4ljj_jesup",&pT4ljj_jesup,"pT4ljj_jesup/F");
+    TT->Branch("pT4ljj_2p5_jesup",&pT4ljj_2p5_jesup,"pT4ljj_2p5_jesup/F");
+
+    //  KD based observables
+    TT->Branch("D_bkg", &D_bkg, "D_bkg/F");
+    TT->Branch("D_bkg_kin", &D_bkg_kin, "D_bkg_kin/F");
+    TT->Branch("D_0hp", &D_0hp, "D_0hp/F");
+    TT->Branch("D_0m", &D_0m, "D_0m/F");
+    TT->Branch("D_CP", &D_CP, "D_CP/F");
+    TT->Branch("D_int",&D_int,"D_int/F");
+    TT->Branch("D_L1",&D_L1,"D_L1/F");
+    TT->Branch("D_L1_int",&D_L1_int,"D_L1_int/F");
+    TT->Branch("D_L1Zg",&D_L1Zg,"D_L1Zg/F");
+    TT->Branch("D_L1Zgint",&D_L1Zgint,"D_L1Zgint/F");
+
+    // Tau variables
+    TT->Branch("TauB_Inc_0j_pTWgt",&TauB_Inc_0j_pTWgt,"TauB_Inc_0j_pTWgt/F");
+    TT->Branch("TauC_Inc_0j_EnergyWgt",&TauC_Inc_0j_EnergyWgt,"TauC_Inc_0j_EnergyWgt/F");
 
     // counters
     int nEvtMassWindow = 0;
@@ -409,7 +829,7 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
 //_______________________________________________________________________________________________________________________________________________
 // using the fixed floor at the moment, to be changed
 int getTemplateXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
-                  TString obsName, TString obsBinDn, TString obsBinUp, TString obsName2, TString obsBinDn2, TString obsBinUp2, TString fitTypeZ4l, bool useRefit,
+                  TString obsName, TString obsBinDn, TString obsBinUp, bool obs_ifJES, TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2, TString fitTypeZ4l, bool useRefit,
                   double elpT, double mupT, double mZ2_low, double mZ1_low, double m4l_low, double m4l_high)
 {
     // prepare final state variables (for loop, later also plotting)
@@ -440,7 +860,7 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
     if (obsName2 != ""){
         fLocation = templatesDir + "/" + PROCESSING_TYPE + "_" + obsName + "_vs_" + obsName2 + "/" + sqrtsTag + "/";
     }
-    // std::cout << "[DEBUG: fiducialXSTemplates.C#441]  fLocation: " << fLocation << std::endl;
+    std::cout << "[DEBUG: fiducialXSTemplates.C#441]  fLocation: " << fLocation << std::endl;
     TFile *fTemplateTree = new TFile(fLocation + "/" + templateNameTag + "_" + sfinalState + ".root", fOption);
     TTree* TT = new TTree("selectedEvents","selectedEvents");
 
@@ -480,7 +900,7 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
             TString obsBinDn = ((TObjString*) ta->At(kEntry))->GetString();
             TString obsBinUp = ((TObjString*) ta->At(kEntry+1))->GetString();
             cout<<"test1: "<<endl;
-            storeTreeAndTemplatesXS(TT, obsName, obsBinDn, obsBinUp, sfinalState, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit);
+            storeTreeAndTemplatesXS(TT, obsName, obsBinDn, obsBinUp, sfinalState, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit, obs_ifJES);
         }
     }
     else if (obsBinDn == obsBinUp && obsBinDn.Contains("|") && obsBinDn2 == obsBinUp2)
@@ -495,13 +915,14 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
             TString obsBinDn = ((TObjString *)ta->At(kEntry))->GetString();
             TString obsBinUp = ((TObjString *)ta->At(kEntry + 1))->GetString();
             cout << "[DEBUG]#502:  " << endl;
-            storeTreeAndTemplatesXS(TT, obsName, obsBinDn, obsBinUp, sfinalState, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit, obsName2, obsBinDn2, obsBinUp2);
+            cout << "obs_ifJES: "<<obs_ifJES<<"; obs_ifJES2: "<<obs_ifJES2<<endl;
+            storeTreeAndTemplatesXS(TT, obsName, obsBinDn, obsBinUp, sfinalState, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2);
         }
     } else { // if one set of up & down bin boundaries is passed - run for it
         // FIXME: Add the else statement for both 1D and 2D
         // if one set of up & down bin boundaries is passed - run for itate, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit);
         cout<<"test1: "<<endl;
-        storeTreeAndTemplatesXS(TT, obsName, obsBinDn, obsBinUp, sfinalState, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit);
+        storeTreeAndTemplatesXS(TT, obsName, obsBinDn, obsBinUp, sfinalState, fLocation, templateNameTag, fOption, fitTypeZ4l, useRefit, obs_ifJES);
     }
 
     // TFile* fTemplateTree = new TFile(fLocation+"/"+templateNameTag+"_"+sfinalState+".root", fOption);
@@ -518,7 +939,7 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
 }
 
 //_______________________________________________________________________________________________________________________________________________
-void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit){
+void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit, bool obs_ifJES){
 
     TString obsTag = obsName+"_"+obsBinDn+"_"+obsBinUp;
     TH1D* h1D = new TH1D("m4l_"+obsTag, "m4l_"+obsTag, nbinsX, CUT_M4LLOW, CUT_M4LHIGH);
@@ -557,6 +978,7 @@ void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TStri
 
     // prepare cuts and get hist from the tree->Draw()
     TString treeCut = "((" + obsBinDn + " <= "+selectionObsName+") && ("+selectionObsName+" < " + obsBinUp + "))";
+    if (obsBinUp == "inf") treeCut = "((" + obsBinDn + " <= " + selectionObsName + "))";
     TString sM4l = "";
     if (useRefit) {sM4l = "mass4lREFIT>>m4l_";}
     else {sM4l = "mass4l>>m4l_";}
@@ -567,11 +989,14 @@ void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TStri
     cout << "[Observable tag: " << obsTag << "]" << endl;
     cout << "[Tree and templates saved in: " << fLocation << "]" << endl;
     cout << "[Bin fraction: " << fracBin << "][end fraction]" << endl;
-    if (obsName.Contains("jet")){ // assumes obserbale name in form "njets_pt{pt}_eta{eta}"
+    //if (obsName.Contains("jet")){ // assumes obserbale name in form "njets_pt{pt}_eta{eta}"
+    if (obs_ifJES){
         TString treeCut_jesdn = "((" + obsBinDn + " <= "+obsName+"_jesdn) && ("+obsName+"_jesdn < " + obsBinUp + "))";
+        if (obsBinUp == "inf") treeCut_jesdn = "((" + obsBinDn + " <= "+obsName+"_jesdn))";
         double entriesBin_jesdn = TT->GetEntries(treeCut_jesdn);
         double fracBin_jesdn = (double) entriesBin_jesdn/entriesTot;
         TString treeCut_jesup = "((" + obsBinDn + " <= "+obsName+"_jesup) && ("+obsName+"_jesup < " + obsBinUp + "))";
+        if (obsBinUp == "inf") treeCut_jesup = "((" + obsBinDn + " <= "+obsName+"_jesup))";
         double entriesBin_jesup = TT->GetEntries(treeCut_jesup);
         double fracBin_jesup = (double) entriesBin_jesup/entriesTot;
         cout << "[Bin fraction (JESdn): " << fracBin_jesdn << "]" << endl;
@@ -602,7 +1027,7 @@ void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TStri
 }
 
 //_______________________________________________________________________________________________________________________________________________
-void storeTreeAndTemplatesXS(TTree *TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit, TString obsName2, TString obsBinDn2, TString obsBinUp2)
+void storeTreeAndTemplatesXS(TTree *TT, TString obsName, TString obsBinDn, TString obsBinUp, TString sfinalState, TString fLocation, TString templateNameTag, TString fOption, TString fitTypeZ4l, bool useRefit, bool obs_ifJES, TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2)
 {
     TString obsTag = obsName + "_" + obsBinDn + "_" + obsBinUp;
     //  for second observable
@@ -675,8 +1100,10 @@ void storeTreeAndTemplatesXS(TTree *TT, TString obsName, TString obsBinDn, TStri
     // prepare cuts and get hist from the tree->Draw()
     // TString treeCut = "((" + obsBinDn + " <= "+selectionObsName+") && ("+selectionObsName+" < " + obsBinUp + "))";
     TString treeCut1 = "((" + obsBinDn + " <= " + selectionObsName + ") && (" + selectionObsName + " < " + obsBinUp + "))";
+    if (obsBinUp == "inf") treeCut1 = "((" + obsBinDn + " <= " + selectionObsName + "))";
     cout << "[  Tree cut 1 is............ " << treeCut1 << "]" << endl;
     TString treeCut2 = "((" + obsBinDn2 + " <= " + selectionObsName2 + ") && (" + selectionObsName2 + " < " + obsBinUp2 + "))";
+    if (obsBinUp2 == "inf") treeCut2 = "((" + obsBinDn2 + " <= " + selectionObsName2 + "))";
     cout << "[  Tree cut 2 is............ " << treeCut2 << "]" << endl;
     TString treeCut = "(" + treeCut1 + " && " + treeCut2 + ")"; // joint cut
     cout << "[  Tree cut is............ " << treeCut << "]" << endl;
@@ -697,12 +1124,39 @@ void storeTreeAndTemplatesXS(TTree *TT, TString obsName, TString obsBinDn, TStri
     cout << "[Observable tag: " << obsTag << "]" << endl;
     cout << "[Tree and templates saved in: " << fLocation << "]" << endl;
     cout << "[Bin fraction: " << fracBin << "][end fraction]" << endl;
-    if (obsName.Contains("jet"))
+    //if (obsName.Contains("jet"))
+    if (obs_ifJES || obs_ifJES2)
     { // assumes obserbale name in form "njets_pt{pt}_eta{eta}"
-        TString treeCut_jesdn = "((" + obsBinDn + " <= " + obsName + "_jesdn) && (" + obsName + "_jesdn < " + obsBinUp + "))";
+        TString treeCut1_jesdn = treeCut1;
+        TString treeCut1_jesup = treeCut1;
+        TString treeCut2_jesdn = treeCut2;
+        TString treeCut2_jesup = treeCut2;
+
+        if (obs_ifJES) {
+            treeCut1_jesdn = "((" + obsBinDn + " <= " + selectionObsName + "_jesdn) && (" + selectionObsName + "_jesdn < " + obsBinUp + "))";
+            if (obsBinUp == "inf") treeCut1_jesdn = "((" + obsBinDn + " <= " + selectionObsName + "_jesdn))";
+            treeCut1_jesup = "((" + obsBinDn + " <= " + selectionObsName + "_jesup) && (" + selectionObsName + "_jesup < " + obsBinUp + "))";
+            if (obsBinUp == "inf") treeCut1_jesup = "((" + obsBinDn + " <= " + selectionObsName + "_jesup))";
+        }
+        if (obs_ifJES2) {
+            treeCut2_jesdn = "((" + obsBinDn2 + " <= " + selectionObsName2 + "_jesdn) && (" + selectionObsName2 + "_jesdn < " + obsBinUp2 + "))";
+            if (obsBinUp2 == "inf") treeCut2_jesdn = "((" + obsBinDn2 + " <= " + selectionObsName2 + "_jesdn))";
+            treeCut2_jesup = "((" + obsBinDn2 + " <= " + selectionObsName2 + "_jesup) && (" + selectionObsName2 + "_jesup < " + obsBinUp2 + "))";
+            if (obsBinUp2 == "inf") treeCut2_jesup = "((" + obsBinDn2 + " <= " + selectionObsName2 + "_jesup))";
+        }
+
+        TString treeCut_jesdn = "(" + treeCut1_jesdn + " && " + treeCut2_jesdn + ")";
+        TString treeCut_jesup = "(" + treeCut1_jesup + " && " + treeCut2_jesup + ")";
+
+        cout << "[  Tree cut 1 jes_dn is............ " << treeCut1_jesdn << "]" << endl;
+        cout << "[  Tree cut 1 jes_up is............ " << treeCut1_jesup << "]" << endl;
+        cout << "[  Tree cut 2 jes_dn is............ " << treeCut2_jesdn << "]" << endl;
+        cout << "[  Tree cut 2 jes_up is............ " << treeCut2_jesup << "]" << endl;
+
+
         double entriesBin_jesdn = TT->GetEntries(treeCut_jesdn);
         double fracBin_jesdn = (double)entriesBin_jesdn / entriesTot;
-        TString treeCut_jesup = "((" + obsBinDn + " <= " + obsName + "_jesup) && (" + obsName + "_jesup < " + obsBinUp + "))";
+
         double entriesBin_jesup = TT->GetEntries(treeCut_jesup);
         double fracBin_jesup = (double)entriesBin_jesup / entriesTot;
         cout << "[Bin fraction (JESdn): " << fracBin_jesdn << "]" << endl;

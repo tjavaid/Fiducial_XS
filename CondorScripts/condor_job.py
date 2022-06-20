@@ -45,6 +45,7 @@ parser.add_argument('--log', type=str,
                     help='output path, where the CMSSW tar file and the datacard dict will be stored')
 parser.add_argument('--tar', dest="ifTar", action='store_true', help='if want to run using nohup')
 parser.add_argument( '-y', dest='year', default=2018, type=int, help='dataset year')
+parser.add_argument( '-j', dest='jobType', default="eff", choices=['eff','unc'], help='dataset year')
 args = parser.parse_args()
 
 datacardInputs = datacardInputs.format(year = args.year)
@@ -100,6 +101,7 @@ def condorJDLFile(fileName = "test",
     outJdl.write('\n'+'transfer_input_files = '+fileName+'.sh, '+fileName+'.txt')
     outJdl.write('\n'+'when_to_transfer_output = ON_EXIT')
     # outJdl.write('\n'+'x509userproxy = $ENV(X509_USER_PROXY)')
+    outJdl.write('\n'+'request_cpus = 8')
     outJdl.write('\n'+'+JobFlavour = "'+JobFlavour+'"')
     outJdl.write('\n'+'+AccountingGroup        = "group_u_CMS.CAF.ALCA"')
     # if request_memory != 0: outJdl.write('\n'+'request_memory = '+str(request_memory))
@@ -119,22 +121,34 @@ def condorSHFile(fileName = "test",
     outSHFile.write('\n'+'channel=$2')
     outSHFile.write('\n'+'obsBins=$3')
     outSHFile.write('\n'+'year=$4')
+
+    outSHFile.write('\n'+'OneDOr2DObs=$5')
+
     outSHFile.write('\n'+'echo "Input arguments: "')
     outSHFile.write('\n'+'echo "obsName: ${obsName}"')
     outSHFile.write('\n'+'echo "channel: ${channel}"')
     outSHFile.write('\n'+'echo "obsBins: ${obsBins}"')
     outSHFile.write('\n'+'echo "year: ${year}"')
+
+    outSHFile.write('\n'+'echo "OneDOr2DObs: ${OneDOr2DObs}"')
+
     outSHFile.write('\n'+'')
     outSHFile.write('\n'+'obsName=$(echo ${obsName} | sed "s/==/ /g")')
     outSHFile.write('\n'+'channel=$(echo ${channel} | sed "s/==/ /g")')
     outSHFile.write('\n'+'obsBins=$(echo ${obsBins} | sed "s/==/ /g")')
     outSHFile.write('\n'+'year=$(echo ${year} | sed "s/==/ /g")')
+
+    outSHFile.write('\n'+'OneDOr2DObs=$(echo ${OneDOr2DObs} | sed "s/==/ /g")')
+
     outSHFile.write('\n'+'')
     outSHFile.write('\n'+'echo "Input arguments: "')
     outSHFile.write('\n'+'echo "obsName: ${obsName}"')
     outSHFile.write('\n'+'echo "channel: ${channel}"')
     outSHFile.write('\n'+'echo "obsBins: ${obsBins}"')
     outSHFile.write('\n'+'echo "year: ${year}"')
+
+    outSHFile.write('\n'+'echo "OneDOr2DObs: ${OneDOr2DObs}"')
+
     outSHFile.write('\n'+'')
     outSHFile.write('\n'+'cp '+EOSPath+'/'+CMSSW+'.tgz .')
     outSHFile.write('\n'+'echo "==============="')
@@ -169,7 +183,9 @@ def condorSHFile(fileName = "test",
     outSHFile.write('\n'+'echo "Start of efficiency script"')
     outSHFile.write('\n'+'date')
     outSHFile.write('\n'+'echo "==============="')
-    outSHFile.write('\n'+'python -u efficiencyFactors.py -l -q -b --obsName="${obsName}" --obsBins="${obsBins}" -c "${channel}" -y "${year}"')
+    
+    outSHFile.write('\n'+'python -u efficiencyFactors.py -l -q -b --obsName="${obsName}" --obsBins="${obsBins}" -c "${channel}" -y "${year}" --obs=${OneDOr2DObs}')
+
     outSHFile.write('\n'+'echo "==============="')
     outSHFile.write('\n'+'date')
     outSHFile.write('\n'+'echo "==============="')
@@ -194,7 +210,11 @@ if __name__ == "__main__":
     if not os.path.isdir(args.OutputPath): os.mkdir(args.OutputPath)
     if not os.path.isdir(args.OutputPath + "/{}".format(datacardInputs)): os.makedirs(args.OutputPath + "/{}".format(datacardInputs))
 
-    if args.ifTar:
+    if args.jobType == "unc":
+        # Step-1: Check if the efficiency dict exists?
+        # Step-2: Check if the collect input run or not?
+        pass
+    if args.ifTar or  args.jobType == "unc":
         CreateCMSSWTarFile(args.OutputPath)
     GetArgumentTextFile(InputYAMLFile = args.inYAMLFile,
                                 fileName = args.CondorFileName,
