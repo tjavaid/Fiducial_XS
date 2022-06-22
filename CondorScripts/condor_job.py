@@ -183,7 +183,7 @@ def condorSHFile(fileName = "test",
     outSHFile.write('\n'+'echo "Start of efficiency script"')
     outSHFile.write('\n'+'date')
     outSHFile.write('\n'+'echo "==============="')
-    
+
     outSHFile.write('\n'+'python -u efficiencyFactors.py -l -q -b --obsName="${obsName}" --obsBins="${obsBins}" -c "${channel}" -y "${year}" --obs=${OneDOr2DObs}')
 
     outSHFile.write('\n'+'echo "==============="')

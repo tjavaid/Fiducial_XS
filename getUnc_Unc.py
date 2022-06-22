@@ -14,7 +14,6 @@ from Input_Info import datacardInputs
 from Input_Info import *
 import yaml
 
-
 grootargs = []
 def callback_rootargs(option, opt, value, parser):
     grootargs.append(opt)
@@ -103,7 +102,6 @@ else:
     obs_ifJES2 = ''
 
     print obs_ifJES
-
 
 
 def getunc(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, genbin, obs_reco_2 = '', obse_gen2 = ''):
