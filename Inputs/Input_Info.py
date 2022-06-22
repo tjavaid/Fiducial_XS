@@ -10,6 +10,11 @@ INPUT_m4l_bins = 55
 INPUT_m4l_low = 105.0
 INPUT_m4l_high = 160.0
 
+# Lumi for each year
+Lumi_2016 = 35.9
+Lumi_2017 = 41.5
+Lumi_2018 = 59.7
+
 ################################
 # Name of output directories
 datacardInputs = "{year}/datacardInputs"

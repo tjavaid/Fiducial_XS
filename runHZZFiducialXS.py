@@ -368,41 +368,6 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
             UpdateDatabin = "sed -i 's~_xs.Databin0~_xs_"+modelName+"_"+obsName+"_"+physicalModel+".Databin0~g' "+combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin0_"+physicalModel+".txt"
             processCmd(UpdateDatabin, get_linenumber(), os.path.basename(__file__))
 
-def createAsimov_161718_checkIssue(obsName, observableBins, modelName, physicalModel, years = ['2016', '2017', '2018']):
-    logger.warning("inside function: createAsimov_161718_checkIssue")
-    if years == "allYear":  years = ['2016', '2017', '2018']
-    logger.info('[Producing/merging workspaces and datacards for obsName "'+obsName.replace(' ','_')+'" using '+modelName+']')
-    logger.info('Year: {}'.format(years))
-
-    logger.debug('obsName: {}'.format(obsName))
-    logger.debug('observableBins: {}'.format(observableBins))
-
-    ListObsName = (''.join(obsName.split())).split('vs')
-    logger.debug('ListObsName: {}'.format(ListObsName))
-
-    # INFO: in case of 2D obs nbins is n else its n-1
-    nBins = len(observableBins) -1
-    if len(ListObsName) == 2:    # INFO: for 2D this list size == 2
-        nBins = len(observableBins)
-    logger.debug("nBins: = "+str(nBins))
-
-    # fStates = ['2e2mu','4mu','4e']
-    fStates = ['4e']
-
-    cmd = 'combineCards.py '
-    for year in years:
-      for fState in fStates:
-        for obsBin in range(nBins):
-          cmd += obsName+'_'+fState+'_bin'+str(obsBin)+'_'+year+'=xs_125.0_'+year+'/hzz4l_'+fState+'S_13TeV_xs_'+obsName+'_bin'+str(obsBin)+'_'+physicalModel+'.txt '  # ORIG, working
-    cmd += ' > xs_125.0_allYear/hzz4l_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'.txt'
-    processCmd(cmd, get_linenumber(),  os.path.basename(__file__), 1)
-
-    # text-to-workspace
-    if (physicalModel=="v2"):
-        cmd = 'text2workspace.py xs_125.0_allYear/hzz4l_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'.txt -P HiggsAnalysis.CombinedLimit.HZZ4L_Fiducial_v2:differentialFiducialV2 --PO higgsMassRange=115,135 --PO nBin='+str(nBins)+' -o hzz4l_all_13TeV_xs_'+obsName+'_bin_'+physicalModel+'.root '
-        processCmd(cmd, get_linenumber(),  os.path.basename(__file__), 1)
-
-    logger.error("Done")
 
 def createAsimov_161718(obsName, observableBins, modelName, physicalModel, years = ['2016', '2017', '2018']):
     logger.info('[Combined datacard for all 3 years for obsName "'+obsName.replace(' ','_')+'" using '+modelName+']')

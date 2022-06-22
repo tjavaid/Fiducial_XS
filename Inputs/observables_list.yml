@@ -238,7 +238,7 @@ Observables:
      gen: "GENdPhij1j2_2p5"
      ifAbs: False
      ifJES: True
-
+ 
     D_0m:
      bins: "|0|0.4|0.5|0.6|0.7|0.8|0.9|1.0|"
      label: "D_{0-}^{dec}"
@@ -246,7 +246,7 @@ Observables:
      gen: "GEND_0m"
      ifAbs: False
      ifJES: False
-
+ 
     D_CP:
      bins: "|-0.75|-0.25|-0.1|0|0.1|0.25|0.75|"
      label: "D_{cp}^{dec}"
@@ -254,7 +254,7 @@ Observables:
      gen: "GEND_CP"
      ifAbs: False
      ifJES: False
-
+ 
     D_0hp:
      bins: "|0|0.35|0.4|0.45|0.55|0.65|0.75|1|"
      label: "D_{0+}^{dec}"
@@ -262,7 +262,7 @@ Observables:
      gen: "GEND_0hp"
      ifAbs: False
      ifJES: False
-
+ 
     D_int:
      bins: "|0|0.7|0.8|0.9|0.95|1|"
      label: "D_{int}^{dec}"
@@ -270,7 +270,7 @@ Observables:
      gen: "GEND_int"
      ifAbs: False
      ifJES: False
-
+ 
     D_L1:
      bins: "|0|0.45|0.5|0.6|0.7|1|"
      label: "D_{#Lambda1}^{dec}"
@@ -278,7 +278,7 @@ Observables:
      gen: "GEND_L1"
      ifAbs: False
      ifJES: False
-
+ 
     D_L1Zg:
      bins: "|0|0.35|0.45|0.5|0.55|0.65|1.0|"
      label: "D_{#Lambda1}^{Z#gamma,dec}"
