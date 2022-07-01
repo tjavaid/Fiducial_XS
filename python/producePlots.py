@@ -1415,7 +1415,11 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
         lumi = round(59.7*float(opt.LUMISCALE),1)
         latex2.DrawLatex(0.94, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
     else:
-        latex2.DrawLatex(0.94, 0.94,"59.7 fb^{-1} (13 TeV)")
+        if year == '2016': lumi = Lumi_2016
+        if year == '2017': lumi = Lumi_2017
+        if year == '2018': lumi = Lumi_2018
+        if year == 'allYear': lumi = Lumi_Run2
+        latex2.DrawLatex(0.94, 0.94, str(lumi)+" fb^{-1} (13 TeV)")
     latex2.SetTextSize(0.7*c.GetTopMargin())
     latex2.SetTextFont(62)
     latex2.SetTextAlign(11) # align right

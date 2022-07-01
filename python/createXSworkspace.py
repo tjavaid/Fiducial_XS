@@ -181,10 +181,11 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             observable2.Print()
 
     # luminosity
-    lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), 0.0) # FIXME: Lumi value is hardcoded
-    if (str(year) == "2018"): lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), 59.7) # FIXME: Lumi value is hardcoded
-    if (str(year) == "2017"): lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), 41.5) # FIXME: Lumi value is hardcoded
-    if (str(year) == "2016"): lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), 35.9) # FIXME: Lumi value is hardcoded
+    lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), 0.0)
+    if (str(year) == "2018"): lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), Lumi_2018)
+    if (str(year) == "2017"): lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year),  Lumi_2017)
+    if (str(year) == "2016"): lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), Lumi_2016)
+    if (str(year) == "allYear"): lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), Lumi_Run2)
 
     # SM values of signal expectations (inclusive, reco level)
     # ggH_norm = w.function("ggH_norm")
