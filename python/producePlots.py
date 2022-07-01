@@ -94,8 +94,8 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
 
     _temp = __import__('inputs_sig_'+obsName, globals(), locals(), ['acc'], -1)
     acc = _temp.acc
-    eff = _temp.eff
-    outinratio = _temp.outinratio
+    # eff = _temp.eff
+    # outinratio = _temp.outinratio
     _temp = __import__('higgs_xsbr_13TeV', globals(), locals(), ['higgs_xs','higgs4l_br'], -1)
     higgs_xs = _temp.higgs_xs
     higgs4l_br = _temp.higgs4l_br

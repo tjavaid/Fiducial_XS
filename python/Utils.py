@@ -129,3 +129,50 @@ def GetDirectory(DirToCreate):
             logger.warning("Direcoty created/exist - "+DirToCreate)
     except OSError as err:
         logger.error(err)
+
+def mergeDictionary_average2Dict (dict_1, dict_2):
+    dict_3 = dict_1.copy()
+    dict_3.update(dict_2)
+    for key, value in dict_3.items():
+        if key in dict_1 and key in dict_2:
+            dict_3[key] = (value  + dict_1[key])/2.0
+
+    return dict_3
+
+def mergeDictionary_average3Dict(dict_1, dict_2, dict_3):
+    dict_4 = dict_1.copy()
+    dict_4.update(dict_2)
+    dict_4.update(dict_3)
+    # print(dict_4)
+    for key, value in dict_4.items():
+        if key in dict_1 and key in dict_2 and key in dict_3:
+            # print value,dict_1[key], dict_2[key]
+            dict_4[key] = (value  + dict_1[key] + dict_2[key])/3.0
+            # dict_4[key] = (value  + dict_1[key] + dict_2[key])
+
+    return dict_4
+
+def mergeDictionary_average(dict_1, dict_2, dict_3):
+    dict_4 = dict_1.copy()
+    dict_4.update(dict_2)
+    dict_4.update(dict_3)
+    # print(dict_4)
+    for key, value in dict_4.items():
+        if key in dict_1 and key in dict_2 and key in dict_3:
+            # print "="*51
+            # print key, value
+            # print "*"*51
+            # print key, dict_1[key]
+            # print "*"*51
+            # print key, dict_2[key]
+            # print "*"*51
+            # print value,dict_1[key], dict_2[key]
+            # print type(value), type(value) is dict
+            if not (type(value) is dict):
+                dict_4[key] = (value  + dict_1[key] + dict_2[key])/3.0
+                # dict_4[key] = (value  + dict_1[key] + dict_2[key])
+            if (type(value) is dict):
+                dict_4[key] = mergeDictionary_average3Dict(value, dict_1[key], dict_2[key])
+            # print key, dict_4[key]
+
+    return dict_4
