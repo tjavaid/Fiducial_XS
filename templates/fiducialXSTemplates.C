@@ -54,20 +54,22 @@ const int NEVT_PRINTOUT = 100000;
 const int SORT_EVENTS = false;
 // fake rate files and hists
 //const TString fakeRatesEl = "fakeRates_el.root";
-const TString fakeRatesEl = "newData_FakeRates_OS_2018.root";  // new for HIG-19-001 paper
-//const TString h1Name_FRel_EB = "h1D_FRel_EB";
-const TString g1Name_FRel_EB = "FR_OS_electron_EB";
-//const TString h1Name_FRel_EE = "h1D_FRel_EE";
-const TString g1Name_FRel_EE = "FR_OS_electron_EE";
+//const TString fakeRatesEl = "newData_FakeRates_OS_2018.root";  // new for HIG-19-001 paper
+const TString fakeRatesEl = "Hist_Data_ptl3_WZremoved";
+const TString h1Name_FRel_EB = "Data_FRel_EB";
+//const TString g1Name_FRel_EB = "FR_OS_electron_EB";
+const TString h1Name_FRel_EE = "Data_FRel_EE";
+//const TString g1Name_FRel_EE = "FR_OS_electron_EE";
 //const TString fakeRatesMu = "fakeRates_mu.root";
-const TString fakeRatesMu = "newData_FakeRates_OS_2018.root";  // new for HIG-19-001 paper
-//const TString h1Name_FRmu_EB = "h1D_FRmu_EB";
-const TString g1Name_FRmu_EB = "FR_OS_muon_EB";
-//const TString h1Name_FRmu_EE = "h1D_FRmu_EE";
-const TString g1Name_FRmu_EE = "FR_OS_muon_EE";
-//TH1D *h1DFRelEB, *h1DFRelEE, *h1DFRmuEB, *h1DFRmuEE;
+//const TString fakeRatesMu = "newData_FakeRates_OS_2018.root";  // new for HIG-19-001 paper
+const TString fakeRatesMu = "Hist_Data_ptl3_WZremoved";
+const TString h1Name_FRmu_EB = "Data_FRmu_EB";
+//const TString g1Name_FRmu_EB = "FR_OS_muon_EB";
+const TString h1Name_FRmu_EE = "Data_FRmu_EE";
+//const TString g1Name_FRmu_EE = "FR_OS_muon_EE";
+TH1D *h1DFRelEB, *h1DFRelEE, *h1DFRmuEB, *h1DFRmuEE;
 
-TGraph *g1DFRelEB, *g1DFRelEE, *g1DFRmuEB, *g1DFRmuEE;  //
+//TGraph *g1DFRelEB, *g1DFRelEE, *g1DFRmuEB, *g1DFRmuEE;  //
 
 
 // k-factor files and graphs
@@ -81,19 +83,19 @@ TString PROCESSING_TYPE = "XSTree";// "XSTreeZ4l"
 
 void templatesXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
                  TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit, bool obs_ifJES, 
-                 TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2);
+                 TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2, TString year = "2018");
 
 int getTemplateXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
                   TString obsName, TString obsBinDn, TString obsBinUp, bool obs_ifJES, 
                   TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2, 
-                  TString fitTypeZ4l, bool useRefit,
+                  TString fitTypeZ4l, bool useRefit, TString year = "2018",
                   double elpT = CUT_ELPT, double mupT = CUT_MUPT, double mZ2_low = CUT_MZ2LOW,
                   double mZ1_low = CUT_MZ1LOW, double m4l_low = CUT_M4LLOW, double m4l_high = CUT_M4LHIGH);
 
 double getFakeRateWeight(TString lepMode = "el", TString etaRegion = "EB", double pT = 10.);
 //double kdWithPDFm4l(double KD, double pdfSigM4l, double pdfBkgM4l);
 TString getTemplateNameTag(TString processNameTag);
-void loadFakeRateHists();
+void loadFakeRateHists(TString year = "2018");
 TString strRandom(unsigned int rndmMax = 100000);
 void smoothAndNormaliseTemplate(TH2D* &h2D, bool silent = true);
 void smoothAndNormaliseTemplate1D(TH1D* &h1D, double norm = 1.);
@@ -115,11 +117,11 @@ double nEvents = -1;
 
 
 //_______________________________________________________________________________________________________________________________________________
-void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileName = "ZZTo2e2mu_mZZ95-160.root", TString sfinalState = "4l", TString obsName = "massZ1", TString obsBinDn = "0", TString obsBinUp = "120", TString sqrtsTag = "8TeV", TString baseDirXS = "templatesXS", TString sProcessingType = "DTreeXS", TString fitTypeZ4l = "none", bool useRefit = false, bool obs_ifJES = false, TString obsName2 = "", TString obsBinDn2 = "", TString obsBinUp2 = "", bool obs_ifJES2 = false)
+void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileName = "ZZTo2e2mu_mZZ95-160.root", TString sfinalState = "4l", TString obsName = "massZ1", TString obsBinDn = "0", TString obsBinUp = "120", TString sqrtsTag = "8TeV", TString baseDirXS = "templatesXS", TString sProcessingType = "DTreeXS", TString fitTypeZ4l = "none", bool useRefit = false, bool obs_ifJES = false, TString obsName2 = "", TString obsBinDn2 = "", TString obsBinUp2 = "", bool obs_ifJES2 = false, TString year = "2018")
 {
     // prepare XS templates for given parameters
     PROCESSING_TYPE = sProcessingType;
-    templatesDir = baseDirXS;
+    templatesDir = baseDirXS + "_" + year;
     if (fitTypeZ4l=="doZ4l") {
         CUT_M4LLOW = 50;
         CUT_M4LHIGH = 105;
@@ -140,7 +142,7 @@ void fiducialXSTemplates(TString processNameTag = "qqZZ", TString processFileNam
     }
     cout<<"Begin templatesXS"<<endl;
     cout<<"obs_ifJES: "<<obs_ifJES<<endl;
-    templatesXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2);
+    templatesXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, fitTypeZ4l, useRefit, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, year);
 }
 
 //_______________________________________________________________________________________________________________________________________________
@@ -152,7 +154,7 @@ void analysisInit() {
 //_______________________________________________________________________________________________________________________________________________
 void templatesXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
                  TString obsName, TString obsBinDn, TString obsBinUp, TString fitTypeZ4l, bool useRefit, bool obs_ifJES,  
-                 TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2)
+                 TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2, TString year)
 {
     analysisInit();
 
@@ -163,13 +165,13 @@ void templatesXS(TString processNameTag, TString processFileName, TString sqrtsT
     cout<<"[INFO] fitType: "<<fitTypeZ4l<<" templatesXS using refit? "<<useRefit<<endl;
 
     if (sfinalState == "4l") {
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, "2e2mu", obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit);
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4e", obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit);
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4mu", obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, "2e2mu", obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit, year);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4e", obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit, year);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, "4mu", obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit, year);
     }
     else
     {
-        getTemplateXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit);
+        getTemplateXS(processNameTag, processFileName, sqrtsTag, sfinalState, obsName, obsBinDn, obsBinUp, obs_ifJES, obsName2, obsBinDn2, obsBinUp2, obs_ifJES2, fitTypeZ4l, useRefit, year);
     }
 }
 
@@ -829,7 +831,7 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
 //_______________________________________________________________________________________________________________________________________________
 // using the fixed floor at the moment, to be changed
 int getTemplateXS(TString processNameTag, TString processFileName, TString sqrtsTag, TString sfinalState,
-                  TString obsName, TString obsBinDn, TString obsBinUp, bool obs_ifJES, TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2, TString fitTypeZ4l, bool useRefit,
+                  TString obsName, TString obsBinDn, TString obsBinUp, bool obs_ifJES, TString obsName2, TString obsBinDn2, TString obsBinUp2, bool obs_ifJES2, TString fitTypeZ4l, bool useRefit, TString year,
                   double elpT, double mupT, double mZ2_low, double mZ1_low, double m4l_low, double m4l_high)
 {
     // prepare final state variables (for loop, later also plotting)
@@ -847,7 +849,7 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
         sigTree = new TChain("Ana/passedEvents");
     } else if (processNameTag == "ZJetsCR") {
         sigTree = new TChain("passedEvents");
-        loadFakeRateHists();
+        loadFakeRateHists(year);
     } else {
         sigTree = new TChain("Ana/passedEvents");
     }
@@ -856,7 +858,7 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
     // tree for a set of variables, for selected events
     TString fOption = "RECREATE";
     TString templateNameTag = getTemplateNameTag(processNameTag);
-    TString fLocation = templatesDir+"/"+PROCESSING_TYPE+"_"+obsName+"/"+sqrtsTag+"/";
+    TString fLocation = templatesDir + "/"+PROCESSING_TYPE+"_"+obsName+"/"+sqrtsTag+"/";
     if (obsName2 != ""){
         fLocation = templatesDir + "/" + PROCESSING_TYPE + "_" + obsName + "_vs_" + obsName2 + "/" + sqrtsTag + "/";
     }
@@ -1282,27 +1284,27 @@ TString getTemplateNameTag(TString processNameTag) {
 }
 
 //_______________________________________________________________________________________________________________________________________________
-void loadFakeRateHists(){
+void loadFakeRateHists(TString year){
     // open files
-    TFile *frel = TFile::Open(fakeRatesEl);
-    TFile *frmu = TFile::Open(fakeRatesMu);
+    TFile *frel = TFile::Open(fakeRatesEl+"_"+year+".root");
+    TFile *frmu = TFile::Open(fakeRatesMu+"_"+year+".root");
     // load fake rate histogram
-    // h1DFRelEB    = (TH1D*) frel->Get(h1Name_FRel_EB);
+    h1DFRelEB    = (TH1D*) frel->Get(h1Name_FRel_EB);
     // h1DFRelEB    = (TGraphErrors*) frel->Get(FR_OS_electron_EB);
     // g1DFRelEB    = frel->Get(h1Name_FRel_EB);
-    g1DFRelEB    = (TGraph*) frel->Get(g1Name_FRel_EB);
-    // h1DFRelEE    = (TH1D*) frel->Get(h1Name_FRel_EE);
+    //g1DFRelEB    = (TGraph*) frel->Get(g1Name_FRel_EB);
+     h1DFRelEE    = (TH1D*) frel->Get(h1Name_FRel_EE);
     // h1DFRelEE    = (TGraphErrors*) frel->Get(FR_OS_electron_EE);
     // g1DFRelEE    = frel->Get(h1Name_FRel_EE);
-    g1DFRelEE    = (TGraph*) frel->Get(g1Name_FRel_EE);
-    // h1DFRmuEB    = (TH1D*) frmu->Get(h1Name_FRmu_EB);
+    //g1DFRelEE    = (TGraph*) frel->Get(g1Name_FRel_EE);
+     h1DFRmuEB    = (TH1D*) frmu->Get(h1Name_FRmu_EB);
     // h1DFRmuEB    = (TGraphErrors*) frmu->Get(FR_OS_muon_EB);
     // g1DFRmuEB    = frmu->Get(h1Name_FRmu_EB);
-    g1DFRmuEB    = (TGraph*) frmu->Get(g1Name_FRmu_EB);
-    // h1DFRmuEE    = (TH1D*) frmu->Get(h1Name_FRmu_EE);
+    //g1DFRmuEB    = (TGraph*) frmu->Get(g1Name_FRmu_EB);
+     h1DFRmuEE    = (TH1D*) frmu->Get(h1Name_FRmu_EE);
     // h1DFRmuEE    = (TGraphErrors*) frmu->Get(FR_OS_muon_EB);
     // g1DFRmuEE    = frmu->Get(h1Name_FRmu_EE);
-    g1DFRmuEE    = (TGraph*) frmu->Get(g1Name_FRmu_EE);
+    
 }
 
 //_______________________________________________________________________________________________________________________________________________
@@ -1322,21 +1324,21 @@ double getFakeRateWeight(TString lepMode, TString etaRegion, double pT) {
 
 
     if (lepMode == "el" && etaRegion == "EB") {
-        //fr = h1DFRelEB->GetBinContent(h1DFRelEB->FindBin(pT));
-        //fr = h1DFRelEB->Eval(pT);
-        fr = g1DFRelEB->GetY()[bin];
+        fr = h1DFRelEB->GetBinContent(h1DFRelEB->FindBin(pT));
+       // fr = h1DFRelEB->Eval(pT);
+        //fr = g1DFRelEB->GetY()[bin];
     } else if (lepMode == "el" && etaRegion == "EE") {
-        //fr = h1DFRelEE->GetBinContent(h1DFRelEE->FindBin(pT));
-        //fr = h1DFRelEE->Eval(pT);
-        fr = g1DFRelEE->GetY()[bin];
+        fr = h1DFRelEE->GetBinContent(h1DFRelEE->FindBin(pT));
+       // fr = h1DFRelEE->Eval(pT);
+        //fr = g1DFRelEE->GetY()[bin];
     } else if (lepMode == "mu" && etaRegion == "EB") {
-        //fr = h1DFRmuEB->GetBinContent(h1DFRmuEB->FindBin(pT));
-        //fr = h1DFRmuEB->Eval(pT);
-        fr = g1DFRmuEB->GetY()[bin];
+        fr = h1DFRmuEB->GetBinContent(h1DFRmuEB->FindBin(pT));
+       // fr = h1DFRmuEB->Eval(pT);
+        //fr = g1DFRmuEB->GetY()[bin];
     } else if (lepMode == "mu" && etaRegion == "EE") {
-        //fr = h1DFRmuEE->GetBinContent(h1DFRmuEE->FindBin(pT));
-        //fr = h1DFRmuEE->Eval(pT);
-        fr = g1DFRmuEE->GetY()[bin];
+        fr = h1DFRmuEE->GetBinContent(h1DFRmuEE->FindBin(pT));
+       // fr = h1DFRmuEE->Eval(pT);
+        //fr = g1DFRmuEE->GetY()[bin];
     } else {
         fr = 0.;
     }
