@@ -1,0 +1,111 @@
+Processes:
+  0:
+    Name: trueH4muBin
+    Rate: '1.0'
+  1:
+    Name: out_trueH
+    Rate: '1.0'
+  2:
+    Name: fakeH
+    Rate: '1.0'
+  3:
+    Name: bkg_qqzz
+    Rate: '40.766935088993904'
+  4:
+    Name: bkg_ggzz
+    Rate: '4.115511593091537'
+  5:
+    Name: bkg_zjets
+    Rate: '15.659146626'
+
+Nuissances:
+  100n:
+    Name: norm_fakeH
+    Applied_To:
+      - fakeH
+    Type: lnU
+    Value: '10.0' 
+  101n:
+    Name: lumi_13TeV_2017_uncorrelated
+    Applied_To:
+      - AllButZX
+    Type: lnN
+    Value: '1.02'
+  102n:
+    Name: lumi_13TeV_correlated_16_17_18
+    Applied_To:
+      - AllButZX
+    Type: lnN
+    Value: '1.009'
+  103n:
+    Name: lumi_13TeV_correlated_17_18
+    Applied_To:
+      - AllButZX
+    Type: lnN
+    Value: '1.006'
+  104n:
+    Name: CMS_eff_m
+    Applied_To:
+      - AllButZX
+    Type: lnN
+    Value: '0.981/1.009'  
+  105n: 
+    Name: CMS_hzz4mu_Zjets_2017
+    Applied_To:
+      - bkg_zjets
+    Type: lnN
+    Value: '0.694063/1.30623'
+  106n:
+    Name: CMS_zz4l_mean_m_sig_2017
+    Applied_To:
+      - All
+    Type: param 
+    Value: '0.0 1.0'
+  107n:
+    Name: CMS_zz4l_sigma_m_sig_2017
+    Applied_To:
+      - All
+    Type: param 
+    Value: '0.0 0.2'
+  108n:
+    Name: CMS_zz4l_n_sig_1_2017
+    Applied_To:
+      - All
+    Type: param 
+    Value: '0.0 0.05'
+  109n:
+    Name: QCDscale_ggVV
+    Applied_To:
+      - bkg_ggzz
+    Type: lnN
+    Value: '1.039/0.961'
+  110n:
+    Name: QCDscale_VV
+    Applied_To: 
+      - bkg_qqzz
+    Type: lnN
+    Value: '1.0325/0.958'
+  111n:
+    Name: pdf_gg
+    Applied_To:
+      - bkg_ggzz
+    Type: lnN
+    Value: '1.032/0.968'
+  112n:
+    Name: pdf_qqbar
+    Applied_To:
+      - bkg_qqzz
+    Type: lnN
+    Value: '1.031/0.966'
+  113n:
+    Name: kfactor_ggzz
+    Applied_To: 
+      - bkg_ggzz
+    Type: lnN
+    Value: '1.1'
+  #114n:
+  #  Name: CMS_zjets_bkgdcompo 
+  #  Applied_To:
+  #    - bkg_zjets
+  #  Type: lnN
+  #  Value: '1.35'
