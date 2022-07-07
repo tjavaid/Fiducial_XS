@@ -644,8 +644,10 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     #     row.Print("v")
     #legacy_data.Print("v")
 
-    if (obsName=="mass4lREFIT"):  data_obs_file = TFile('Inputs/data_13TeV_refit.root')
-    else:  data_obs_file = TFile('Inputs/data_13TeV.root') #FIXME: # Hardcoded...
+    if (year == '2016'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2016/data_UL2016_all_noDuplicates_slimmed_newMuSF_add2p5_workspace.root')
+    elif (year == '2017'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2017/Slimmed_2p5/DataUL2017_all_noDuplicates_slimmed_newMuSF_add2p5_slimmed_newMuSF_add2p5_workspace.root')
+    elif (year == '2018'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2018/Slimmed_2p5/DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5_slimmed_newMuSF_add2p5_workspace.root')
+
     data_obs_tree = data_obs_file.Get('passedEvents')
 
     logger.info ("Obs name: {:11}  Bin (low, high) edge: ({}, {})".format(obsName,obsBin_low,obsBin_high))
