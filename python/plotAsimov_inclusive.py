@@ -357,7 +357,11 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
         lumi = round(59.7*float(opt.LUMISCALE),1)
         latex2.DrawLatex(0.87, 0.95,str(lumi)+"fb^{-1} at #sqrt{s} = 13 TeV")
     else:
-        latex2.DrawLatex(0.87, 0.95,"59.7 fb^{-1} at #sqrt{s} = 13 TeV")
+        if (str(year) == "2016"): latex2.DrawLatex(0.87, 0.95,str(Lumi_2016) + " fb^{-1} at #sqrt{s} = 13 TeV")
+        if (str(year) == "2017"): latex2.DrawLatex(0.87, 0.95,str(Lumi_2017) + " fb^{-1} at #sqrt{s} = 13 TeV")
+        if (str(year) == "2018"): latex2.DrawLatex(0.87, 0.95,str(Lumi_2018) + " fb^{-1} at #sqrt{s} = 13 TeV")
+        if (str(year) == "allYear"): latex2.DrawLatex(0.87, 0.95,str(Lumi_Run2) + " fb^{-1} at #sqrt{s} = 13 TeV")
+
     latex2.SetTextSize(0.8*c.GetTopMargin())
     latex2.SetTextFont(62)
     latex2.SetTextAlign(11) # align right
