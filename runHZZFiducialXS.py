@@ -1363,8 +1363,6 @@ def runFiducialXS():
                 cmd = 'python python/producePlots.py -l -q -b --obsName="'+obsName.replace(' ','_')+'" --obsBins="'+opt.OBSBINS+'" --unfoldModel="'+modelName+'" --theoryMass="'+opt.FIXMASS+'"'+ ' --year="'+ year + '"'
             else:
                 cmd = 'python python/producePlots.py -l -q -b --obsName="'+obsName.replace(' ','_')+'" --obsBins="'+opt.OBSBINS+'" --unfoldModel="'+modelName+'" --theoryMass="125.0"'+ ' --year="'+ year + '"'
-                ### FIXME: VUKASIN: Just until Higgs mass is properly implemented
-            cmd = 'python python/producePlots.py -l -q -b --obsName="'+obsName.replace(' ','_')+'" --obsBins="'+opt.OBSBINS+'" --unfoldModel="'+modelName+'" --theoryMass="125.38"'+ ' --year="'+ year + '"'
 
             if (opt.FIXFRAC): cmd = cmd + ' --fixFrac'
             if (opt.UNBLIND): cmd = cmd + ' --unblind'
