@@ -187,38 +187,6 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     if (str(year) == "2016"): lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), Lumi_2016)
     if (str(year) == "allYear"): lumi = RooRealVar("lumi_13"+str(year),"lumi_13"+str(year), Lumi_Run2)
 
-    # SM values of signal expectations (inclusive, reco level)
-    # ggH_norm = w.function("ggH_norm")
-    # qqH_norm = w.function("qqH_norm")
-    # WH_norm = w.function("WH_norm")
-    # ZH_norm = w.function("ZH_norm")
-    # ttH_norm = w.function("ttH_norm")
-    # logger.debug("""
-    #     Norm values:
-    #         ggH_norm = {}
-    #         qqH_norm = {}
-    #         WH_norm = {}
-    #         ZH_norm = {}
-    #         ttH_norm = {}
-    #         Total: n_allH = {}
-    # """.format(
-    #     ggH_norm.getVal(),
-    #     qqH_norm.getVal(),
-    #     WH_norm.getVal(),
-    #     ZH_norm.getVal(),
-    #     ttH_norm.getVal(),
-    #     ggH_norm.getVal() + qqH_norm.getVal() + WH_norm.getVal() + ZH_norm.getVal() + ttH_norm.getVal()
-    # ))
-    logger.error("=="*51)
-    ggH_norm = RooRealVar("ggH_norm","ggH_norm", 6.94202296623) # FIXME: got these values from 8TeV Rootfiles
-    qqH_norm = RooRealVar("qqH_norm","qqH_norm", 0.633580595429) # FIXME: got these values from 8TeV Rootfiles
-    WH_norm = RooRealVar("WH_norm","WH_norm", 0.209508946773) # FIXME: got these values from 8TeV Rootfiles
-    ZH_norm = RooRealVar("ZH_norm","ZH_norm", 0.157008222773) # FIXME: got these values from 8TeV Rootfiles
-    ttH_norm = RooRealVar("ttH_norm","ttH_norm", 0.03604907196) # FIXME: got these values from 8TeV Rootfiles
-    n_allH = (ggH_norm.getVal()+qqH_norm.getVal()+WH_norm.getVal()+ZH_norm.getVal()+ttH_norm.getVal())
-    logger.info("allH norm: {}".format(n_allH))
-
-
     # update to 13 TeV parameterization
     MH = RooRealVar("MH","MH", 125.38,  m4l_low, m4l_high) # Hardcoded mass
 
@@ -238,22 +206,16 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     if (channel=='2e2mu'):
         if (year=='2018'):
-            CMS_zz4l_mean_sig_3_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year, \
-                                                                "(124.260469656+(0.995095874123)*(@0-125)) + (@0*@1*@3 + @0*@2*@4)/2", \
-                                                                RooArgList(MH,CMS_zz4l_mean_m_sig,CMS_zz4l_mean_e_sig,CMS_zz4l_mean_m_err_3,CMS_zz4l_mean_e_err_3))
-
-            CMS_zz4l_sigma_sig_3_centralValue = RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year, \
-                                                                "(1.55330758963+(0.00797274642218)*(@0-125))*(TMath::Sqrt((1+@1)*(1+@2)))",RooArgList(MH,CMS_zz4l_sigma_m_sig,CMS_zz4l_sigma_e_sig))
-
-            CMS_zz4l_alpha_3_centralValue = RooFormulaVar("CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"(0.947414158515+(0)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_3_centralValue = RooFormulaVar("CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"(3.33147279858+(-0.0438375854704)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_3))
-
-
-            CMS_zz4l_alpha2_3_centralValue=RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"(1.52497361611+(0)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_3_centralValue=RooFormulaVar("CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"(5.20522265056+(0)*(@0-125))",RooArgList(MH))
-
-            # true signal shape
-            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_3_centralValue,CMS_zz4l_sigma_sig_3_centralValue,CMS_zz4l_alpha_3_centralValue,CMS_zz4l_n_3_centralValue,CMS_zz4l_alpha2_3_centralValue,CMS_zz4l_n2_3_centralValue)
+            CMS_zz4l_mean_sig_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_mean_sig_3_centralValue_2e2mu" + recobin + "2018", "(%s) + (@0*@1*@3 + @0*@2*@4)/2" %(massParaMap["mean_"+channel+"_"+year]), ROOT.RooArgList(MH,CMS_zz4l_mean_m_sig_2018,CMS_zz4l_mean_e_sig_2018,CMS_zz4l_mean_m_err_3_2018,CMS_zz4l_mean_e_err_3_2018))
+            CMS_zz4l_mean_sig_NoConv_3 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2018","CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2018","@0",ROOT.RooArgList(CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2018))
+            CMS_zz4l_sigma_sig_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_sigma_sig_3_centralValue_2e2mu" + recobin + "2018", "(%s)*(TMath::Sqrt((1+@1)*(1+@2)))" %(massParaMap["sigma_"+channel+"_"+year]),ROOT.RooArgList(MH,CMS_zz4l_sigma_m_sig_2018,CMS_zz4l_sigma_e_sig_2018))
+            CMS_zz4l_alpha_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_alpha_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_alpha_3_centralValue_2e2mu" + recobin + "2018",massParaMap["a1_"+channel+"_"+year],ROOT.RooArgList(MH))
+            CMS_zz4l_n_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_n_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_n_3_centralValue_2e2mu" + recobin + "2018","%s*(1+@1)" %(massParaMap["n1_"+channel+"_"+year]),ROOT.RooArgList(MH,CMS_zz4l_n_sig_3_2018))
+            CMS_zz4l_alpha2_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_alpha2_3_centralValue_2e2mu" + recobin + "2018",massParaMap["a2_"+channel+"_"+year],ROOT.RooArgList(MH))
+            CMS_zz4l_n2_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_n2_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_n2_3_centralValue_2e2mu" + recobin + "2018",massParaMap["n2_"+channel+"_"+year],ROOT.RooArgList(MH))
+            trueH = ROOT.RooDoubleCB(sig_name+'_' + _obsName[obsName], "DoubleCB", m, CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha_3_centralValue_2e2murecobin2018, CMS_zz4l_n_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha2_3_centralValue_2e2murecobin2018, CMS_zz4l_n2_3_centralValue_2e2murecobin2018)
+            # ggH = ROOT.RooDoubleCB('ggH_' + _obsName[obsName], "DoubleCB", m, CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha_3_centralValue_2e2murecobin2018, CMS_zz4l_n_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha2_3_centralValue_2e2murecobin2018, CMS_zz4l_n2_3_centralValue_2e2murecobin2018)
+            # xH = ROOT.RooDoubleCB('xH_' + _obsName[obsName], "DoubleCB", m, CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha_3_centralValue_2e2murecobin2018, CMS_zz4l_n_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha2_3_centralValue_2e2murecobin2018, CMS_zz4l_n2_3_centralValue_2e2murecobin2018)
         elif (year=='2017'):
             CMS_zz4l_mean_sig_3_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year, \
                                                                 "(124.524+(0.00248708+1)*(@0-125)) + (@0*@1*@3 + @0*@2*@4)/2", \
