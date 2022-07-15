@@ -33,7 +33,8 @@ def parseOptions():
     parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observable, supported: "inclusive", "pT", "eta", "Njets"')
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
     parser.add_option('',   '--unblind', action='store_true', dest='UNBLIND', default=False, help='Use real data')
-    parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
+    parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Era to analyze, e.g. 2016, 2017, 2018 or Full')
+    parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
@@ -58,6 +59,18 @@ setTDRStyle()
 asimovDataModel = opt.ASIMOV
 asimovPhysicalModel = 'v2'
 obsName = opt.OBSNAME
+# observableBins = opt.OBSBINS.split('|')
+# observableBins.pop()
+# observableBins.pop(0)
+# print float(observableBins[len(observableBins)-1])
+# if float(observableBins[len(observableBins)-1])>200.0:
+#     observableBins[len(observableBins)-1]='200.0'
+
+if (opt.ERA == '2016'): years = ['2016']
+if (opt.ERA == '2017'): years = ['2017']
+if (opt.ERA == '2018'): years = ['2018']
+if (opt.ERA == 'Full'): years = ['2016','2017','2018']
+
 ListObsName = (''.join(obsName.split())).split('vs')
 
 observableBins = read_bins(opt.OBSBINS)
@@ -72,10 +85,11 @@ logger.debug("nBins: = "+str(nBins))
 
 if len(ListObsName) == 1:    # INFO: for 2D this list size == 1
     print("{}".format(float(observableBins[nBins])))
-    if float(observableBins[nBins])>200.0:
-        observableBins[nBins]='200.0'
+    # if float(observableBins[nBins])>200.0:
+        # observableBins[nBins]='200.0'
 
-def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, observableBins, year):
+
+def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, observableBins, years):
 
     global nBins
 
@@ -93,7 +107,10 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 
     # FIXME: Improve the directory naming/pointer of hardcoded directory
-    f_asimov = TFile(combineOutputs+"/"+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
+    inFile = combineOutputs+"/"+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root'
+    f_asimov = TFile(inFile, 'READ')
+    logger.debug("Asimov file is :  {}".format(inFile))
+
     if (not opt.UNBLIND):
         data = f_asimov.Get("toys/toy_asimov");
     #data.Print("v");
@@ -108,87 +125,79 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     fakeH_asimov = {}
     out_trueH_asimov = {}
     qqzz_asimov = {}
+
     n_trueH_asimov = {}
-    for recobin in range(nBins):
-        n_trueH_asimov["4lrecobin"+str(recobin)] = 0.0
     n_trueH_otherfid_asimov = {}
-    for recobin in range(nBins):
-        n_trueH_otherfid_asimov["4lrecobin"+str(recobin)] = 0.0
     n_zjets_asimov = {}
-    for recobin in range(nBins):
-        n_zjets_asimov["4lrecobin"+str(recobin)] = 0.0
     n_ggzz_asimov = {}
-    for recobin in range(nBins):
-        n_ggzz_asimov["4lrecobin"+str(recobin)] = 0.0
     n_fakeH_asimov = {}
-    for recobin in range(nBins):
-        n_fakeH_asimov["4lrecobin"+str(recobin)] = 0.0
     n_out_trueH_asimov = {}
-    for recobin in range(nBins):
-        n_out_trueH_asimov["4lrecobin"+str(recobin)] = 0.0
     n_qqzz_asimov = {}
-    for recobin in range(nBins):
-        n_qqzz_asimov["4lrecobin"+str(recobin)] = 0.0
     n_zz_asimov = {}
-    for recobin in range(nBins):
-        n_zz_asimov["4lrecobin"+str(recobin)] = 0.0
-
-
-    fStates = ['4mu','4e','2e2mu']
-    for fState in fStates:
+    for year in years:
         for recobin in range(nBins):
-            for bin in range(nBins):
-                trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_trueH"+fState+"Bin"+str(bin))
-            zjets_asimov[fState+"recobin"+str(recobin)] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_bkg_zjets")
-            ggzz_asimov[fState+"recobin"+str(recobin)] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_bkg_ggzz")
-            fakeH_asimov[fState+"recobin"+str(recobin)] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_fakeH")
-            out_trueH_asimov[fState+"recobin"+str(recobin)] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_out_trueH")
-            qqzz_asimov[fState+"recobin"+str(recobin)] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_bkg_qqzz")
-            n_trueH_otherfid_asimov[fState+"recobin"+str(recobin)] = 0.0
-            for bin in range(nBins):
-                # print "bin is==", bin
-                # print "recobin===", recobin
-                if (bin==recobin):
-                    n_trueH_asimov[fState+"recobin"+str(recobin)] = trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
-                    # print "trueH_asimov value is(if condition) ==", trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
-                else:
-                    n_trueH_otherfid_asimov[fState+"recobin"+str(recobin)] += trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
-                    # print "trueH_asimov value is (else condition) ==", trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)].getVal()
-            n_zjets_asimov[fState+"recobin"+str(recobin)] = zjets_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_ggzz_asimov[fState+"recobin"+str(recobin)] = ggzz_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_fakeH_asimov[fState+"recobin"+str(recobin)] = fakeH_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_out_trueH_asimov[fState+"recobin"+str(recobin)] = out_trueH_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_qqzz_asimov[fState+"recobin"+str(recobin)] = qqzz_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_zz_asimov[fState+"recobin"+str(recobin)] = n_ggzz_asimov[fState+"recobin"+str(recobin)]+n_qqzz_asimov[fState+"recobin"+str(recobin)]
-            n_trueH_asimov["4lrecobin"+str(recobin)] += n_trueH_asimov[fState+"recobin"+str(recobin)]
-            n_trueH_otherfid_asimov["4lrecobin"+str(recobin)] += n_trueH_otherfid_asimov[fState+"recobin"+str(recobin)]
-            n_zjets_asimov["4lrecobin"+str(recobin)] += zjets_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_ggzz_asimov["4lrecobin"+str(recobin)] += ggzz_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_fakeH_asimov["4lrecobin"+str(recobin)] += fakeH_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_out_trueH_asimov["4lrecobin"+str(recobin)] += out_trueH_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_qqzz_asimov["4lrecobin"+str(recobin)] += qqzz_asimov[fState+"recobin"+str(recobin)].getVal()
-            n_zz_asimov["4lrecobin"+str(recobin)] += n_ggzz_asimov[fState+"recobin"+str(recobin)]+n_qqzz_asimov[fState+"recobin"+str(recobin)]
+            n_trueH_asimov["4lrecobin"+str(recobin)+year] = 0.0
+            n_trueH_otherfid_asimov["4lrecobin"+str(recobin)+year] = 0.0
+            n_zjets_asimov["4lrecobin"+str(recobin)+year] = 0.0
+            n_ggzz_asimov["4lrecobin"+str(recobin)+year] = 0.0
+            n_fakeH_asimov["4lrecobin"+str(recobin)+year] = 0.0
+            n_out_trueH_asimov["4lrecobin"+str(recobin)+year] = 0.0
+            n_qqzz_asimov["4lrecobin"+str(recobin)+year] = 0.0
+	    n_zz_asimov["4lrecobin"+str(recobin)+year] = 0.0
+    fStates = ['4mu','4e','2e2mu']
+    for year in years:
+        for fState in fStates:
+            for recobin in range(nBins):
+                TaggerFromWS = "n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fState+"S_"+str(recobin)+"_"+year
+                for bin in range(nBins):
+                    trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)+year] = w_asimov.function(TaggerFromWS+"_proc_trueH"+fState+"Bin"+str(bin))
+                zjets_asimov[fState+"recobin"+str(recobin)+year] = w_asimov.function(TaggerFromWS+"_proc_bkg_zjets")
+                ggzz_asimov[fState+"recobin"+str(recobin)+year] = w_asimov.function(TaggerFromWS+"_proc_bkg_ggzz")
+                fakeH_asimov[fState+"recobin"+str(recobin)+year] = w_asimov.function(TaggerFromWS+"_proc_fakeH")
+                out_trueH_asimov[fState+"recobin"+str(recobin)+year] = w_asimov.function(TaggerFromWS+"_proc_out_trueH")
+                qqzz_asimov[fState+"recobin"+str(recobin)+year] = w_asimov.function(TaggerFromWS+"_proc_bkg_qqzz")
+                n_trueH_otherfid_asimov[fState+"recobin"+str(recobin)+year] = 0.0
+                for bin in range(nBins):
+                    if (bin==recobin):
+                        n_trueH_asimov[fState+"recobin"+str(recobin)+year] = trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)+year].getVal()
+                    else:
+                        n_trueH_otherfid_asimov[fState+"recobin"+str(recobin)+year] += trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)+year].getVal()
+                n_zjets_asimov[fState+"recobin"+str(recobin)+year] = zjets_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_ggzz_asimov[fState+"recobin"+str(recobin)+year] = ggzz_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_fakeH_asimov[fState+"recobin"+str(recobin)+year] = fakeH_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_out_trueH_asimov[fState+"recobin"+str(recobin)+year] = out_trueH_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_qqzz_asimov[fState+"recobin"+str(recobin)+year] = qqzz_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_zz_asimov[fState+"recobin"+str(recobin)+year] = n_ggzz_asimov[fState+"recobin"+str(recobin)+year]+n_qqzz_asimov[fState+"recobin"+str(recobin)+year]
+                n_trueH_asimov["4lrecobin"+str(recobin)+year] += n_trueH_asimov[fState+"recobin"+str(recobin)+year]
+                n_trueH_otherfid_asimov["4lrecobin"+str(recobin)+year] += n_trueH_otherfid_asimov[fState+"recobin"+str(recobin)+year]
+                n_zjets_asimov["4lrecobin"+str(recobin)+year] += zjets_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_ggzz_asimov["4lrecobin"+str(recobin)+year] += ggzz_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_fakeH_asimov["4lrecobin"+str(recobin)+year] += fakeH_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_out_trueH_asimov["4lrecobin"+str(recobin)+year] += out_trueH_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_qqzz_asimov["4lrecobin"+str(recobin)+year] += qqzz_asimov[fState+"recobin"+str(recobin)+year].getVal()
+                n_zz_asimov["4lrecobin"+str(recobin)+year] += n_ggzz_asimov[fState+"recobin"+str(recobin)+year]+n_qqzz_asimov[fState+"recobin"+str(recobin)+year]
 
 
     CMS_channel = w.cat("CMS_channel")
     mass = w.var("CMS_zz4l_mass").frame(RooFit.Bins(1))
+    logger.debug(type(mass))
 
     databin = {}
     if (fstate=="4l"):
-        for recobin in range(nBins):
-            datacut = ''
-            for fState in fStates:
-                datacut += "CMS_channel==CMS_channel::ch"+channel[fState]+"_ch"+str(recobin+1)+" || "
-            datacut = datacut.rstrip(" || ")
-            databin[str(recobin)] = data.reduce(RooFit.Cut(datacut))
-            #databin[str(recobin)].Print("v")
-
+        for year in years:
+            for recobin in range(nBins):
+                datacut = ''
+                for fState in fStates:
+                    sbin = obsName.replace(' ','_')+"_"+fstate+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fstate+"S_"+str(recobin)+"_"+year
+                    datacut += "CMS_channel==CMS_channel::"+sbin+" || "
+                datacut = datacut.rstrip(" || ")
+                logger.debug("datacut is :    {}".format(datacut))
+                databin[str(recobin)+year] = data.reduce(RooFit.Cut(datacut))
     else:
-        for recobin in range(nBins):
-            sbin = "ch"+channel[fstate]+"_ch"+str(recobin+1)
-            databin[str(recobin)] = data.reduce(RooFit.Cut("CMS_channel==CMS_channel::"+sbin))
-            #databin[str(recobin)].Print("v")
-
+        for year in years:
+            for recobin in range(nBins):
+                sbin = obsName.replace(' ','_')+"_"+fstate+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fstate+"S_"+str(recobin)+"_"+year
+                databin[str(recobin)+year] = data.reduce(RooFit.Cut("CMS_channel==CMS_channel::"+sbin))
 
 
     if (obsName.startswith('njets')):
@@ -197,21 +206,43 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
         h_zz = TH1D("h_zz","h_zz",nBins,0,nBins)
         h_zx = TH1D("h_zx","h_zx",nBins,0,nBins)
     else:
-        h_data = TH1D("h_data","h_data",nBins,array('d',[float(observableBins[i]) for i in range(nBins+1)]))
-        h_sig = TH1D("h_sig","h_xig",nBins,array('d',[float(observableBins[i]) for i in range(nBins+1)]))
-        h_zz = TH1D("h_zz","h_zz",nBins,array('d',[float(observableBins[i]) for i in range(nBins+1)]))
-        h_zx = TH1D("h_zx","h_zx",nBins,array('d',[float(observableBins[i]) for i in range(nBins+1)]))
-    for recobin in range(nBins):
-        print("\n==> Final State: {:7}  {:8}    {}".format(fstate,"recobin",recobin))
-        print('H:   {}'.format(n_trueH_asimov[fstate+"recobin"+str(recobin)]+n_trueH_otherfid_asimov[fstate+"recobin"+str(recobin)]+n_out_trueH_asimov[fstate+"recobin"+str(recobin)]+n_fakeH_asimov[fstate+"recobin"+str(recobin)]))
-        h_sig.SetBinContent(recobin+1,n_trueH_asimov[fstate+"recobin"+str(recobin)]+n_trueH_otherfid_asimov[fstate+"recobin"+str(recobin)]+n_out_trueH_asimov[fstate+"recobin"+str(recobin)]+n_fakeH_asimov[fstate+"recobin"+str(recobin)])
-        print('ZZ:  {}'.format(n_zz_asimov[fstate+"recobin"+str(recobin)]))
-        h_zz.SetBinContent(recobin+1,n_zz_asimov[fstate+"recobin"+str(recobin)])
-        print('Z+X: {}'.format(n_zjets_asimov[fstate+"recobin"+str(recobin)]))
-        h_zx.SetBinContent(recobin+1,n_zjets_asimov[fstate+"recobin"+str(recobin)])
-        print('Data:{}\n'.format(databin[str(recobin)].sumEntries()))
-        h_data.SetBinContent(recobin+1,databin[str(recobin)].sumEntries())
+        CustomBinInfo = [float(observableBins[i]) for i in range(nBins+1)]
+        CustomBinInfo[0] = 0.0
+        h_data = TH1D("h_data","h_data",nBins,array('d',CustomBinInfo))
+        h_sig = TH1D("h_sig","h_xig",nBins,array('d',CustomBinInfo))
+        h_zz = TH1D("h_zz","h_zz",nBins,array('d',CustomBinInfo))
+        h_zx = TH1D("h_zx","h_zx",nBins,array('d',CustomBinInfo))
 
+    nH={};
+    nZZ={};
+    nZX={};
+    nData={}
+    for recobin in range(nBins):
+        nH[fstate+"recobin"+str(recobin)] = 0.0
+        nZZ[fstate+"recobin"+str(recobin)] = 0.0
+        nZX[fstate+"recobin"+str(recobin)] = 0.0
+        nData[fstate+"recobin"+str(recobin)] = 0.0
+
+
+    for recobin in range(nBins):
+        for year in years:
+            logger.debug(fstate+"recobin"+str(recobin)+ "year"+ str(year))
+            nH[fstate+"recobin"+str(recobin)]+=n_trueH_asimov[fstate+"recobin"+str(recobin)+year]+n_trueH_otherfid_asimov[fstate+"recobin"+str(recobin)+year]+n_out_trueH_asimov[fstate+"recobin"+str(recobin)+year]+n_fakeH_asimov[fstate+"recobin"+str(recobin)+year]
+            logger.debug('H:'+str(n_trueH_asimov[fstate+"recobin"+str(recobin)+year]+n_trueH_otherfid_asimov[fstate+"recobin"+str(recobin)+year]+n_out_trueH_asimov[fstate+"recobin"+str(recobin)+year]+n_fakeH_asimov[fstate+"recobin"+str(recobin)+year]))
+
+            nZZ[fstate+"recobin"+str(recobin)]+=n_zz_asimov[fstate+"recobin"+str(recobin)+year]
+            logger.debug('ZZ:'+str(n_zz_asimov[fstate+"recobin"+str(recobin)+year]))
+
+            nZX[fstate+"recobin"+str(recobin)]+=n_zjets_asimov[fstate+"recobin"+str(recobin)+year]
+            logger.debug('Z+X:'+str(n_zjets_asimov[fstate+"recobin"+str(recobin)+year]))
+
+            nData[fstate+"recobin"+str(recobin)]+=databin[str(recobin)+year].sumEntries()
+            logger.debug('Data:'+str(databin[str(recobin)+year].sumEntries()))
+
+        h_sig.SetBinContent(recobin+1,nH[fstate+"recobin"+str(recobin)])
+        h_zz.SetBinContent(recobin+1,nZZ[fstate+"recobin"+str(recobin)])
+        h_zx.SetBinContent(recobin+1,nZX[fstate+"recobin"+str(recobin)])
+        h_data.SetBinContent(recobin+1,nData[fstate+"recobin"+str(recobin)])
 
     h_sig.SetLineColor(kRed)
     h_sig.SetLineWidth(2)
@@ -285,9 +316,17 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     latex2.SetTextSize(0.5*c.GetTopMargin())
     latex2.SetTextFont(42)
     latex2.SetTextAlign(31) # align right
-    # latex2.DrawLatex(0.87, 0.95, "10.0 fb^{-1} at #sqrt{s} = 13 TeV")
-    # latex2.DrawLatex(0.87, 0.95, "41.4 fb^{-1} at #sqrt{s} = 13 TeV")
-    latex2.DrawLatex(0.87, 0.95, "58.8 fb^{-1} at #sqrt{s} = 13 TeV")
+    if (not opt.LUMISCALE=="1.0"):
+        if (opt.ERA=='2016') : lumi = round(35.9*float(opt.LUMISCALE),1)
+        elif (opt.ERA=='2017') : lumi = round(41.7*float(opt.LUMISCALE),1)
+        else  : lumi = round(58.5*float(opt.LUMISCALE),1)
+        latex2.DrawLatex(0.94, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
+    else:
+        if (opt.ERA=='2016') : latex2.DrawLatex(0.94, 0.94,"35.9 fb^{-1} (13 TeV)")
+        elif (opt.ERA=='2017') : latex2.DrawLatex(0.94, 0.94,"41.7 fb^{-1} (13 TeV)")
+        elif (opt.ERA=='2018') : latex2.DrawLatex(0.94, 0.94,"58.8 fb^{-1} (13 TeV)")
+        else : latex2.DrawLatex(0.94, 0.94,"137 fb^{-1} (13 TeV)")
+
     latex2.SetTextSize(0.9*c.GetTopMargin())
     latex2.SetTextFont(62)
     latex2.SetTextAlign(11) # align right
@@ -298,7 +337,6 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     latex2.DrawLatex(0.23, 0.8, "Preliminary")
     latex2.SetTextFont(42)
     latex2.SetTextSize(0.45*c.GetTopMargin())
-    #latex2.DrawLatex(0.19,0.75,"105 GeV < m("+fstate.replace('mu','#mu')+") < 140 GeV")
     latex2.DrawLatex(0.19,0.75,str(INPUT_m4l_low)+" GeV < m("+fstate.replace('mu','#mu')+") < "+str(INPUT_m4l_high)+" GeV")
     legend = TLegend(.6,.70,.9,.90)
     if (not opt.UNBLIND):
@@ -308,7 +346,6 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     legend.AddEntry(h_sig,"m(H) = "+opt.ASIMOVMASS+" GeV","f")
     legend.AddEntry(h_zz,"ZZ background","f")
     legend.AddEntry(h_zx,"Z+X background","f")
-
     legend.SetShadowColor(0);
     legend.SetFillColor(0);
     legend.SetLineColor(0);
@@ -317,7 +354,6 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     # Create output directory if it does not exits
     OutputPath = DifferentialBins.format(year = year, obsName = obsName.replace(' ','_'))
     GetDirectory(OutputPath)
-
     if (not opt.UNBLIND):
         c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".pdf")
         c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".png")
@@ -326,6 +362,8 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
         c.SaveAs(OutputPath+"/data_"+obsName.replace(' ','_')+'_'+fstate+".png")
 
 
-fStates = ["4e","4mu","2e2mu","4l"]
+# fStates = ["4e","4mu","2e2mu","4l"]
+fStates = ["4e","4mu","2e2mu"]
+logger.debug("years are: {}".format(years))
 for fState in fStates:
-    plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fState, observableBins, opt.ERA)
+    plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fState, observableBins, years)

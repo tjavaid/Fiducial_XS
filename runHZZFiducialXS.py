@@ -2,24 +2,27 @@
 #-----------------------------------------------
 # Latest update: 2014.10.16
 #-----------------------------------------------
+import ast
 import json
 import math
 import optparse
 import os
 import sys
+
+from cgi import test
 from decimal import *
 
-from ROOT import *
+import yaml
 
 # INFO: Following items are imported from either python directory or Inputs
-from Input_Info import datacardInputs, combineOutputs
 from createXSworkspace import createXSworkspace
-from higgs_xsbr_13TeV import higgs4l_br, higgsZZ_br, filtereff, higgs_xs
-from sample_shortnames import sample_shortnames, background_samples
-from Utils import  logging, logger, GetDirectory
-from Utils import  processCmd, get_linenumber, mergeDictionary_average
+from higgs_xsbr_13TeV import filtereff, higgs4l_br, higgs_xs, higgsZZ_br
+from Input_Info import combineOutputs, datacardInputs
 from read_bins import read_bins
-import yaml
+from ROOT import *
+from sample_shortnames import background_samples, sample_shortnames
+from Utils import (GetDirectory, get_linenumber, logger, logging,
+                   mergeDictionary_average, processCmd)
 
 
 ### Define function for parsing options
@@ -117,7 +120,8 @@ def extractFiducialEfficiencies(obsName, observableBins, modelName):
     cmd = 'python efficiencyFactors.py --dir='+opt.SOURCEDIR+' --obsName='+opt.OBSNAME+' --obsBins="'+opt.OBSBINS+'" -l -q -b --doPlots --doFit'
     output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
     print (output)
-    if (not opt.OBSNAME.startswith("mass4l")):
+    # if (not opt.OBSNAME.startswith("mass4l")):
+    if (not (opt.OBSNAME=="mass4l")):
         cmd = 'python plot2dsigeffs.py -l -q -b --obsName='+opt.OBSNAME+' --obsBins="'+opt.OBSBINS+'"'
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
@@ -187,7 +191,7 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year, obs_if
 
         if (" vs " not in obsName ):
             #cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[year][sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+obsName+' "'+opt.OBSBINS+'" "'+opt.OBSBINS+'" 13TeV templatesXS_'+str(year)+' DTreeXS ' + fitTypeZ4l+ ' 0' +' "' +str(obs_ifJES).lower() +'" '
-            cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[year][sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+obsName+' "'+opt.OBSBINS+'" "'+opt.OBSBINS+'" 13TeV templatesXS'+' DTreeXS ' + fitTypeZ4l+ ' 0 ' +str(int(obs_ifJES))
+            cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[year][sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+obsName+' "'+opt.OBSBINS+'" "'+opt.OBSBINS+'" 13TeV templatesXS'+' DTreeXS ' + fitTypeZ4l+ ' 0 ' +str(int(obs_ifJES)) + ' "'+ str(year)+'"'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
             # FIXME: URGENT: Here previous command copies all the cout info in variable `output`
             #               then from the string it is going to extract useful information about bin fraction
@@ -220,7 +224,7 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year, obs_if
                 ListObsName = (''.join(obsName.split())).split('vs')
                 logger.info(ListObsName[0]+ ' : ' + str(bin0_)+"\t"+ListObsName[1] + ' : '+str(bin1_))
 
-                cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[year][sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+ListObsName[0]+' "'+bin0_+'" "'+bin0_ +'" 13TeV templatesXS'+' DTreeXS ' + fitTypeZ4l+ ' 0 ' + str(int(obs_ifJES)) + ' ' + ListObsName[1]+' "'+bin1_+'" "'+bin1_ +'" '+str(int(obs_ifJES2))
+                cmd = './main_fiducialXSTemplates '+bkg_samples_shorttags[sample_tag]+' "'+tmpSrcDir+'/'+background_samples[year][sample_tag]+'" '+bkg_samples_fStates[sample_tag]+' '+ListObsName[0]+' "'+bin0_+'" "'+bin0_ +'" 13TeV templatesXS'+' DTreeXS ' + fitTypeZ4l+ ' 0 ' + str(int(obs_ifJES)) + ' "'+ str(year)+'"' + ' ' + ListObsName[1]+' "'+bin1_+'" "'+bin1_ +'" '+str(int(obs_ifJES2))
                 output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
                 tmp_fracs = output.split("[Bin fraction: ")
                 logger.debug('tmp_fracs: {}'.format(tmp_fracs))
@@ -325,7 +329,8 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
                 observableBins = observableBins , modelName = modelName ,
                 physicalModel = physicalModel
                 ))
-        if (not obsName.startswith("mass4l")):
+        # if (not obsName.startswith("mass4l")):
+        if (not (obsName=="mass4l")):
             logger.debug("Running the datacard_maker.py...")
             processCmd("python python/datacard_maker.py -c {} -b {}".format(fState, nBins),get_linenumber(), os.path.basename(__file__))
             logger.debug("Completed the datacard_maker.py...")
@@ -347,14 +352,26 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
                 processCmd(UpdateObservationValue, get_linenumber(), os.path.basename(__file__))
                 UpdateDatabin = "sed -i 's~_xs.Databin"+str(obsBin)+"~_xs_"+modelName+"_"+obsName.replace(' ','_')+"_"+physicalModel+".Databin"+str(obsBin)+"~g' "+combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
                 os.system(UpdateDatabin)
-                #if ("jet" in obsName.replace(' ','_')):
-                if (obs_ifJES):
-                    os.system("sed -i 's~\#JES param~JES param~g' "+combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
 
+                if (obs_ifJES):
+                    # INFO: This "command_append" here just to ensures appending new line from next one. Below, "command_append" is just added a blank in card
+                    command_append = "echo '" "' >> " +combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
+                    os.system(command_append)
+                    with open("Inputs/JES/{year}/{obsName}/datacardLines_JESnuis_{obsName}_{channel}.txt".format(year = year, obsName = obsName.replace(' ','_'), channel= fState)) as f:
+                        data = f.read()
+
+                    d = ast.literal_eval(data)
+                    for keys, values in d.items():
+                        if (keys == obsName.replace(' ','_') + '_' + str(obsBin)):
+                            for value in values:
+                                # INFO: or FIXME: Here, I added 5 - manually in the cards for background process
+                                command_append = "echo '"+str(value)+" - - - - -' >> " +combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
+                                os.system(command_append)
                 os.system("sed -i 's~0.0 0.2~0.0 0.2 [-1,1]~g' "+combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt")
 
         else:
             logger.debug("Running the datacard_maker.py...")
+            print("python python/datacard_maker.py -c {} -b {}".format(fState, 1))
             os.system("python python/datacard_maker.py -c {} -b {}".format(fState, 1))
             logger.debug("Completed the datacard_maker.py...")
             ndata = createXSworkspace(ListObsName,fState, nBins, 0, observableBins, False, True, modelName, physicalModel, year, obs_ifJES, obs_ifJES2)
@@ -1144,7 +1161,8 @@ def runFiducialXS():
         logger.info("Combination done")
         logger.debug("resultsXS: {}".format(resultsXS))
         # plot the asimov predictions for data, signal, and backround in differential bins
-        if ( (not obsName.startswith("mass4l")) and ("vs" not in obsName)): # INFO: skip this plotter for 2D obs
+        # if ( (not obsName.startswith("mass4l")) and ("vs" not in obsName)): # INFO: skip this plotter for 2D obs
+        if ( (not (obsName=="mass4l")) and ("vs" not in obsName)):
             cmd = 'python python/plotDifferentialBins.py -l -q -b --obsName="'+obsName.replace(' ','_')+'" --obsBins="'+opt.OBSBINS+'" --asimovModel="'+asimovDataModelName+'" --inYAMLFile="'+opt.inYAMLFile+'" --year="'+year+'"'
             if (opt.UNBLIND): cmd = cmd + ' --unblind'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
@@ -1181,7 +1199,8 @@ def runFiducialXS():
         resultsXS = createAsimov(obsName, observableBins, asimovDataModelName, resultsXS, asimovPhysicalModel, year)
         logger.debug("resultsXS: {}".format(resultsXS))
         # plot the asimov predictions for data, signal, and backround in differential bins
-        if ( (not obsName.startswith("mass4l")) and ("vs" not in obsName)): # INFO: skip this plotter for 2D obs
+        # if ( (not obsName.startswith("mass4l")) and ("vs" not in obsName)): # INFO: skip this plotter for 2D obs
+        if ( (not (obsName=="mass4l")) and ("vs" not in obsName)):
             cmd = 'python python/plotDifferentialBins.py -l -q -b --obsName="'+obsName.replace(' ','_')+'" --obsBins="'+opt.OBSBINS+'" --asimovModel="'+asimovDataModelName+'" --inYAMLFile="'+opt.inYAMLFile+'" --year="'+year+'"'
             if (opt.UNBLIND): cmd = cmd + ' --unblind'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
@@ -1195,7 +1214,8 @@ def runFiducialXS():
     logger.info("model name: {}".format(modelNames))
 
     # FIXME: Why for mass4l we are using two versions while for others only v3.
-    if (obsName.startswith("mass4l")): physicalModels = ["v2","v3"]
+    # if (obsName.startswith("mass4l")): physicalModels = ["v2","v3"]
+    if (obsName == "mass4l"): physicalModels = ["v2","v3"]
     else: physicalModels = ["v3"]
 
     logger.debug("Options:\n\trunAllSteps: {}\n\topt.resultsOnly {}\n".format(runAllSteps,opt.resultsOnly))
@@ -1212,7 +1232,8 @@ def runFiducialXS():
                 logger.debug("Extract results for physicsModel - {}, and modelName - {}".format(physicalModel, modelName))
                 resultsXS = extractResults(obsName, observableBins, modelName, physicalModel, asimovDataModelName, asimovPhysicalModel, resultsXS, year)
                 # plot the fit results
-                if ( (not obsName.startswith("mass4l")) and year != "allYear"):
+                # if ( (not obsName.startswith("mass4l")) and year != "allYear"):
+                if ( (not (obsName == "mass4l")) and year != "allYear"):
                     # identify 1D or 2D obs using `ListObsName` length
                     cmd = 'python python/plotAsimov_simultaneous.py -l -q -b --obsName="'+obsName+'" --obsBins="'+opt.OBSBINS+'" --asimovModel="'+asimovDataModelName+'" --unfoldModel="'+modelName+'" --obs='+str(len(ListObsName)) + ' --year="'+year+'"'# +' --lumiscale=str(opt.LUMISCALE)'
                     if (opt.UNBLIND): cmd = cmd + ' --unblind'

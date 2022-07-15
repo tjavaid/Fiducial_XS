@@ -17,6 +17,7 @@ except Exception as e:
     print (e)
     raise ImportError("Check if you run `source setup.sh`. If not please run it.\n")
 
+from LoadData import dirMC
 
 # Kept for record of models (copied from runHZZFiducialXS.py)
 # modelNames = "SM_125,SMup_125,SMdn_125" #,'VBF_powheg_JHUgen_125']
@@ -32,7 +33,6 @@ parser.add_argument( '-s', dest='step', default=1, choices=[1, 2, 3, 4, 5, 6, 7]
 parser.add_argument( '-c', dest='channels', nargs="+",  default=["4mu", "4e", "2e2mu", "4l"], help='list of channels')
 parser.add_argument( '-model', dest='modelNames', default="SM_125",
                         help='Names of models for unfolding, separated by , (comma) . Default is "SM_125"')
-parser.add_argument( '-p', dest='NtupleDir', default="/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/", help='Path of ntuples')
 parser.add_argument( '-m', dest='HiggsMass', default=125.38, type=float, help='Higgs mass')
 parser.add_argument( '-y', dest='year', default='2018', type=str, help='dataset year')
 parser.add_argument( '-r', dest='RunCommand', default=0, type=int, choices=[0, 1], help="if 1 then it will run the commands else it will just print the commands")
@@ -149,7 +149,7 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 command = ''
                 if args.nohup: command = 'nohup '
                 command += 'python -u runHZZFiducialXS.py --dir="{NtupleDir}" --obsName="{obsName}" --obsBins="{obsBins}" --modelNames {modelNames} --year="{year}" --redoTemplates --templatesOnly '.format(
-                        obsName = obsName, obsBins = obsBin['bins'], NtupleDir = args.NtupleDir, modelNames= args.modelNames, year = args.year
+                        obsName = obsName, obsBins = obsBin['bins'], NtupleDir = dirMC[args.year], modelNames= args.modelNames, year = args.year
                 )
                 if args.nohup: command += ' >& log_{year}/step_6_{obsName}.log &'.format(obsName = obsName, year = args.year)
                 logger.info("Command: {}".format(command))
