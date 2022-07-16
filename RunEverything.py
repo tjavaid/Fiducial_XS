@@ -41,7 +41,7 @@ parser.add_argument( '-test', dest='TestVar', default="", type=str, help="Name o
 parser.add_argument('-n', dest="nohup", action='store_true', help='if want to run using nohup')
 parser.add_argument(
      "--log-level",
-     default=logging.DEBUG,
+     default=logging.ERROR,
      type=lambda x: getattr(logging, x),
      help="Configure the logging level."
      )

@@ -72,11 +72,11 @@ def interpolate_full(x, nbins, obsName, DEBUG = 0):
         for channel in channels:
             for obsBin in range(0, nbins-1):
                 for recoBin in range(0, nbins-1):
-                    border_msg("obsName: {:11} Channel: {:5} obsBin: {:3}  recoBin: {}".format(obsName, channel, obsBin, recoBin))
+                    if (DEBUG): border_msg("obsName: {:11} Channel: {:5} obsBin: {:3}  recoBin: {}".format(obsName, channel, obsBin, recoBin))
 
                     #key_powheg_MX = 'ggH_powheg_JHUgen_'+str(x)+'_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(recoBin)
                     key_powheg_MX = mode+str(x)+'_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(recoBin)
-                    print("=== ===>{:15} : {}".format("dict key", key_powheg_MX))
+                    if (DEBUG): print("=== ===>{:15} : {}".format("dict key", key_powheg_MX))
             # introducing lists to store the values at different mass points
                     acc_points = []; dacc_points = []; acc_4l_points = []; dacc_4l_points = []; eff_points = []; deff_points = []; inc_wrongfrac_points = []; binfrac_outfrac_points = []; outinratio_points = []; doutinratio_points = []; inc_outfrac_points = []; binfrac_wrongfrac_points = []; cfactor_points = []; lambdajesup_points = []; lambdajesdn_points = [];
 
@@ -84,16 +84,16 @@ def interpolate_full(x, nbins, obsName, DEBUG = 0):
                     for point in x_points:
                         key = mode+str(point)+'_'+channel+'_'+obsName+'_genbin'+str(obsBin)+'_recobin'+str(recoBin)
                         #print "key is : ", key
-                        acc_points.append(acc_all[key]);  acc_4l_points.append(acc_4l_all[key]); 
+                        acc_points.append(acc_all[key]);  acc_4l_points.append(acc_4l_all[key]);
                         dacc_points.append(dacc_all[key]);  dacc_4l_points.append(dacc_4l_all[key]);
                         eff_points.append(eff_all[key]); deff_points.append(deff_all[key]); inc_wrongfrac_points.append(inc_wrongfrac_all[key]);
                         binfrac_outfrac_points.append(binfrac_outfrac_all[key]); outinratio_points.append(outinratio_all[key]);
                         doutinratio_points.append(doutinratio_all[key]);
-                        inc_outfrac_points.append(inc_outfrac_all[key]); binfrac_wrongfrac_points.append(binfrac_wrongfrac_all[key]); cfactor_points.append(cfactor_all[key]); 
+                        inc_outfrac_points.append(inc_outfrac_all[key]); binfrac_wrongfrac_points.append(binfrac_wrongfrac_all[key]); cfactor_points.append(cfactor_all[key]);
                         lambdajesup_points.append(lambdajesup_all[key]); lambdajesdn_points.append(lambdajesdn_all[key]);
 
-                    print("=== ===>{:15} : {}".format("acc_points", acc_points))
-                    print("=== ===>{:15} : {}".format("eff_points", eff_points))
+                    if (DEBUG): print("=== ===>{:15} : {}".format("acc_points", acc_points))
+                    if (DEBUG): print("=== ===>{:15} : {}".format("eff_points", eff_points))
 
                     # INFO: Step - 2: Interpolate the line
                     # tck = interpolate.splrep(x_points, y_points)
@@ -130,7 +130,7 @@ def interpolate_full(x, nbins, obsName, DEBUG = 0):
                     lambdajesup[key_powheg_MX]= float(interpolate.splev(x, spl_lambdajesup_points))
                     lambdajesdn[key_powheg_MX]= float(interpolate.splev(x, spl_lambdajesdn_points))
 
-                    print("=== ===>{:15} : {}".format("acceptance", acceptance))
+                    if (DEBUG): print("=== ===>{:15} : {}".format("acceptance", acceptance))
 
                     #################################################################
                     # INFO: Step - 4: Update the original dict
