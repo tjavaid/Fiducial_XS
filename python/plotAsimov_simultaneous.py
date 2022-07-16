@@ -16,7 +16,7 @@ grootargs = []
 def callback_rootargs(option, opt, value, parser):
     grootargs.append(opt)
 
-### Define function for parsing options
+# Define function for parsing options
 def parseOptions():
 
     global opt, args, runAllSteps
@@ -262,7 +262,7 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
 
     CMS_channel = w.cat("CMS_channel")
     if (obsName=="mass4l"):
-        mass = w.var("CMS_zz4l_mass").frame(RooFit.Bins(15))  #FIXME
+        mass = w.var("CMS_zz4l_mass").frame(RooFit.Bins(15))
     else:
         mass = w.var("CMS_zz4l_mass").frame(RooFit.Bins(15))
 
@@ -350,7 +350,6 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     c = TCanvas("c","c",1000,800)
     c.cd()
 
-    #dummy = TH1D("","",1,105.6,140.6)
     dummy = TH1D("","",1,105.0,140.0)
     dummy.SetBinContent(1,2)
     dummy.SetFillColor(0)
@@ -441,7 +440,6 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     latex2.SetTextSize(0.5*c.GetTopMargin())
     latex2.SetTextFont(42)
     latex2.SetTextAlign(31) # align right
-#    latex2.DrawLatex(0.87, 0.95,"35.9+41.4+58.8 fb^{-1} at #sqrt{s} = 13 TeV") # Full Run 2
     print opt.LUMISCALE
     if (not opt.LUMISCALE=="1.0"):
         if (opt.ERA=='2016') : lumi = round(35.9*float(opt.LUMISCALE),1)
@@ -449,10 +447,10 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
         else  : lumi = round(58.5*float(opt.LUMISCALE),1)
         latex2.DrawLatex(0.94, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
     else:
-        if (opt.ERA=='2016') : latex2.DrawLatex(0.94, 0.94,"35.9 fb^{-1} (13 TeV)")
-        elif (opt.ERA=='2017') : latex2.DrawLatex(0.94, 0.94,"41.7 fb^{-1} (13 TeV)")
-        elif (opt.ERA=='2018') : latex2.DrawLatex(0.94, 0.94,"58.8 fb^{-1} (13 TeV)")
-        else : latex2.DrawLatex(0.94, 0.94,"137 fb^{-1} (13 TeV)")
+        if (opt.ERA=='2016') : latex2.DrawLatex(0.94, 0.94, str(Lumi_2016)+" fb^{-1} (13 TeV)")
+        elif (opt.ERA=='2017') : latex2.DrawLatex(0.94, 0.94, str(Lumi_2017)+" fb^{-1} (13 TeV)")
+        elif (opt.ERA=='2018') : latex2.DrawLatex(0.94, 0.94, str(Lumi_2018)+" fb^{-1} (13 TeV)")
+        else : latex2.DrawLatex(0.94, 0.94, str(Lumi_Run2) + " fb^{-1} (13 TeV)")
 
     latex2.SetTextSize(0.8*c.GetTopMargin())
     latex2.SetTextFont(62)
@@ -465,8 +463,6 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     latex2.SetTextFont(42)
     latex2.SetTextSize(0.45*c.GetTopMargin())
     if (ObsToStudy == "1D_Observables"):
-        logger.debug(observableBins[recobin]+" "+unit+" < "+label+" < "+observableBins[recobin+1]+" "+unit)
-        sys.exit()
         latex2.DrawLatex(0.65,0.85, observableBins[recobin]+" "+unit+" < "+label+" < "+observableBins[recobin+1]+" "+unit)
     else:
         latex2.DrawLatex(0.65,0.85, observableBins[recobin][0][0]+" "+unit[0]+" < "+label[0]+" < "+observableBins[recobin][0][1]+" "+unit[0])

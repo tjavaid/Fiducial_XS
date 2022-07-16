@@ -62,7 +62,7 @@ def parseOptions():
     parser.add_option('',   '--calcSys', action='store_true', dest='SYS', default=False, help='Calculate Systematic Uncertainties (in addition to stat+sys)')
     parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
     parser.add_option('-i',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
-    parser.add_option("-l", "--logLevel", action="store", dest="logLevel", help="Change log verbosity(WARNING: 0, INFO: 1, DEBUG: 2)")
+    parser.add_option("-l", "--logLevel", dest="logLevel",  type = 'string', default = '3', help="Change log verbosity(WARNING: 0, INFO: 1, DEBUG: 2, ERROR: 3)")
     parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
 
     # store options and arguments as global variables
@@ -81,6 +81,8 @@ def parseOptions():
         log_level = logging.INFO
     elif opt.logLevel == "2":
         log_level = logging.DEBUG
+    elif opt.logLevel == "3":
+        log_level = logging.ERROR
     logger.setLevel( log_level)
 
     # prepare the global flag if all the step should be run
