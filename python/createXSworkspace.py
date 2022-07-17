@@ -1,21 +1,11 @@
 # this script is called once for each reco bin (obsBin)
 # in each reco bin there are (nBins) signals (one for each gen bin)
 
-# FIXME: Commented RooFit.Silence() and RooFit.RecycleConflictNodes()
-# RooFit.RecycleConflictNodes(): https://root.cern.ch/doc/master/classRooWorkspace.html
-#           If any of the function objects to be imported already exist in the name space,
-#           connect the imported expression to the already existing nodes.
-#           Attention:
-#           Use with care! If function definitions do not match,
-#           this alters the definition of your function upon import
-
-# For Silence issue we should shift to ROOT 6.18
-#       Reference: https://root-forum.cern.ch/t/rooworkspace-import-roofit-silence-does-not-work-when-importing-datasets/32591/2
-
-import sys
 import os
+import sys
 
 from ROOT import *
+import ROOT
 
 # INFO: Following items are imported from either python directory or Inputs
 from Input_Info import *
@@ -123,6 +113,15 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         SuffixOfRootFile = obsNameOrig[0]+"_"+obsBin_low+"_"+obsBin_high
         logger.info("SuffixOfRootFile: {}".format(SuffixOfRootFile))
 
+    # print "workspace: working path is:      ",os.getcwd()
+    # obsBin_low = observableBins[obsBin]
+    # obsBin_high = observableBins[obsBin+1]
+
+    # obs_bin_lowest = observableBins[0]
+    # obs_bin_highest = observableBins[len(observableBins)-1]
+
+    # recobin = "recobin"+str(obsBin)
+
     doJES = 1
 
     # Load some libraries
@@ -172,8 +171,6 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     mass4mu = RooRealVar("mass4mu", "mass4mu", m4l_low, m4l_high)
     mass2e2mu = RooRealVar("mass2e2mu", "mass2e2mu",m4l_low, m4l_high)
     if (not obsName=="mass4l"):
-        # if (obsName=="rapidity4l" or obsName=="cosThetaStar" or obsName=="cosTheta1" or obsName=="cosTheta2" or obsName=="Phi" or obsName=="Phi1"):
-            # observable = RooRealVar(obsName,obsName,-1.0*float(obs_bin_highest),float(obs_bin_highest))
         observable   = RooRealVar(obsName,obsName,float(obs_bin_lowest),float(obs_bin_highest))
         observable.Print()
         if is2DObs:
@@ -190,174 +187,249 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     # update to 13 TeV parameterization
     MH = RooRealVar("MH","MH", 125.38,  m4l_low, m4l_high) # Hardcoded mass
 
-    CMS_zz4l_mean_m_sig = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
-    CMS_zz4l_mean_e_sig = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
-    CMS_zz4l_sigma_m_sig = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
-    CMS_zz4l_sigma_e_sig = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
-    CMS_zz4l_n_sig_1 = RooRealVar("CMS_zz4l_n_sig_1_"+year,"CMS_zz4l_n_sig_1_"+year,0.0)
-    CMS_zz4l_n_sig_2 = RooRealVar("CMS_zz4l_n_sig_2_"+year,"CMS_zz4l_n_sig_2_"+year,0.0)
-    CMS_zz4l_n_sig_3 = RooRealVar("CMS_zz4l_n_sig_3_"+year,"CMS_zz4l_n_sig_3_"+year,0.0)
 
-    # scale systematics
-    CMS_zz4l_mean_m_err_1 = RooRealVar("CMS_zz4l_mean_m_err_1_"+year,"CMS_zz4l_mean_m_err_1_"+year,0.0004,0.0004,0.0004)
-    CMS_zz4l_mean_e_err_2 = RooRealVar("CMS_zz4l_mean_e_err_2_"+year,"CMS_zz4l_mean_e_err_2_"+year,0.003,0.003,0.003)
-    CMS_zz4l_mean_m_err_3 = RooRealVar("CMS_zz4l_mean_m_err_3_"+year,"CMS_zz4l_mean_m_err_3_"+year,0.0004,0.0004,0.0004)
-    CMS_zz4l_mean_e_err_3 = RooRealVar("CMS_zz4l_mean_e_err_3_"+year,"CMS_zz4l_mean_e_err_3_"+year,0.003,0.003,0.003)
+    if (year=='2018'):
+        CMS_zz4l_mean_m_sig_2018 = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
+        CMS_zz4l_mean_e_sig_2018 = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
+        CMS_zz4l_sigma_m_sig_2018 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
+        CMS_zz4l_sigma_e_sig_2018 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
+        CMS_zz4l_n_sig_1_2018 = RooRealVar("CMS_zz4l_n_sig_1_"+year,"CMS_zz4l_n_sig_1_"+year,0.0)
+        CMS_zz4l_n_sig_2_2018 = RooRealVar("CMS_zz4l_n_sig_2_"+year,"CMS_zz4l_n_sig_2_"+year,0.0)
+        CMS_zz4l_n_sig_3_2018 = RooRealVar("CMS_zz4l_n_sig_3_"+year,"CMS_zz4l_n_sig_3_"+year,0.0)
+
+        # scale systematics
+        CMS_zz4l_mean_m_err_1_2018 = RooRealVar("CMS_zz4l_mean_m_err_1_"+year,"CMS_zz4l_mean_m_err_1_"+year,0.0004,0.0004,0.0004)
+        CMS_zz4l_mean_e_err_2_2018 = RooRealVar("CMS_zz4l_mean_e_err_2_"+year,"CMS_zz4l_mean_e_err_2_"+year,0.003,0.003,0.003)
+        CMS_zz4l_mean_m_err_3_2018 = RooRealVar("CMS_zz4l_mean_m_err_3_"+year,"CMS_zz4l_mean_m_err_3_"+year,0.0004,0.0004,0.0004)
+        CMS_zz4l_mean_e_err_3_2018 = RooRealVar("CMS_zz4l_mean_e_err_3_"+year,"CMS_zz4l_mean_e_err_3_"+year,0.003,0.003,0.003)
+
+    elif (year=='2017'):
+        CMS_zz4l_mean_m_sig_2017 = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
+        CMS_zz4l_mean_e_sig_2017 = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
+        CMS_zz4l_sigma_m_sig_2017 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
+        CMS_zz4l_sigma_e_sig_2017 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
+        CMS_zz4l_n_sig_1_2017 = RooRealVar("CMS_zz4l_n_sig_1_"+year,"CMS_zz4l_n_sig_1_"+year,0.0)
+        CMS_zz4l_n_sig_2_2017 = RooRealVar("CMS_zz4l_n_sig_2_"+year,"CMS_zz4l_n_sig_2_"+year,0.0)
+        CMS_zz4l_n_sig_3_2017 = RooRealVar("CMS_zz4l_n_sig_3_"+year,"CMS_zz4l_n_sig_3_"+year,0.0)
+
+        # scale systematics
+        CMS_zz4l_mean_m_err_1_2017 = RooRealVar("CMS_zz4l_mean_m_err_1_"+year,"CMS_zz4l_mean_m_err_1_"+year,0.0004,0.0004,0.0004)
+        CMS_zz4l_mean_e_err_2_2017 = RooRealVar("CMS_zz4l_mean_e_err_2_"+year,"CMS_zz4l_mean_e_err_2_"+year,0.003,0.003,0.003)
+        CMS_zz4l_mean_m_err_3_2017 = RooRealVar("CMS_zz4l_mean_m_err_3_"+year,"CMS_zz4l_mean_m_err_3_"+year,0.0004,0.0004,0.0004)
+        CMS_zz4l_mean_e_err_3_2017 = RooRealVar("CMS_zz4l_mean_e_err_3_"+year,"CMS_zz4l_mean_e_err_3_"+year,0.003,0.003,0.003)
+
+    else:
+        CMS_zz4l_mean_m_sig_2016 = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
+        CMS_zz4l_mean_e_sig_2016 = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
+        CMS_zz4l_sigma_m_sig_2016 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
+        CMS_zz4l_sigma_e_sig_2016 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
+        CMS_zz4l_n_sig_1_2016 = RooRealVar("CMS_zz4l_n_sig_1_"+year,"CMS_zz4l_n_sig_1_"+year,0.0)
+        CMS_zz4l_n_sig_2_2016 = RooRealVar("CMS_zz4l_n_sig_2_"+year,"CMS_zz4l_n_sig_2_"+year,0.0)
+        CMS_zz4l_n_sig_3_2016 = RooRealVar("CMS_zz4l_n_sig_3_"+year,"CMS_zz4l_n_sig_3_"+year,0.0)
+
+        # scale systematics
+        CMS_zz4l_mean_m_err_1_2016 = RooRealVar("CMS_zz4l_mean_m_err_1_"+year,"CMS_zz4l_mean_m_err_1_"+year,0.0004,0.0004,0.0004)
+        CMS_zz4l_mean_e_err_2_2016 = RooRealVar("CMS_zz4l_mean_e_err_2_"+year,"CMS_zz4l_mean_e_err_2_"+year,0.003,0.003,0.003)
+        CMS_zz4l_mean_m_err_3_2016 = RooRealVar("CMS_zz4l_mean_m_err_3_"+year,"CMS_zz4l_mean_m_err_3_"+year,0.0004,0.0004,0.0004)
+        CMS_zz4l_mean_e_err_3_2016 = RooRealVar("CMS_zz4l_mean_e_err_3_"+year,"CMS_zz4l_mean_e_err_3_"+year,0.003,0.003,0.003)
 
     if (channel=='2e2mu'):
         if (year=='2018'):
-            CMS_zz4l_mean_sig_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_mean_sig_3_centralValue_2e2mu" + recobin + "2018", "(%s) + (@0*@1*@3 + @0*@2*@4)/2" %(massParaMap["mean_"+channel+"_"+year]), ROOT.RooArgList(MH,CMS_zz4l_mean_m_sig_2018,CMS_zz4l_mean_e_sig_2018,CMS_zz4l_mean_m_err_3_2018,CMS_zz4l_mean_e_err_3_2018))
-            CMS_zz4l_mean_sig_NoConv_3 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2018","CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2018","@0",ROOT.RooArgList(CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2018))
-            CMS_zz4l_sigma_sig_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_sigma_sig_3_centralValue_2e2mu" + recobin + "2018", "(%s)*(TMath::Sqrt((1+@1)*(1+@2)))" %(massParaMap["sigma_"+channel+"_"+year]),ROOT.RooArgList(MH,CMS_zz4l_sigma_m_sig_2018,CMS_zz4l_sigma_e_sig_2018))
-            CMS_zz4l_alpha_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_alpha_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_alpha_3_centralValue_2e2mu" + recobin + "2018",massParaMap["a1_"+channel+"_"+year],ROOT.RooArgList(MH))
-            CMS_zz4l_n_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_n_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_n_3_centralValue_2e2mu" + recobin + "2018","%s*(1+@1)" %(massParaMap["n1_"+channel+"_"+year]),ROOT.RooArgList(MH,CMS_zz4l_n_sig_3_2018))
-            CMS_zz4l_alpha2_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_alpha2_3_centralValue_2e2mu" + recobin + "2018",massParaMap["a2_"+channel+"_"+year],ROOT.RooArgList(MH))
-            CMS_zz4l_n2_3_centralValue = ROOT.RooFormulaVar("CMS_zz4l_n2_3_centralValue_2e2mu" + recobin + "2018","CMS_zz4l_n2_3_centralValue_2e2mu" + recobin + "2018",massParaMap["n2_"+channel+"_"+year],ROOT.RooArgList(MH))
-            trueH = ROOT.RooDoubleCB(sig_name+'_' + _obsName[obsName], "DoubleCB", m, CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha_3_centralValue_2e2murecobin2018, CMS_zz4l_n_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha2_3_centralValue_2e2murecobin2018, CMS_zz4l_n2_3_centralValue_2e2murecobin2018)
-            # ggH = ROOT.RooDoubleCB('ggH_' + _obsName[obsName], "DoubleCB", m, CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha_3_centralValue_2e2murecobin2018, CMS_zz4l_n_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha2_3_centralValue_2e2murecobin2018, CMS_zz4l_n2_3_centralValue_2e2murecobin2018)
-            # xH = ROOT.RooDoubleCB('xH_' + _obsName[obsName], "DoubleCB", m, CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha_3_centralValue_2e2murecobin2018, CMS_zz4l_n_3_centralValue_2e2murecobin2018, CMS_zz4l_alpha2_3_centralValue_2e2murecobin2018, CMS_zz4l_n2_3_centralValue_2e2murecobin2018)
+            CMS_zz4l_mean_sig_3_centralValue_2018 = RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year, \
+                                                        "(124.512392+0.99361*(@0-125)) + (@0*@1*@3 + @0*@2*@4)/2", \
+                                                        RooArgList(MH,CMS_zz4l_mean_m_sig_2018,CMS_zz4l_mean_e_sig_2018,CMS_zz4l_mean_m_err_3_2018,CMS_zz4l_mean_e_err_3_2018))
+
+            CMS_zz4l_sigma_sig_3_centralValue_2018 = RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year, \
+                                                        "(1.705306+0.00948*(@0-125))*(TMath::Sqrt((1+@1)*(1+@2)))",RooArgList(MH,CMS_zz4l_sigma_m_sig_2018,CMS_zz4l_sigma_e_sig_2018))
+
+            CMS_zz4l_alpha_3_centralValue_2018 = RooFormulaVar("CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"(1.000696+0.00411*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n_3_centralValue_2018 = RooFormulaVar("CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"(3.284378+(-0.06518)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_3_2018))
+
+
+            CMS_zz4l_alpha2_3_centralValue_2018=RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"(1.782321+(-0.00321)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_3_centralValue_2018=RooFormulaVar("CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"(3.600091+0.01133*(@0-125))",RooArgList(MH))
+
+            # true signal shape
+            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_3_centralValue_2018,CMS_zz4l_sigma_sig_3_centralValue_2018,CMS_zz4l_alpha_3_centralValue_2018,CMS_zz4l_n_3_centralValue_2018,CMS_zz4l_alpha2_3_centralValue_2018,CMS_zz4l_n2_3_centralValue_2018)
         elif (year=='2017'):
-            CMS_zz4l_mean_sig_3_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year, \
-                                                                "(124.524+(0.00248708+1)*(@0-125)) + (@0*@1*@3 + @0*@2*@4)/2", \
-                                                                RooArgList(MH,CMS_zz4l_mean_m_sig,CMS_zz4l_mean_e_sig,CMS_zz4l_mean_m_err_3,CMS_zz4l_mean_e_err_3))
+            CMS_zz4l_mean_sig_3_centralValue_2017 = RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year, \
+                                                                "(124.499189+0.99550*(@0-125)) + (@0*@1*@3 + @0*@2*@4)/2", \
+                                                                RooArgList(MH,CMS_zz4l_mean_m_sig_2017,CMS_zz4l_mean_e_sig_2017,CMS_zz4l_mean_m_err_3_2017,CMS_zz4l_mean_e_err_3_2017))
 
-            CMS_zz4l_sigma_sig_3_centralValue = RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,\
-                                                                "(1.77228+(0.00526163)*(@0-125))*(TMath::Sqrt((1+@1)*(1+@2)))",RooArgList(MH,CMS_zz4l_sigma_m_sig,CMS_zz4l_sigma_e_sig))
+            CMS_zz4l_sigma_sig_3_centralValue_2017 = RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,\
+                                                                "(1.679486+0.00442*(@0-125))*(TMath::Sqrt((1+@1)*(1+@2)))",RooArgList(MH,CMS_zz4l_sigma_m_sig_2017,CMS_zz4l_sigma_e_sig_2017))
 
-            CMS_zz4l_alpha_3_centralValue = RooFormulaVar("CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"(0.967963+(-0.0047248)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_3_centralValue = RooFormulaVar("CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"(3.69774+(0)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_3))
-            CMS_zz4l_alpha2_3_centralValue = RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"(1.51606+(-0.000272186)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_3_centralValue = RooFormulaVar("CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"(6.01048+(0)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_alpha_3_centralValue_2017 = RooFormulaVar("CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"(1.000032+(-0.00336)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n_3_centralValue_2017 = RooFormulaVar("CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"(3.086201+(-0.01446)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_3_2017))
+            CMS_zz4l_alpha2_3_centralValue_2017 = RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"(1.771256+(-0.01493)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_3_centralValue_2017 = RooFormulaVar("CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"(3.639008+0.04508*(@0-125))",RooArgList(MH))
 
             # true signal shape
-            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_3_centralValue,CMS_zz4l_sigma_sig_3_centralValue,CMS_zz4l_alpha_3_centralValue,CMS_zz4l_n_3_centralValue,CMS_zz4l_alpha2_3_centralValue,CMS_zz4l_n2_3_centralValue)
+            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_3_centralValue_2017,CMS_zz4l_sigma_sig_3_centralValue_2017,CMS_zz4l_alpha_3_centralValue_2017,CMS_zz4l_n_3_centralValue_2017,CMS_zz4l_alpha2_3_centralValue_2017,CMS_zz4l_n2_3_centralValue_2017)
         else:
-            CMS_zz4l_mean_sig_3_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year, \
-                                                                "(124.539+(-0.00679774+1)*(@0-125)) + (@0*@1*@3 + @0*@2*@4)/2", \
-                                                                RooArgList(MH,CMS_zz4l_mean_m_sig,CMS_zz4l_mean_e_sig,CMS_zz4l_mean_m_err_3,CMS_zz4l_mean_e_err_3))
+            CMS_zz4l_mean_sig_3_centralValue_2016 = RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_3_centralValue_"+channel+recobin+year, \
+                                                                "(124.508178+1.00243*(@0-125)) + (@0*@1*@3 + @0*@2*@4)/2", \
+                                                                RooArgList(MH,CMS_zz4l_mean_m_sig_2016,CMS_zz4l_mean_e_sig_2016,CMS_zz4l_mean_m_err_3_2016,CMS_zz4l_mean_e_err_3_2016))
 
-            CMS_zz4l_sigma_sig_3_centralValue = RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,\
-                                                                "(1.64632+(0.016435)*(@0-125))*(TMath::Sqrt((1+@1)*(1+@2)))",RooArgList(MH,CMS_zz4l_sigma_m_sig,CMS_zz4l_sigma_e_sig))
-            CMS_zz4l_alpha_3_centralValue = RooFormulaVar("CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"(0.905389+(0.0029819)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_3_centralValue = RooFormulaVar("CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"(3.90164+(0)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_3))
-            CMS_zz4l_alpha2_3_centralValue = RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"(1.5737+(0.00776476)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_3_centralValue = RooFormulaVar("CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"(4.33416+(0)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_sigma_sig_3_centralValue_2016 = RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_3_centralValue_"+channel+recobin+year,\
+                                                                "(1.656564+0.00626*(@0-125))*(TMath::Sqrt((1+@1)*(1+@2)))",RooArgList(MH,CMS_zz4l_sigma_m_sig_2016,CMS_zz4l_sigma_e_sig_2016))
+            CMS_zz4l_alpha_3_centralValue_2016 = RooFormulaVar("CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_3_centralValue_"+channel+recobin+year,"(1.000108+(-0.01268)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n_3_centralValue_2016 = RooFormulaVar("CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n_3_centralValue_"+channel+recobin+year,"(2.960266+0.05011*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_3_2016))
+            CMS_zz4l_alpha2_3_centralValue_2016 = RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_3_centralValue_"+channel+recobin+year,"(1.732230+0.00577*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_3_centralValue_2016 = RooFormulaVar("CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_3_centralValue_"+channel+recobin+year,"(3.798668+(-0.02313)*(@0-125))",RooArgList(MH))
 
             # true signal shape
-            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_3_centralValue,CMS_zz4l_sigma_sig_3_centralValue,CMS_zz4l_alpha_3_centralValue,CMS_zz4l_n_3_centralValue,CMS_zz4l_alpha2_3_centralValue,CMS_zz4l_n2_3_centralValue)
+            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_3_centralValue_2016,CMS_zz4l_sigma_sig_3_centralValue_2016,CMS_zz4l_alpha_3_centralValue_2016,CMS_zz4l_n_3_centralValue_2016,CMS_zz4l_alpha2_3_centralValue_2016,CMS_zz4l_n2_3_centralValue_2016)
 
     if (channel=='4e'):
         if (year=='2018'):
-            CMS_zz4l_mean_sig_2_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year, \
-                                                                "(123.5844824+(0.985478630993)*(@0-125)) + @0*@1*@2", \
-                                                                RooArgList(MH,CMS_zz4l_mean_e_sig,CMS_zz4l_mean_e_err_2))
+            CMS_zz4l_mean_sig_2_centralValue_2018 = RooFormulaVar("CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year, \
+                                                                "(124.122309+0.99150*(@0-125)) + @0*@1*@2", \
+                                                                RooArgList(MH,CMS_zz4l_mean_e_sig_2018,CMS_zz4l_mean_e_err_2_2018))
 
-            CMS_zz4l_sigma_sig_2_centralValue = RooFormulaVar("CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year, \
-                                                                "(2.06515102908+(0.0170917403402)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_e_sig))
+            CMS_zz4l_sigma_sig_2_centralValue_2018 = RooFormulaVar("CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year, \
+                                                                "(2.228662+0.01068*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_e_sig_2018))
 
-            CMS_zz4l_alpha_2_centralValue = RooFormulaVar("CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"(0.948100247167+(0)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_2_centralValue = RooFormulaVar("CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"(4.50639853892+(0)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_2))
-            CMS_zz4l_alpha2_2_centralValue = RooFormulaVar("CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"(1.50095152675+(0)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_2_centralValue = RooFormulaVar("CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"(8.41693578742+(0.219719825966)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_alpha_2_centralValue_2018 = RooFormulaVar("CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"(1.000000+0.00386*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n_2_centralValue_2018 = RooFormulaVar("CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"(3.791876+(-0.07482)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_2_2018))
+            CMS_zz4l_alpha2_2_centralValue_2018 = RooFormulaVar("CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"(1.907851+(-0.00946)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_2_centralValue_2018 = RooFormulaVar("CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"(3.717134+0.09005*(@0-125))",RooArgList(MH))
 
             # true signal shape
-            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_2_centralValue,CMS_zz4l_sigma_sig_2_centralValue,CMS_zz4l_alpha_2_centralValue,CMS_zz4l_n_2_centralValue,CMS_zz4l_alpha2_2_centralValue,CMS_zz4l_n2_2_centralValue)
+            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_2_centralValue_2018,CMS_zz4l_sigma_sig_2_centralValue_2018,CMS_zz4l_alpha_2_centralValue_2018,CMS_zz4l_n_2_centralValue_2018,CMS_zz4l_alpha2_2_centralValue_2018,CMS_zz4l_n2_2_centralValue_2018)
         elif (year=='2017'):
-            CMS_zz4l_mean_sig_2_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year, \
-                                                                "(124.1+(-0.00262293+1)*(@0-125)) + @0*@1*@2", \
-                                                                RooArgList(MH,CMS_zz4l_mean_e_sig,CMS_zz4l_mean_e_err_2))
+            CMS_zz4l_mean_sig_2_centralValue_2017 = RooFormulaVar("CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year, \
+                                                                "(124.034512+0.99869*(@0-125)) + @0*@1*@2", \
+                                                                RooArgList(MH,CMS_zz4l_mean_e_sig_2017,CMS_zz4l_mean_e_err_2_2017))
 
-            CMS_zz4l_sigma_sig_2_centralValue = RooFormulaVar("CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year, \
-                                                                "(2.38283+(0.0155)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_e_sig))
+            CMS_zz4l_sigma_sig_2_centralValue_2017 = RooFormulaVar("CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year, \
+                                                                "(2.236452+0.00453*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_e_sig_2017))
 
-            CMS_zz4l_alpha_2_centralValue = RooFormulaVar("CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"(0.972669+(-0.00597402)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_2_centralValue = RooFormulaVar("CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"(5.05142+(0)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_2))
-            CMS_zz4l_alpha2_2_centralValue = RooFormulaVar("CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"(1.62625+(0.0121146)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_2_centralValue = RooFormulaVar("CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"(6.30057+(0)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_alpha_2_centralValue_2017 = RooFormulaVar("CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"(1.000001+(-0.01453)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n_2_centralValue_2017 = RooFormulaVar("CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"(3.647217+0.09608*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_2_2017))
+            CMS_zz4l_alpha2_2_centralValue_2017 = RooFormulaVar("CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"(1.915742+(-0.01599)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_2_centralValue_2017 = RooFormulaVar("CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"(3.968863+0.10151*(@0-125))",RooArgList(MH))
 
             # true signal shape
-            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_2_centralValue,CMS_zz4l_sigma_sig_2_centralValue,CMS_zz4l_alpha_2_centralValue,CMS_zz4l_n_2_centralValue,CMS_zz4l_alpha2_2_centralValue,CMS_zz4l_n2_2_centralValue)
+            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_2_centralValue_2017,CMS_zz4l_sigma_sig_2_centralValue_2017,CMS_zz4l_alpha_2_centralValue_2017,CMS_zz4l_n_2_centralValue_2017,CMS_zz4l_alpha2_2_centralValue_2017,CMS_zz4l_n2_2_centralValue_2017)
         else:
-            CMS_zz4l_mean_sig_2_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year, \
-                                                                "(124.194+(-0.0123934+1)*(@0-125)) + @0*@1*@2", \
-                                                                RooArgList(MH,CMS_zz4l_mean_e_sig,CMS_zz4l_mean_e_err_2))
+            CMS_zz4l_mean_sig_2_centralValue_2016 = RooFormulaVar("CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_2_centralValue_"+channel+recobin+year, \
+                                                                "(123.991536+1.01065*(@0-125)) + @0*@1*@2", \
+                                                                RooArgList(MH,CMS_zz4l_mean_e_sig_2016,CMS_zz4l_mean_e_err_2_2016))
 
-            CMS_zz4l_sigma_sig_2_centralValue = RooFormulaVar("CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year, \
-                                                                "(2.09076+(0.0153247)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_e_sig))
+            CMS_zz4l_sigma_sig_2_centralValue_2016 = RooFormulaVar("CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_2_centralValue_"+channel+recobin+year, \
+                                                                "(2.250599+(-0.00689)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_e_sig_2016))
 
-            CMS_zz4l_alpha_2_centralValue = RooFormulaVar("CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"(0.778691+(-0.00177387)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_2_centralValue = RooFormulaVar("CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"(6.85936+(0)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_2))
-            CMS_zz4l_alpha2_2_centralValue = RooFormulaVar("CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"(1.47389+(0.00503384)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_2_centralValue = RooFormulaVar("CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"(7.24158+(0)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_alpha_2_centralValue_2016 = RooFormulaVar("CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_2_centralValue_"+channel+recobin+year,"(1.000207+(-0.02621)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n_2_centralValue_2016 = RooFormulaVar("CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n_2_centralValue_"+channel+recobin+year,"(3.485910+0.17889*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_2_2016))
+            CMS_zz4l_alpha2_2_centralValue_2016 = RooFormulaVar("CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_2_centralValue_"+channel+recobin+year,"(1.911649+(-0.01900)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_2_centralValue_2016 = RooFormulaVar("CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_2_centralValue_"+channel+recobin+year,"(4.027399+0.03819*(@0-125))",RooArgList(MH))
 
             # true signal shape
-            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_2_centralValue,CMS_zz4l_sigma_sig_2_centralValue,CMS_zz4l_alpha_2_centralValue,CMS_zz4l_n_2_centralValue,CMS_zz4l_alpha2_2_centralValue,CMS_zz4l_n2_2_centralValue)
+            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_2_centralValue_2016,CMS_zz4l_sigma_sig_2_centralValue_2016,CMS_zz4l_alpha_2_centralValue_2016,CMS_zz4l_n_2_centralValue_2016,CMS_zz4l_alpha2_2_centralValue_2016,CMS_zz4l_n2_2_centralValue_2016)
 
     if (channel=='4mu'):
         if (year=='2018'):
-            CMS_zz4l_mean_sig_1_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year, \
-                                                                "(124.820536957+(0.999619883119)*(@0-125)) + @0*@1*@2",RooArgList(MH,CMS_zz4l_mean_m_sig,CMS_zz4l_mean_m_err_1))
+            CMS_zz4l_mean_sig_1_centralValue_2018 = RooFormulaVar("CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year, \
+                                                                "(124.843147+0.99986*(@0-125)) + @0*@1*@2",RooArgList(MH,CMS_zz4l_mean_m_sig_2018,CMS_zz4l_mean_m_err_1_2018))
 
-            CMS_zz4l_sigma_sig_1_centralValue = RooFormulaVar("CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year, \
-                                                                "(1.09001384743+(0.00899911411679)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_m_sig))
-            CMS_zz4l_alpha_1_centralValue = RooFormulaVar("CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"(1.23329827124+(0)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_1_centralValue = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.04575884495+(0)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1))
-            CMS_zz4l_alpha2_1_centralValue = RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"(1.84386824883+(0)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_1_centralValue = RooFormulaVar("CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"(2.98483993137+(0)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_sigma_sig_1_centralValue_2018 = RooFormulaVar("CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year, \
+                                                                "(1.159393+0.00953*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_m_sig_2018))
+            CMS_zz4l_alpha_1_centralValue_2018 = RooFormulaVar("CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"(1.263473+(-0.00215)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n_1_centralValue_2018 = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.050764+0.00066*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1_2018))
+            CMS_zz4l_alpha2_1_centralValue_2018 = RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"(1.939331+(-0.00025)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_1_centralValue_2018 = RooFormulaVar("CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"(2.551306+0.01706*(@0-125))",RooArgList(MH))
 
             # true signal shape
-            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_1_centralValue,CMS_zz4l_sigma_sig_1_centralValue,CMS_zz4l_alpha_1_centralValue,CMS_zz4l_n_1_centralValue,CMS_zz4l_alpha2_1_centralValue,CMS_zz4l_n2_1_centralValue)
+            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_1_centralValue_2018,CMS_zz4l_sigma_sig_1_centralValue_2018,CMS_zz4l_alpha_1_centralValue_2018,CMS_zz4l_n_1_centralValue_2018,CMS_zz4l_alpha2_1_centralValue_2018,CMS_zz4l_n2_1_centralValue_2018)
         elif (year=='2017'):
-            CMS_zz4l_mean_sig_1_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year, \
-                                                                "(124.82+(-0.000560694+1)*(@0-125)) + @0*@1*@2",RooArgList(MH,CMS_zz4l_mean_m_sig,CMS_zz4l_mean_m_err_1))
+            CMS_zz4l_mean_sig_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year, \
+                                                                "(124.849295+0.99435*(@0-125)) + @0*@1*@2",RooArgList(MH,CMS_zz4l_mean_m_sig_2017,CMS_zz4l_mean_m_err_1_2017))
 
-            CMS_zz4l_sigma_sig_1_centralValue = RooFormulaVar("CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year, \
-                                                                "(1.16647+(0.0124833)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_m_sig))
+            CMS_zz4l_sigma_sig_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year, \
+                                                                "(1.154259+0.00825*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_m_sig_2017))
 
-            CMS_zz4l_alpha_1_centralValue = RooFormulaVar("CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"(1.23329827124+(0)*(@0-125))",RooArgList(MH))
-            #CMS_zz4l_alpha_1_centralValue = RooFormulaVar("CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"(1.22997+(0.00256332)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_1_centralValue = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.07185+(0)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1))
-            CMS_zz4l_alpha2_1_centralValue = RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"(1.92338+(0.0109082)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_1_centralValue = RooFormulaVar("CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"(2.90336+(0)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_alpha_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"(1.257942+0.00418*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.059605+(-0.01752)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1_2017))
+            CMS_zz4l_alpha2_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"(1.962162+0.00080*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"(2.463661+0.00254*(@0-125))",RooArgList(MH))
 
             # true signal shape
-            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_1_centralValue,CMS_zz4l_sigma_sig_1_centralValue,CMS_zz4l_alpha_1_centralValue,CMS_zz4l_n_1_centralValue,CMS_zz4l_alpha2_1_centralValue,CMS_zz4l_n2_1_centralValue)
+            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_1_centralValue_2017,CMS_zz4l_sigma_sig_1_centralValue_2017,CMS_zz4l_alpha_1_centralValue_2017,CMS_zz4l_n_1_centralValue_2017,CMS_zz4l_alpha2_1_centralValue_2017,CMS_zz4l_n2_1_centralValue_2017)
         else:
-            CMS_zz4l_mean_sig_1_centralValue = RooFormulaVar("CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year, \
-                                            "(124.801+(-0.00230642+1)*(@0-125)) + @0*@1*@2",RooArgList(MH,CMS_zz4l_mean_m_sig,CMS_zz4l_mean_m_err_1))
+            CMS_zz4l_mean_sig_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_mean_sig_1_centralValue_"+channel+recobin+year, \
+                                                                "(124.847170+0.99417*(@0-125)) + @0*@1*@2",RooArgList(MH,CMS_zz4l_mean_m_sig_2016,CMS_zz4l_mean_m_err_1_2016))
 
-            CMS_zz4l_sigma_sig_1_centralValue = RooFormulaVar("CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year, \
-                                            "(1.20385+(0.00862539)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_m_sig))
+            CMS_zz4l_sigma_sig_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year,"CMS_zz4l_sigma_sig_1_centralValue_"+channel+recobin+year, \
+                                                                "(1.153763+0.01344*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_m_sig_2016))
 
-            CMS_zz4l_alpha_1_centralValue = RooFormulaVar("CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"(1.29006+(-0.0040219)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_1_centralValue = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.1216+(0)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1))
-            CMS_zz4l_alpha2_1_centralValue = RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"(1.90093+(-0.0017352)*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_1_centralValue = RooFormulaVar("CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"(2.7194+(0)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_alpha_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"(1.259665+0.00540*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.051191+(-0.01579)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1_2016))
+            CMS_zz4l_alpha2_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"(1.871168+0.00937*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"(2.676450+(-0.01358)*(@0-125))",RooArgList(MH))
 
             # true signal shape
-            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_1_centralValue,CMS_zz4l_sigma_sig_1_centralValue,CMS_zz4l_alpha_1_centralValue,CMS_zz4l_n_1_centralValue,CMS_zz4l_alpha2_1_centralValue,CMS_zz4l_n2_1_centralValue)
+            trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_1_centralValue_2016,CMS_zz4l_sigma_sig_1_centralValue_2016,CMS_zz4l_alpha_1_centralValue_2016,CMS_zz4l_n_1_centralValue_2016,CMS_zz4l_alpha2_1_centralValue_2016,CMS_zz4l_n2_1_centralValue_2016)
+
 
     # Wrong signal combination events
-    if (channel=='4mu'):    ## applying CJLST preliminary suggestion for fakeH shapes
-        p1_1 = RooFormulaVar("CMS_fakeH_p1_1"+year,"p1_1"+year,"139.99-0.70*(@0-125)",RooArgList(MH))
-        p2_1 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"7.2008-0.38641*(@0-125)",RooArgList(MH))
-        fakeH = RooLandau("fakeH", "landau", m, p1_1, p2_1)
-    if (channel=='4e'):
-        p1_2 = RooFormulaVar("CMS_fakeH_p1_2"+year,"p1_2"+year,"136.4428-1.20775*(@0-125)", RooArgList(MH))
-        p2_2 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"6.9318-0.67813*(@0-125)",RooArgList(MH))
-        fakeH = RooLandau("fakeH", "landau", m, p1_2, p2_2)
-    if (channel=='2e2mu'):
-        p1_3 = RooFormulaVar("CMS_fakeH_p1_3"+year,"p1_3"+year,"134.8540-0.41421*(@0-125)",RooArgList(MH))
-        p2_3 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"6.2231-0.33519*(@0-125)",RooArgList(MH))
-        fakeH = RooLandau("fakeH", "landau", m, p1_3, p2_3)
+
+    if (year=='2018'):
+        if (channel=='4mu'):
+            p1_12018 = RooRealVar("CMS_fakeH_p1_1"+year,"p1_1"+year,165.0, 145.0, 185.0)
+            p3_12018 = RooRealVar("CMS_fakeH_p3_1"+year,"p3_1"+year,89.0, 84.0,94.0)
+            p2_12018 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"0.72*@0-@1",RooArgList(p1_12018,p3_12018))
+            fakeH = RooLandau("fakeH", "landau", m, p1_12018, p2_12018)
+        if (channel=='4e'):
+            p1_22018 = RooRealVar("CMS_fakeH_p1_2"+year,"p1_2"+year,165.0, 145.0, 185.0)
+            p3_22018 = RooRealVar("CMS_fakeH_p3_2"+year,"p3_2"+year,89.0, 84.0,94.0)
+            p2_22018 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"0.72*@0-@1",RooArgList(p1_22018,p3_22018))
+            fakeH = RooLandau("fakeH", "landau", m, p1_22018, p2_22018)
+        if (channel=='2e2mu'):
+            p1_32018 = RooRealVar("CMS_fakeH_p1_3"+year,"p1_3"+year,165.0, 145.0, 185.0)
+            p3_32018 = RooRealVar("CMS_fakeH_p3_3"+year,"p3_3"+year,89.0, 84.0,94.0)
+            p2_32018 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"0.72*@0-@1",RooArgList(p1_32018,p3_32018))
+            fakeH = RooLandau("fakeH", "landau", m, p1_32018, p2_32018)
+    elif (year=='2017'):
+        if (channel=='4mu'):
+            p1_12017 = RooRealVar("CMS_fakeH_p1_1"+year,"p1_1"+year,165.0, 145.0, 185.0)
+            p3_12017 = RooRealVar("CMS_fakeH_p3_1"+year,"p3_1"+year,89.0, 84.0,94.0)
+            p2_12017 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"0.72*@0-@1",RooArgList(p1_12017,p3_12017))
+            fakeH = RooLandau("fakeH", "landau", m, p1_12017, p2_12017)
+        if (channel=='4e'):
+            p1_22017 = RooRealVar("CMS_fakeH_p1_2"+year,"p1_2"+year,165.0, 145.0, 185.0)
+            p3_22017 = RooRealVar("CMS_fakeH_p3_2"+year,"p3_2"+year,89.0, 84.0,94.0)
+            p2_22017 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"0.72*@0-@1",RooArgList(p1_22017,p3_22017))
+            fakeH = RooLandau("fakeH", "landau", m, p1_22017, p2_22017)
+        if (channel=='2e2mu'):
+            p1_32017 = RooRealVar("CMS_fakeH_p1_3"+year,"p1_3"+year,165.0, 145.0, 185.0)
+            p3_32017 = RooRealVar("CMS_fakeH_p3_3"+year,"p3_3"+year,89.0, 84.0,94.0)
+            p2_32017 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"0.72*@0-@1",RooArgList(p1_32017,p3_32017))
+            fakeH = RooLandau("fakeH", "landau", m, p1_32017, p2_32017)
+    else:
+        if (channel=='4mu'):
+            p1_12016 = RooRealVar("CMS_fakeH_p1_1"+year,"p1_1"+year,165.0, 145.0, 185.0)
+            p3_12016 = RooRealVar("CMS_fakeH_p3_1"+year,"p3_1"+year,89.0, 84.0,94.0)
+            p2_12016 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"0.72*@0-@1",RooArgList(p1_12016,p3_12016))
+            fakeH = RooLandau("fakeH", "landau", m, p1_12016, p2_12016)
+        if (channel=='4e'):
+            p1_22016 = RooRealVar("CMS_fakeH_p1_2"+year,"p1_2"+year,165.0, 145.0, 185.0)
+            p3_22016 = RooRealVar("CMS_fakeH_p3_2"+year,"p3_2"+year,89.0, 84.0,94.0)
+            p2_22016 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"0.72*@0-@1",RooArgList(p1_22016,p3_22016))
+            fakeH = RooLandau("fakeH", "landau", m, p1_22016, p2_22016)
+        if (channel=='2e2mu'):
+            p1_32016 = RooRealVar("CMS_fakeH_p1_3"+year,"p1_3"+year,165.0, 145.0, 185.0)
+            p3_32016 = RooRealVar("CMS_fakeH_p3_3"+year,"p3_3"+year,89.0, 84.0,94.0)
+            p2_32016 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"0.72*@0-@1",RooArgList(p1_32016,p3_32016))
+            fakeH = RooLandau("fakeH", "landau", m, p1_32016, p2_32016)
+
 
     if (addfakeH):
-        inc_wrongfrac_ggH=inc_wrongfrac["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        #inc_wrongfrac_ggH=inc_wrongfrac["ggH_HRes_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_qqH=inc_wrongfrac["VBF_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_WH=inc_wrongfrac["WH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_ZH=inc_wrongfrac["ZH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_ttH=inc_wrongfrac["ttH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ggH=inc_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_qqH=inc_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_WH=inc_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ZH=inc_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ttH=inc_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
     else:
         inc_wrongfrac_ggH=0.0
         inc_wrongfrac_qqH=0.0
@@ -365,12 +437,11 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         inc_wrongfrac_ZH=0.0
         inc_wrongfrac_ttH=0.0
 
-    binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    #binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_HRes_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_qqH=binfrac_wrongfrac["VBF_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_WH=binfrac_wrongfrac["WH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_ZH=binfrac_wrongfrac["ZH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_ttH=binfrac_wrongfrac["ttH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_qqH=binfrac_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_WH=binfrac_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ZH=binfrac_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ttH=binfrac_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
 
     if (channel=='4e'):
         n_fakeH = (0.24*inc_wrongfrac_WH*binfrac_wrongfrac_WH+0.20*inc_wrongfrac_ZH*binfrac_wrongfrac_ZH+0.10*inc_wrongfrac_ttH*binfrac_wrongfrac_ttH)
@@ -395,7 +466,10 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     # nuisance describes the jet energy scale uncertainty
     #JES = RooRealVar("JES_"+year,"JES_"+year, 0, -5.0, 5.0)
-    JES = RooRealVar("JES","JES", 0, -5.0, 5.0)
+    JES = RooRealVar("JES","JES", 0, -5.0, 5.0)    # FIXME, update with new recommendations
+    #if (obsName == "nJets"  or ("jet" in obsName)):
+    # if (("jet" in obsName) or ("Jet" in obsName) or ("j1" in obsName) or ("j2" in obsName) or ("4lj" in obsName) or (doJES) ):
+    logger.error("obs_ifJES = {}".format(obs_ifJES))
     if (obs_ifJES):
         lambda_JES_sig = lambdajesup[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin]
         lambda_JES_sig_var = RooRealVar("lambda_sig_"+modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin+"_"+year, "lambda_sig_"+modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin+"_"+year, lambda_JES_sig)
@@ -406,10 +480,10 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         trueH_shape[genbin].SetName("trueH"+channel+"Bin"+str(genbin))
         if (usecfactor): fideff[genbin] = cfactor[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(genbin)+"_"+recobin]
         else: fideff[genbin] = eff[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(genbin)+"_"+recobin]
-        logger.info("fideff[genbin]: {}".format(fideff[genbin]))
-        logger.info("model name is   {}".format(modelName))
         fideff_var[genbin] = RooRealVar("effBin"+str(genbin)+"_"+recobin+"_"+channel+"_"+year,"effBin"+str(genbin)+"_"+recobin+"_"+channel+"_"+year, fideff[genbin]);
 
+        logger.error("obs_ifJES: {},  doJES: {}, condition: {}".format(obs_ifJES, doJES, (not (obs_ifJES) or (not doJES))))
+        # sys.exit()
         if( not (obs_ifJES) or (not doJES)) :
             trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1", RooArgList(fideff_var[genbin], lumi) );
         else :
@@ -428,12 +502,13 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     SigmaHBin = {}
 
     for genbin in range(nBins):
+
         if (physicalModel=="v3"):
+
             fidxs = {}
             for fState in ['4e','4mu', '2e2mu']:
                 fidxs[fState] = 0
                 fidxs[fState] += higgs_xs['ggH_125.38']*higgs4l_br['125.38_'+fState]*acc['ggH_powheg_JHUgen_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
-                #fidxs[fState] += acc['ggH_HRes_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
                 fidxs[fState] += higgs_xs['VBF_125.38']*higgs4l_br['125.38_'+fState]*acc['VBF_powheg_JHUgen_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
                 fidxs[fState] += higgs_xs['WH_125.38']*higgs4l_br['125.38_'+fState]*acc['WH_powheg_JHUgen_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
                 fidxs[fState] += higgs_xs['ZH_125.38']*higgs4l_br['125.38_'+fState]*acc['ZH_powheg_JHUgen_125.38_'+fState+'_'+obsNameDictKey+'_genbin'+str(genbin)+'_recobin'+str(genbin)]
@@ -450,30 +525,18 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             SigmaHBin['4e'+str(genbin)] = RooFormulaVar("Sigma4eBin"+str(genbin),"(@0*@1*@2)", RooArgList(SigmaBin[str(genbin)], fracSM4eBin[str(genbin)], K1Bin[str(genbin)]))
             SigmaHBin['4mu'+str(genbin)] = RooFormulaVar("Sigma4muBin"+str(genbin),"(@0*(1.0-@1*@2)*@3*@4/(1.0-@1))", RooArgList(SigmaBin[str(genbin)], fracSM4eBin[str(genbin)], K1Bin[str(genbin)], K2Bin[str(genbin)], fracSM4muBin[str(genbin)]))
             SigmaHBin['2e2mu'+str(genbin)] = RooFormulaVar("Sigma2e2muBin"+str(genbin),"(@0*(1.0-@1*@2)*(1.0-@3*@4/(1.0-@1)))", RooArgList(SigmaBin[str(genbin)], fracSM4eBin[str(genbin)], K1Bin[str(genbin)], K2Bin[str(genbin)], fracSM4muBin[str(genbin)]))
-            #if (obsName == "nJets" or ("jet" in obsName)):
+
+            logger.error("obs_ifJES: {},  doJES: {}, condition: {}".format(obs_ifJES, doJES, (not (obs_ifJES) or (not doJES))))
             if (obs_ifJES):
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2*(1-@3)" ,RooArgList(SigmaHBin[channel+str(genbin)],fideff_var[genbin],lumi,JES_sig_rfv))
             else:
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2" ,RooArgList(SigmaHBin[channel+str(genbin)],fideff_var[genbin],lumi))
-        elif (physicalModel=="v1"):
-            fracBin['4mu'+str(genbin)] = RooRealVar("frac4muBin"+str(genbin),"frac4muBin"+str(genbin), 0.25, 0.0, 0.5) # frac 4mu
-            fracBin['4e'+str(genbin)] = RooRealVar("frac4eBin"+str(genbin),"frac4eBin"+str(genbin), 0.25, 0.0, 0.5) # frac 4e
-            fracBin['2e2mu'+str(genbin)] = RooFormulaVar("frac2e2muBin"+str(genbin),"1-@0-@1", RooArgList(fracBin['4e'+str(genbin)],fracBin['4mu'+str(genbin)])) # frac 2e2mu
-            fracBin['4mu'+str(genbin)].setConstant(True)
-            fracBin['4e'+str(genbin)].setConstant(True)
-            rBin[str(genbin)] = RooRealVar("rBin"+str(genbin),"rBin"+str(genbin), 1.0, 0.0, 10.0)
-            rBin[str(genbin)].setConstant(True)
-            #trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_final_norm","@0*@1*@2", RooArgList(rBin[str(genbin)], fracBin[channel+str(genbin)], trueH_norm[genbin]) );
-            #if (obsName == "nJets" or ("jet" in obsName)):
-            if (obs_ifJES):
-                trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2*@3*(1-@4)" ,RooArgList(rBin[str(genbin)],fracBin[channel+str(genbin)],fideff_var[genbin],lumi,JES_sig_rfv))
-            else:
-                trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2*@3" ,RooArgList(rBin[str(genbin)],fracBin[channel+str(genbin)],fideff_var[genbin],lumi))
-        else:
+
+        elif (physicalModel=="v2"):
+
             rBin_channel[str(genbin)] = RooRealVar("r"+channel+"Bin"+str(genbin),"r"+channel+"Bin"+str(genbin), 1.0, 0.0, 10.0)
             rBin_channel[str(genbin)].setConstant(True)
-            #trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_final_norm","@0*@1", RooArgList(rBin_channel[str(genbin)], trueH_norm[genbin]) );
-            #if (obsName == "nJets" or ("jet" in obsName)):
+
             if (obs_ifJES):
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2*(1-@3)", RooArgList(rBin_channel[str(genbin)], fideff_var[genbin],lumi,JES_sig_rfv))
             else:
@@ -481,7 +544,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     outin = outinratio[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
     logger.info("outin: obsBin: {:3}\t outin: {}".format(obsBin,outin))
-    outin_var = RooRealVar("outfracBin_"+recobin+"_"+channel,"outfracBin_"+recobin+"_"+channel+"_"+year, outin);
+    outin_var = RooRealVar("outfracBin_"+recobin+"_"+channel,"outfracBin_"+recobin+"_"+channel+"_"+year, outin)
     outin_var.setConstant(True)
     out_trueH_norm_args = RooArgList(outin_var)
     out_trueH_norm_func = "@0*("
@@ -490,17 +553,16 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         out_trueH_norm_func = out_trueH_norm_func+"@"+str(i+1)+"+"
     out_trueH_norm_func = out_trueH_norm_func.replace(str(nBins)+"+",str(nBins)+")")
     out_trueH_norm = RooFormulaVar("out_trueH_norm",out_trueH_norm_func,out_trueH_norm_args)
-
     # Backgrounds
 
     # fraction for bkgs and for signal in each gen bin
     bkg_sample_tags = { 'qqzz':{'2e2mu':'ZZTo2e2mu_powheg', '4e':'ZZTo4e_powheg', '4mu':'ZZTo4mu_powheg'},
-                        'ggzz':{'2e2mu':'ggZZ_2e2mu_MCFM67', '4e':'ggZZ_4e_MCFM67', '4mu':'ggZZ_4mu_MCFM67'},
-                        'zjets':{'2e2mu':'ZX4l_CR', '4e':'ZX4l_CR', '4mu':'ZX4l_CR'}}
-    frac_qqzz = fractionsBackground[bkg_sample_tags['qqzz'][channel]+'_'+channel+'_'+obsNameDictKey+'_'+recobin+zzFloatType]
+                         'ggzz':{'2e2mu':'ggZZ_2e2mu_MCFM67', '4e':'ggZZ_4e_MCFM67', '4mu':'ggZZ_4mu_MCFM67'},
+                         'zjets':{'2e2mu':'ZX4l_CR', '4e':'ZX4l_CR', '4mu':'ZX4l_CR'}}
+    frac_qqzz = fractionsBackground[bkg_sample_tags['qqzz'][channel]+'_'+channel+'_'+obsNameDictKey+'_'+recobin]
     frac_qqzz_var  = RooRealVar("frac_qqzz_"+recobin+"_"+channel+"_"+year,"frac_qqzz_"+recobin+"_"+channel+"_"+year, frac_qqzz);
 
-    frac_ggzz = fractionsBackground[bkg_sample_tags['ggzz'][channel]+'_'+channel+'_'+obsNameDictKey+'_'+recobin+zzFloatType]
+    frac_ggzz = fractionsBackground[bkg_sample_tags['ggzz'][channel]+'_'+channel+'_'+obsNameDictKey+'_'+recobin]
     frac_ggzz_var = RooRealVar("frac_ggzz_"+recobin+"_"+channel+"_"+year,"frac_ggzz_"+recobin+"_"+channel+"_"+year, frac_ggzz);
 
     logger.info ("fractionsBackground:\n\t{}".format(fractionsBackground))
@@ -508,35 +570,26 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     frac_zjets_var = RooRealVar("frac_zjet_"+recobin+"_"+channel+"_"+year,"frac_zjet_"+recobin+"_"+channel+"_"+year, frac_zjets);
 
     logger.info ("obsBin: {obsBin:2}, frac_qqzz: {frac_qqzz:9}, frac_ggzz: {frac_ggzz:9}, frac_zjets: {frac_zjets:9}".format(
-        obsBin = obsBin, frac_qqzz = frac_qqzz, frac_ggzz = frac_ggzz, frac_zjets = frac_zjets
-    ))
+         obsBin = obsBin, frac_qqzz = frac_qqzz, frac_ggzz = frac_ggzz, frac_zjets = frac_zjets
+     ))
 
     if (obs_ifJES):
-        #######
         lambda_JES_qqzz = 0.0 #lambda_qqzz_jes[modelName+"_"+channel+"_nJets_"+recobin]
-        lambda_JES_qqzz_var = RooRealVar("lambda_qqzz_"+recobin+"_"+channel,"lambda_"+recobin+"_"+channel, lambda_JES_qqzz)
-        JES_qqzz_rfv = RooFormulaVar("JES_rfv_qqzz_"+recobin+"_"+channel,"@0*@1", RooArgList(JES, lambda_JES_qqzz_var) )
+        lambda_JES_qqzz_var = RooRealVar("lambda_qqzz_"+recobin+"_"+channel+"_"+year,"lambda_"+recobin+"_"+channel+"_"+year, lambda_JES_qqzz)
+        JES_qqzz_rfv = RooFormulaVar("JES_rfv_qqzz_"+recobin+"_"+channel+"_"+year,"@0*@1", RooArgList(JES, lambda_JES_qqzz_var) )
 
         ####
         lambda_JES_ggzz = 0.0 #lambda_ggzz_jes[modelName+"_"+channel+"_nJets_"+recobin]
-        lambda_JES_ggzz_var = RooRealVar("lambda_ggzz_"+recobin+"_"+channel,"lambda_"+recobin+"_"+channel, lambda_JES_ggzz)
-        JES_ggzz_rfv = RooFormulaVar("JES_rfv_ggzz_"+recobin+"_"+channel,"@0*@1", RooArgList(JES, lambda_JES_ggzz_var) )
+        lambda_JES_ggzz_var = RooRealVar("lambda_ggzz_"+recobin+"_"+channel+"_"+year,"lambda_"+recobin+"_"+channel+"_"+year, lambda_JES_ggzz)
+        JES_ggzz_rfv = RooFormulaVar("JES_rfv_ggzz_"+recobin+"_"+channel+"_"+year,"@0*@1", RooArgList(JES, lambda_JES_ggzz_var) )
 
         ####
         lambda_JES_zjets = 0.0 #lambda_zjets_jes[modelName+"_"+channel+"_nJets_"+recobin]
-        lambda_JES_zjets_var = RooRealVar("lambda_zjets_"+recobin+"_"+channel,"lambda_zjets_"+recobin+"_"+channel, lambda_JES_zjets)
-        JES_zjets_rfv = RooFormulaVar("JES_rfv_zjets_"+recobin+"_"+channel,"@0*@1", RooArgList(JES, lambda_JES_zjets_var) )
+        lambda_JES_zjets_var = RooRealVar("lambda_zjets_"+recobin+"_"+channel+"_"+year,"lambda_zjets_"+recobin+"_"+channel+"_"+year, lambda_JES_zjets)
+        JES_zjets_rfv = RooFormulaVar("JES_rfv_zjets_"+recobin+"_"+channel+"_"+year,"@0*@1", RooArgList(JES, lambda_JES_zjets_var) )
 
 
     ## background shapes in each reco bin
-#    ggzzTemplatePdf = w.pdf("bkg_ggzz")
-#    qqzzTemplatePdf = w.pdf("bkg_qqzz")
-#    zjetsTemplatePdf = ggzzTemplatePdf.Clone();
-#    zjetsTemplatePdf.SetName("bkg_zjets");
-
-    #template path : ./templates/templatesXS/DTreeXS_{obsName}/8TeV/
-    #template name : XSBackground_{bkgTag}_{finalStateString}_{obsName}_recobin{binNum}.root
-
     logger.debug("SuffixOfRootFile: "+SuffixOfRootFile)
     template_qqzzName = "./templates/templatesXS_"+str(year)+"/DTreeXS_"+obsNameDictKey+"/13TeV/XSBackground_qqZZ_"+channel+"_"+SuffixOfRootFile+".root"
     template_ggzzName = "./templates/templatesXS_"+str(year)+"/DTreeXS_"+obsNameDictKey+"/13TeV/XSBackground_ggZZ_"+channel+"_"+SuffixOfRootFile+".root"
@@ -576,9 +629,6 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     ggzzTemplateName = "ggzz_"+channel+recobin+year
     zjetsTemplateName = "zjets_"+channel+recobin+year
 
-    #qqzzTempDataHist = RooDataHist(qqzzTemplateName,qqzzTemplateName,RooArgList(m),qqzzTemplate)
-    #ggzzTempDataHist = RooDataHist(ggzzTemplateName,ggzzTemplateName,RooArgList(m),ggzzTemplate)
-    #zjetsTempDataHist = RooDataHist(zjetsTemplateName,zjetsTemplateName,RooArgList(m),zjetsTemplate)
     qqzzTempDataHist = RooDataHist(qqzzTemplateName,qqzzTemplateName,RooArgList(m),qqzzTemplateNew)
     ggzzTempDataHist = RooDataHist(ggzzTemplateName,ggzzTemplateName,RooArgList(m),ggzzTemplateNew)
     zjetsTempDataHist = RooDataHist(zjetsTemplateName,zjetsTemplateName,RooArgList(m),zjetsTemplateNew)
@@ -588,8 +638,6 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     zjetsTemplatePdf = RooHistPdf("zjets","zjets",RooArgSet(m),zjetsTempDataHist)
 
     # bkg fractions in reco bin; implemented in terms of fractions
-
-    #if( not (obsName=='nJets' or ("jet" in obsName) ) or (not doJES)) :
     if( not (obs_ifJES ) or (not doJES)) :
        qqzz_norm = RooFormulaVar("bkg_qqzz_norm", "@0", RooArgList(frac_qqzz_var) )
        ggzz_norm = RooFormulaVar("bkg_ggzz_norm", "@0", RooArgList(frac_ggzz_var) )
@@ -600,12 +648,6 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
        zjets_norm = RooFormulaVar("bkg_zjets_norm", "@0*(1-@1)", RooArgList(frac_zjets_var, JES_zjets_rfv) )
 
 
-    #legacy_data = w.data("data_obs").reduce(RooArgSet(m))
-    #for event in range(legacy_data.numEntries()):
-    #     row = legacy_data.get(event)
-    #     row.Print("v")
-    #legacy_data.Print("v")
-
     if (year == '2016'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2016/data_UL2016_all_noDuplicates_slimmed_newMuSF_add2p5_workspace.root')
     elif (year == '2017'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2017/Slimmed_2p5/DataUL2017_all_noDuplicates_slimmed_newMuSF_add2p5_slimmed_newMuSF_add2p5_workspace.root')
     elif (year == '2018'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2018/Slimmed_2p5/DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5_slimmed_newMuSF_add2p5_workspace.root')
@@ -615,94 +657,142 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     logger.info ("Obs name: {:11}  Bin (low, high) edge: ({}, {})".format(obsName,obsBin_low,obsBin_high))
     if (obsName == "nJets"): obsName = "njets_reco_pt30_eta4p7"
     if (channel=='4mu'):
-        # if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu),"(mass4mu>"+str(m4l_low)+" && mass4mu<"+str(m4l_high)+")")
         if (obsName == "mass4l" ): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu),"(mass4mu>"+str(m4l_low)+" && mass4mu<"+str(m4l_high)+")")
         elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),"(mass4mu>"+str(m4l_low)+" && mass4mu<"+mass_high+" && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
         elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable,observable2),"(mass4mu>"+str(m4l_low)+" && mass4mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsNameOrig[1]+")<"+obsBin_high2+")")
         else:                  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),                    "(mass4mu>"+str(m4l_low)+" && mass4mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
     if (channel=='4e'):
-        # if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+")")
         if (obsName == "mass4l"): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+")")
         elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+" && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
         elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable,observable2),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsNameOrig[1]+")<"+obsBin_high2+")")
         else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
     if (channel=='2e2mu'):
-        # if (obsName.startswith("mass4l")): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+")")
         if (obsName == "mass4l" ): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+")")
         elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+" && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
         elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable,observable2),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsNameOrig[1]+")<"+obsBin_high2+")")
         else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
-    #for event in range(data_obs.numEntries()):
-    #    row = data_obs.get(event)
-    #    row.Print("v")
-    #data_obs.Print("v")
-
-    # scale systematics
-    # CMS_zz4l_mean_m_err_1 = RooRealVar("CMS_zz4l_mean_m_err_1_8","CMS_zz4l_mean_m_err_1_8",0.0004,0.0004,0.0004)
-    # CMS_zz4l_mean_e_err_2_8 = RooRealVar("CMS_zz4l_mean_e_err_2_8","CMS_zz4l_mean_e_err_2_8",0.003,0.003,0.003)
-    # CMS_zz4l_mean_m_err_3 = RooRealVar("CMS_zz4l_mean_m_err_3","CMS_zz4l_mean_m_err_3",0.0004,0.0004,0.0004)
-    # CMS_zz4l_mean_e_err_3 = RooRealVar("CMS_zz4l_mean_e_err_3","CMS_zz4l_mean_e_err_3",0.003,0.003,0.003)
 
     wout = RooWorkspace("w","w")
 
-    if (channel=='2e2mu'):
-        getattr(wout,'import')(CMS_zz4l_mean_sig_3_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_sigma_sig_3_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_alpha_3_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_n_3_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_alpha2_3_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_n2_3_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_mean_m_err_3,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_mean_e_err_3,RooFit.RecycleConflictNodes())
-    if (channel=='4e'):
-        getattr(wout,'import')(CMS_zz4l_mean_sig_2_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_sigma_sig_2_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_alpha_2_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_n_2_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_alpha2_2_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_n2_2_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_mean_e_err_2,RooFit.RecycleConflictNodes())
-    if (channel=='4mu'):
-        getattr(wout,'import')(CMS_zz4l_mean_sig_1_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_sigma_sig_1_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_alpha_1_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_n_1_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_alpha2_1_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_n2_1_centralValue,RooFit.RecycleConflictNodes())
-        getattr(wout,'import')(CMS_zz4l_mean_m_err_1,RooFit.RecycleConflictNodes())
+
+    if (year=="2018"):
+        if (channel=='2e2mu'):
+            getattr(wout,'import')(CMS_zz4l_mean_sig_3_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_sigma_sig_3_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha_3_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n_3_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha2_3_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n2_3_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_m_err_3_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_e_err_3_2018,RooFit.RecycleConflictNodes())
+        if (channel=='4e'):
+            getattr(wout,'import')(CMS_zz4l_mean_sig_2_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_sigma_sig_2_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha_2_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n_2_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha2_2_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n2_2_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_e_err_2_2018,RooFit.RecycleConflictNodes())
+        if (channel=='4mu'):
+            getattr(wout,'import')(CMS_zz4l_mean_sig_1_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_sigma_sig_1_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha_1_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n_1_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha2_1_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n2_1_centralValue_2018,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_m_err_1_2018,RooFit.RecycleConflictNodes())
+    elif (year=="2017"):
+        if (channel=='2e2mu'):
+            getattr(wout,'import')(CMS_zz4l_mean_sig_3_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_sigma_sig_3_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha_3_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n_3_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha2_3_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n2_3_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_m_err_3_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_e_err_3_2017,RooFit.RecycleConflictNodes())
+        if (channel=='4e'):
+            getattr(wout,'import')(CMS_zz4l_mean_sig_2_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_sigma_sig_2_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha_2_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n_2_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha2_2_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n2_2_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_e_err_2_2017,RooFit.RecycleConflictNodes())
+        if (channel=='4mu'):
+            getattr(wout,'import')(CMS_zz4l_mean_sig_1_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_sigma_sig_1_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha_1_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n_1_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha2_1_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n2_1_centralValue_2017,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_m_err_1_2017,RooFit.RecycleConflictNodes())
+    else:
+        if (channel=='2e2mu'):
+            getattr(wout,'import')(CMS_zz4l_mean_sig_3_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_sigma_sig_3_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha_3_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n_3_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha2_3_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n2_3_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_m_err_3_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_e_err_3_2016,RooFit.RecycleConflictNodes())
+        if (channel=='4e'):
+            getattr(wout,'import')(CMS_zz4l_mean_sig_2_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_sigma_sig_2_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha_2_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n_2_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha2_2_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n2_2_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_e_err_2_2016,RooFit.RecycleConflictNodes())
+        if (channel=='4mu'):
+            getattr(wout,'import')(CMS_zz4l_mean_sig_1_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_sigma_sig_1_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha_1_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n_1_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_alpha2_1_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_n2_1_centralValue_2016,RooFit.RecycleConflictNodes())
+            getattr(wout,'import')(CMS_zz4l_mean_m_err_1_2016,RooFit.RecycleConflictNodes())
+
+
+    # logger.error("check-p0oint")
+    # sys.exit()
 
     for genbin in range(nBins):
-        # For Silence issue we should shift to ROOT 6.18
-        # Reference: https://root-forum.cern.ch/t/rooworkspace-import-roofit-silence-does-not-work-when-importing-datasets/32591/2
-        getattr(wout,'import')(trueH_shape[genbin],RooFit.RecycleConflictNodes()) # RooFit.Silence()
-        getattr(wout,'import')(trueH_norm[genbin],RooFit.RecycleConflictNodes()) # RooFit.Silence()
+        getattr(wout,'import')(trueH_shape[genbin],RooFit.RecycleConflictNodes())
+        getattr(wout,'import')(trueH_norm[genbin],RooFit.RecycleConflictNodes())
+    # logger.error("check-p0oint")
 
     if (not usecfactor):
         out_trueH.SetName("out_trueH")
-        getattr(wout,'import')(out_trueH,RooFit.RecycleConflictNodes()) # RooFit.Silence()
-        getattr(wout,'import')(out_trueH_norm,RooFit.RecycleConflictNodes()) # RooFit.Silence()
+        logger.error("check-p0oint")
+        getattr(wout,'import')(out_trueH, RooFit.RecycleConflictNodes())
+        logger.error("check-p0oint")
+        getattr(wout,'import')(out_trueH_norm, RooFit.RecycleConflictNodes())
+        logger.error("check-p0oint")
+    logger.error("check-p0oint")
 
-    getattr(wout,'import')(fakeH) # RooFit.Silence()
-    getattr(wout,'import')(fakeH_norm) # RooFit.Silence()
-
-    #logger.info("trueH norm: ",n_trueH,"fakeH norm:",n_fakeH)
+    getattr(wout,'import')(fakeH)
+    getattr(wout,'import')(fakeH_norm)
+    logger.error("check-p0oint")
+    # sys.exit()
     qqzzTemplatePdf.SetName("bkg_qqzz")
     qqzzTemplatePdf.Print("v")
-    getattr(wout,'import')(qqzzTemplatePdf,RooFit.RecycleConflictNodes()) # RooFit.Silence()
-    getattr(wout,'import')(qqzz_norm) # RooFit.Silence()
+    getattr(wout,'import')(qqzzTemplatePdf,RooFit.RecycleConflictNodes(), ROOT.RooFit.Silence())
+    getattr(wout,'import')(qqzz_norm)
 
     ggzzTemplatePdf.SetName("bkg_ggzz")
     ggzzTemplatePdf.Print("v")
     getattr(wout,'import')(ggzzTemplatePdf,RooFit.RecycleConflictNodes())
-    getattr(wout,'import')(ggzz_norm) # RooFit.Silence()
+    getattr(wout,'import')(ggzz_norm)
 
     zjetsTemplatePdf.SetName("bkg_zjets")
     zjetsTemplatePdf.Print("v")
-    getattr(wout,'import')(zjetsTemplatePdf, RooFit.RecycleConflictNodes()) # RooFit.Silence()
-    getattr(wout,'import')(zjets_norm) # RooFit.Silence()
+    getattr(wout,'import')(zjetsTemplatePdf, RooFit.RecycleConflictNodes(), ROOT.RooFit.Silence())
+    getattr(wout,'import')(zjets_norm)
 
     ## data
-    getattr(wout,'import')(data_obs.reduce(RooArgSet(m))) # RooFit.Silence()
+    getattr(wout,'import')(data_obs.reduce(RooArgSet(m)))
 
     combineOutputs = combineOutputs.format(year = year)
     if (addfakeH):
@@ -727,4 +817,4 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 #createXSworkspace("pT4l", "2e2mu", 4, 1, False, True)
 #createXSworkspace("pT4l", "2e2mu", 4, 2, False, True)
 #createXSworkspace("pT4l", "2e2mu", 4, 3, False, True)
-#createXSworkspace("mass4l", "2e2mu", 2, 0, ["105.0","140.0"], False, True, "ggH_powheg_JHUgen_125", "v2")
+#createXSworkspace("mass4l", "2e2mu", 2, 0, ["105.0","140.0"], False, True, "ggH_powheg_JHUgen_125", "v2","2018")

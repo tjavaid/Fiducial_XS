@@ -62,7 +62,7 @@ def parseOptions():
     parser.add_option('',   '--calcSys', action='store_true', dest='SYS', default=False, help='Calculate Systematic Uncertainties (in addition to stat+sys)')
     parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
     parser.add_option('-i',   '--inYAMLFile', dest='inYAMLFile', type='string', default="Inputs/observables_list.yml", help='Input YAML file having observable names and bin information')
-    parser.add_option("-l", "--logLevel", dest="logLevel",  type = 'string', default = '3', help="Change log verbosity(WARNING: 0, INFO: 1, DEBUG: 2, ERROR: 3)")
+    parser.add_option("-l", "--logLevel", dest="logLevel",  type = 'string', default = '2', help="Change log verbosity(WARNING: 0, INFO: 1, DEBUG: 2, ERROR: 3)")
     parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
 
     # store options and arguments as global variables
@@ -354,7 +354,6 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
                 processCmd(UpdateObservationValue, get_linenumber(), os.path.basename(__file__))
                 UpdateDatabin = "sed -i 's~_xs.Databin"+str(obsBin)+"~_xs_"+modelName+"_"+obsName.replace(' ','_')+"_"+physicalModel+".Databin"+str(obsBin)+"~g' "+combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
                 os.system(UpdateDatabin)
-
                 if (obs_ifJES):
                     # INFO: This "command_append" here just to ensures appending new line from next one. Below, "command_append" is just added a blank in card
                     command_append = "echo '" "' >> " +combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
