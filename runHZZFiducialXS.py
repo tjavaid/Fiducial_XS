@@ -331,7 +331,10 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
                 observableBins = observableBins , modelName = modelName ,
                 physicalModel = physicalModel
                 ))
-        # if (not obsName.startswith("mass4l")):
+        if (obs_ifJES):
+            # Call read_jes module
+            command_read_jes = 'python python/read_jes.py -c {channel} -b {nbins} -v {variable} -y {year}'.format(channel = fState, nbins = nBins, variable = obsName.replace(' ','_'), year = year)
+            processCmd(command_read_jes, get_linenumber(), os.path.basename(__file__))
         if (not (obsName=="mass4l")):
             logger.debug("Running the datacard_maker.py...")
             processCmd("python python/datacard_maker.py -c {} -b {}".format(fState, nBins),get_linenumber(), os.path.basename(__file__))

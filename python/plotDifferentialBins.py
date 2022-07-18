@@ -69,7 +69,7 @@ obsName = opt.OBSNAME
 if (opt.ERA == '2016'): years = ['2016']
 if (opt.ERA == '2017'): years = ['2017']
 if (opt.ERA == '2018'): years = ['2018']
-if (opt.ERA == 'Full'): years = ['2016','2017','2018']
+if (opt.ERA == 'allYear'): years = ['2016','2017','2018']
 
 ListObsName = (''.join(obsName.split())).split('vs')
 
@@ -148,7 +148,9 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     for year in years:
         for fState in fStates:
             for recobin in range(nBins):
-                TaggerFromWS = "n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fState+"S_"+str(recobin)+"_"+year
+                if (len(years) > 1): AdditionalAllYearText = obsName.replace(' ','_')+"_4e4mu2e2mu_"+year+"_"
+                else: AdditionalAllYearText = ""
+                TaggerFromWS = "n_exp_final_bin"+AdditionalAllYearText+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fState+"S_"+str(recobin)+"_"+year
                 for bin in range(nBins):
                     trueH_asimov[fState+"Bin"+str(bin)+"recobin"+str(recobin)+year] = w_asimov.function(TaggerFromWS+"_proc_trueH"+fState+"Bin"+str(bin))
                 zjets_asimov[fState+"recobin"+str(recobin)+year] = w_asimov.function(TaggerFromWS+"_proc_bkg_zjets")
@@ -188,7 +190,11 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
             for recobin in range(nBins):
                 datacut = ''
                 for fState in fStates:
-                    sbin = obsName.replace(' ','_')+"_"+fstate+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fstate+"S_"+str(recobin)+"_"+year
+                    if (len(years) > 1): AdditionalAllYearText = obsName.replace(' ','_')+"_4e4mu2e2mu_"+year+"_"
+                    else: AdditionalAllYearText = ""
+                    sbin = AdditionalAllYearText+obsName.replace(' ','_')+"_"+fstate+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fstate+"S_"+str(recobin)+"_"+year
+                    logger.error(sbin)
+                    sys.exit()
                     datacut += "CMS_channel==CMS_channel::"+sbin+" || "
                 datacut = datacut.rstrip(" || ")
                 logger.debug("datacut is :    {}".format(datacut))
@@ -196,7 +202,9 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     else:
         for year in years:
             for recobin in range(nBins):
-                sbin = obsName.replace(' ','_')+"_"+fstate+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fstate+"S_"+str(recobin)+"_"+year
+                if (len(years) > 1): AdditionalAllYearText = obsName.replace(' ','_')+"_4e4mu2e2mu_"+year+"_"
+                else: AdditionalAllYearText = ""
+                sbin = AdditionalAllYearText+obsName.replace(' ','_')+"_"+fstate+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fstate+"S_"+str(recobin)+"_"+year
                 databin[str(recobin)+year] = data.reduce(RooFit.Cut("CMS_channel==CMS_channel::"+sbin))
 
 
