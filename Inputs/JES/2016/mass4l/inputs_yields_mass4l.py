@@ -1,0 +1,1 @@
+yield_nom = {'bkg_qqzz_125_mass4l_4mu_recobin0': 37.494135342843954, 'bkg_qqzz_125_mass4l_2e2mu_recobin0': 46.269673248000935, 'bkg_ggzz_125_mass4l_4e_recobin0': 1.91753937481043, 'bkg_qqzz_125_mass4l_4e_recobin0': 17.20685193197623, 'bkg_ggzz_125_mass4l_4mu_recobin0': 3.7168485673422365, 'bkg_ggzz_125_mass4l_2e2mu_recobin0': 3.5625995610793484} 
