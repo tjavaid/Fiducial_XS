@@ -1,4 +1,7 @@
 # ignore root file; if we need to add root file then we can use -f option to add
+2016/
+2017/
+2018/
 *.root
 *.stdout
 *.jdl

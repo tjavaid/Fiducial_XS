@@ -78,6 +78,16 @@ logger.debug("nBins: = "+str(nBins))
 #recobin = 0
 
 def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, obsName, fstate, recobin, year):
+    logger.info("""\n\tasimovDataModel: {}\n\tasimovPhysicalModel: {}\n\tmodelName: {}\n\tphysicalModel: {}\n\tobsName: {}\n\tfstate: {}\n\trecobin: {}\n\tyear: {}""".format(
+        asimovDataModel,
+        asimovPhysicalModel,
+        modelName,
+        physicalModel,
+        obsName,
+        fstate,
+        recobin,
+        year
+    ))
 
     channel = {"4mu":"1", "4e":"2", "2e2mu":"3", "4l":"2"}
 
@@ -89,7 +99,7 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
 
     RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 
-    print('[INFO] Filename: {}'.format(asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ'))
+    logger.info('[INFO] Filename: {}'.format(combineOutputs+'/' + asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root'))
     f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
     if (not opt.UNBLIND):
         data = f_asimov.Get("toys/toy_asimov");
@@ -123,12 +133,13 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
 
     fStates = ['4mu','4e','2e2mu']
     for fState in fStates:
-        trueH_asimov[fState] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_proc_trueH"+fState+"Bin0")
-        zjets_asimov[fState] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_proc_bkg_zjets")
-        ggzz_asimov[fState] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_proc_bkg_ggzz")
-        fakeH_asimov[fState] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_proc_fakeH")
-        out_trueH_asimov[fState] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_proc_out_trueH")
-        qqzz_asimov[fState] = w_asimov.function("n_exp_final_binch"+channel[fState]+"_proc_bkg_qqzz")
+        logger.error("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_trueH"+fState+"Bin0")
+        trueH_asimov[fState] = w_asimov.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_trueH"+fState+"Bin0")
+        zjets_asimov[fState] = w_asimov.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_bkg_zjets")
+        ggzz_asimov[fState] = w_asimov.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_bkg_ggzz")
+        fakeH_asimov[fState] = w_asimov.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_fakeH")
+        out_trueH_asimov[fState] = w_asimov.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_out_trueH")
+        qqzz_asimov[fState] = w_asimov.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_bkg_qqzz")
         n_trueH_asimov[fState] = trueH_asimov[fState].getVal()
         n_zjets_asimov[fState] = zjets_asimov[fState].getVal()
         n_ggzz_asimov[fState] = ggzz_asimov[fState].getVal()
@@ -144,12 +155,13 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
         n_qqzz_asimov["4l"] += qqzz_asimov[fState].getVal()
         n_zz_asimov["4l"] += n_ggzz_asimov[fState]+n_qqzz_asimov[fState]
 
+    logger.info('[INFO] Filename: RAM {}'.format(combineOutputs+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_result.root'))
     f_modelfit = TFile(combineOutputs+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_result.root','READ')
     w_modelfit = f_modelfit.Get("w")
     sim = w_modelfit.pdf("model_s")
     #sim.Print("v")
-    if (fstate=="4l"): pdfi = sim.getPdf("ch2")
-    else: pdfi = sim.getPdf("ch"+channel[fstate])
+    if (fstate=="4l"): pdfi = sim.getPdf(obsName.replace(' ','_')+"_"+"4mu"+"S_"+year)
+    else: pdfi = sim.getPdf(obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year)
     CMS_zz4l_mass = w_modelfit.var("CMS_zz4l_mass")
     w_modelfit.loadSnapshot("MultiDimFit")
     #pdfi.Print("v")
@@ -176,12 +188,12 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     n_zz_modelfit["4l"] = 0.0
 
     for fState in fStates:
-        trueH_modelfit[fState] = w_modelfit.function("n_exp_final_binch"+channel[fState]+"_proc_trueH"+fState+"Bin0")
-        zjets_modelfit[fState] = w_modelfit.function("n_exp_final_binch"+channel[fState]+"_proc_bkg_zjets")
-        ggzz_modelfit[fState] = w_modelfit.function("n_exp_final_binch"+channel[fState]+"_proc_bkg_ggzz")
-        fakeH_modelfit[fState] = w_modelfit.function("n_exp_final_binch"+channel[fState]+"_proc_fakeH")
-        out_trueH_modelfit[fState] = w_modelfit.function("n_exp_final_binch"+channel[fState]+"_proc_out_trueH")
-        qqzz_modelfit[fState] = w_modelfit.function("n_exp_final_binch"+channel[fState]+"_proc_bkg_qqzz")
+        trueH_modelfit[fState] = w_modelfit.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_trueH"+fState+"Bin0")
+        zjets_modelfit[fState] = w_modelfit.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_bkg_zjets")
+        ggzz_modelfit[fState] = w_modelfit.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_bkg_ggzz")
+        fakeH_modelfit[fState] = w_modelfit.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_fakeH")
+        out_trueH_modelfit[fState] = w_modelfit.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_out_trueH")
+        qqzz_modelfit[fState] = w_modelfit.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_bkg_qqzz")
         n_trueH_modelfit[fState] = trueH_modelfit[fState].getVal()
         n_zjets_modelfit[fState] = zjets_modelfit[fState].getVal()
         n_ggzz_modelfit[fState] = ggzz_modelfit[fState].getVal()
@@ -204,17 +216,17 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     if (fstate=="4l"):
         data.plotOn(mass,RooFit.LineColor(0),RooFit.MarkerColor(0),RooFit.LineWidth(0))
         sim.plotOn(mass,RooFit.LineColor(kRed), RooFit.ProjWData(data,True))
-        sim.plotOn(mass, RooFit.LineColor(kBlack), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3,shapeBkg_bkg_ggzz_ch1,shapeBkg_bkg_ggzz_ch2,shapeBkg_bkg_ggzz_ch3,shapeBkg_bkg_qqzz_ch1,shapeBkg_bkg_qqzz_ch2,shapeBkg_bkg_qqzz_ch3,shapeBkg_fakeH_ch1,shapeBkg_fakeH_ch2,shapeBkg_fakeH_ch3,shapeBkg_out_trueH_ch1,shapeBkg_out_trueH_ch2,shapeBkg_out_trueH_ch3"), RooFit.ProjWData(data,True))
-        sim.plotOn(mass, RooFit.LineColor(kOrange), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3,shapeBkg_bkg_ggzz_ch1,shapeBkg_bkg_ggzz_ch2,shapeBkg_bkg_ggzz_ch3,shapeBkg_bkg_qqzz_ch1,shapeBkg_bkg_qqzz_ch2,shapeBkg_bkg_qqzz_ch3,shapeBkg_fakeH_ch1,shapeBkg_fakeH_ch2,shapeBkg_fakeH_ch3"), RooFit.ProjWData(data,True))
-        sim.plotOn(mass, RooFit.LineColor(kAzure-3), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3,shapeBkg_bkg_ggzz_ch1,shapeBkg_bkg_ggzz_ch2,shapeBkg_bkg_ggzz_ch3,shapeBkg_bkg_qqzz_ch1,shapeBkg_bkg_qqzz_ch2,shapeBkg_bkg_qqzz_ch3"), RooFit.ProjWData(data,True))
-        sim.plotOn(mass, RooFit.LineColor(kGreen+3), RooFit.Components("shapeBkg_bkg_zjets_ch1,shapeBkg_bkg_zjets_ch2,shapeBkg_bkg_zjets_ch3"), RooFit.ProjWData(data,True))
+        sim.plotOn(mass, RooFit.LineColor(kBlack), RooFit.Components("shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+",shapeBkg_bkg_ggzz_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_ggzz_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_ggzz_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+",shapeBkg_bkg_qqzz_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_qqzz_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_qqzz_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+",shapeBkg_fakeH_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_fakeH_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_fakeH_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+",shapeBkg_out_trueH_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_out_trueH_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_out_trueH_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+""), RooFit.ProjWData(data,True))
+        sim.plotOn(mass, RooFit.LineColor(kOrange), RooFit.Components("shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+",shapeBkg_bkg_ggzz_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_ggzz_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_ggzz_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+",shapeBkg_bkg_qqzz_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_qqzz_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_qqzz_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+",shapeBkg_fakeH_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_fakeH_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_fakeH_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+""), RooFit.ProjWData(data,True))
+        sim.plotOn(mass, RooFit.LineColor(kAzure-3), RooFit.Components("shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+",shapeBkg_bkg_ggzz_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_ggzz_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_ggzz_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+",shapeBkg_bkg_qqzz_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_qqzz_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_qqzz_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+""), RooFit.ProjWData(data,True))
+        sim.plotOn(mass, RooFit.LineColor(kGreen+3), RooFit.Components("shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"4e"+"S_"+year+",shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"4mu"+"S_"+year+",shapeBkg_bkg_zjets_"+obsName.replace(' ','_')+"_"+"2e2mu"+"S_"+year+""), RooFit.ProjWData(data,True))
         #datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,105,140))
         datahist = RooAbsData.createHistogram(data,"datahist",CMS_zz4l_mass,RooFit.Binning(15,INPUT_m4l_low,INPUT_m4l_high))
     else:
-        sbin = "ch"+channel[fstate]
+        sbin = obsName.replace(' ','_')+"_"+fState+"S_"+year
         data = data.reduce(RooFit.Cut("CMS_channel==CMS_channel::"+sbin))
         data.plotOn(mass,RooFit.LineColor(0),RooFit.MarkerColor(0),RooFit.LineWidth(0))
-        pdfi.plotOn(mass, RooFit.Components("pdf_binch"+channel[fstate]+"_nuis"),RooFit.LineColor(kRed), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
+        pdfi.plotOn(mass, RooFit.Components("pdf_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_nuis"),RooFit.LineColor(kRed), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
         pdfi.plotOn(mass, RooFit.LineColor(kBlack), RooFit.Components("shapeBkg_bkg_zjets_"+sbin+",shapeBkg_bkg_ggzz_"+sbin+",shapeBkg_bkg_qqzz_"+sbin+",shapeBkg_fakeH_"+sbin+",shapeBkg_out_trueH_"+sbin), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
         pdfi.plotOn(mass, RooFit.LineColor(kOrange), RooFit.Components("shapeBkg_bkg_zjets_"+sbin+",shapeBkg_bkg_ggzz_"+sbin+",shapeBkg_bkg_qqzz_"+sbin+",shapeBkg_fakeH_"+sbin), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
         pdfi.plotOn(mass, RooFit.LineColor(kAzure-3), RooFit.Components("shapeBkg_bkg_zjets_"+sbin+",shapeBkg_bkg_ggzz_"+sbin+",shapeBkg_bkg_qqzz_"+sbin), RooFit.Slice(CMS_channel,sbin),RooFit.ProjWData(RooArgSet(CMS_channel),data,True))
@@ -240,7 +252,14 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     #dummy.GetYaxis().SetTitle("Events / (1 GeV)")
     dummy.GetXaxis().SetTitle("m_{"+fstate.replace("mu","#mu")+"} (GeV)")
     if (not opt.UNBLIND):
-        dummy.SetMaximum(1.15*max(n_trueH_asimov[fstate],n_trueH_modelfit[fstate]))
+        if (fstate=="4e"):
+            dummy.SetMaximum(3.0*max(n_trueH_asimov[fstate],n_trueH_modelfit[fstate]))
+        if (fstate=="4mu"):
+            dummy.SetMaximum(1.5*max(n_trueH_asimov[fstate],n_trueH_modelfit[fstate]))
+        if (fstate=="2e2mu"):
+            dummy.SetMaximum(1.5*max(n_trueH_asimov[fstate],n_trueH_modelfit[fstate]))
+        else:
+            dummy.SetMaximum(3.0*max(n_trueH_asimov[fstate],n_trueH_modelfit[fstate]))
     else:
         if (fstate=="4mu"):
             dummy.SetMaximum(2.7*max(n_trueH_asimov[fstate],n_trueH_modelfit[fstate],3.0))
@@ -272,7 +291,7 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     dummy_zx.SetLineColor(kGreen+3)
     dummy_zx.SetLineWidth(2)
 
-    legend = TLegend(.20,.41,.53,.89)
+    legend = TLegend(.50,.41,.95,.89)
     legend.AddEntry(dummy_data,"Asimov Data (SM m(H) = 125.38 GeV)","ep")
     legend.AddEntry(dummy_fid,"N_{fid.}^{fit} = %.2f (exp. = %.2f)"%(n_trueH_modelfit[fstate],n_trueH_asimov[fstate]), "l")
     legend.AddEntry(dummy_out, "N_{out}^{fit} = %.2f (exp. = %.2f)"%(n_out_trueH_modelfit[fstate],n_out_trueH_asimov[fstate]), "l")
@@ -338,7 +357,11 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
         lumi = round(59.7*float(opt.LUMISCALE),1)
         latex2.DrawLatex(0.87, 0.95,str(lumi)+"fb^{-1} at #sqrt{s} = 13 TeV")
     else:
-        latex2.DrawLatex(0.87, 0.95,"59.7 fb^{-1} at #sqrt{s} = 13 TeV")
+        if (str(year) == "2016"): latex2.DrawLatex(0.87, 0.95,str(Lumi_2016) + " fb^{-1} at #sqrt{s} = 13 TeV")
+        if (str(year) == "2017"): latex2.DrawLatex(0.87, 0.95,str(Lumi_2017) + " fb^{-1} at #sqrt{s} = 13 TeV")
+        if (str(year) == "2018"): latex2.DrawLatex(0.87, 0.95,str(Lumi_2018) + " fb^{-1} at #sqrt{s} = 13 TeV")
+        if (str(year) == "allYear"): latex2.DrawLatex(0.87, 0.95,str(Lumi_Run2) + " fb^{-1} at #sqrt{s} = 13 TeV")
+
     latex2.SetTextSize(0.8*c.GetTopMargin())
     latex2.SetTextFont(62)
     latex2.SetTextAlign(11) # align right
