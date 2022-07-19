@@ -60,12 +60,12 @@ for b in range(nbins):
                str(eval(bkg_ggzz_125)) + " " + \
                str(eval(bkg_zjets_125)) + " ")
 
-        print(line)
+        #print(line)
         lines.append(line)
 
     datacardInputs[variable_name + "_" + str(b)] = lines   
 
-print(datacardInputs)
+#print(datacardInputs)
 
 
 f = open("Inputs/JES/{}/{}/datacardLines_JESnuis_{}_{}.txt".format(year, variable_name, variable_name, channel),"w")
