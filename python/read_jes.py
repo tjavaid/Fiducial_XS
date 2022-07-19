@@ -43,19 +43,25 @@ processes = [
 
 ]
 
-jes_sources = [x.replace('year', year) for x in jes_sources]
+jes_sources_year_updated = [x.replace('year', year) for x in jes_sources]
 
 datacardInputs = {}
 
 for b in range(nbins):
     lines = [] 
     for jes_source in jes_sources:
-       line = "CMS_scale_j_"+ jes_source + " lnN " + "{} ".format(JES.yield_nom['Hproc_125_'+ variable_name +'_'+ channel +'_recobin' +str(b)]) * (nbins + 2) + \
-              str(JES.yield_nom['bkg_qqzz_125_'+ variable_name +'_'+ channel +'_recobin' + str(b)]) + " "  + \
-              str(JES.yield_nom['bkg_ggzz_125_'+ variable_name +'_'+ channel +'_recobin' + str(b)]) + " "  + \
-              str(JES.yield_nom['bkg_zjets_125_'+ variable_name +'_'+ channel +'_recobin' + str(b)])
-      # print(line)
-       lines.append(line)
+        Hproc_125 = "JES.nuis_"+jes_source+"['Hproc_125_"+ variable_name +"_"+ channel +"_recobin" +str(b)+"_"+jes_source+"']"
+        bkg_qqzz_125 = "JES.nuis_"+jes_source+"['bkg_qqzz_125_"+ variable_name +"_"+ channel +"_recobin" + str(b)+"_"+jes_source+"']" 
+        bkg_ggzz_125 = "JES.nuis_"+jes_source+"['bkg_ggzz_125_"+ variable_name +"_"+ channel +"_recobin" + str(b)+"_"+jes_source+"']"
+        bkg_zjets_125 = "JES.nuis_"+jes_source+"['bkg_zjets_125_"+ variable_name +"_"+ channel +"_recobin" + str(b)+"_"+jes_source+"']"
+        
+        line = "CMS_scale_j_"+ jes_sources_year_updated[jes_sources.index(jes_source)] + " lnN " + "{} ".format(str(eval(Hproc_125)+ " ") * (nbins + 2) + \
+               str(eval(bkg_qqzz_125)) + " " + \
+               str(eval(bkg_ggzz_125)) + " " + \
+               str(eval(bkg_zjets_125)) + " ")
+
+        #print(line)
+        lines.append(line)
 
     datacardInputs[variable_name + "_" + str(b)] = lines   
 
