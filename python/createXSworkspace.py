@@ -466,9 +466,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     # nuisance describes the jet energy scale uncertainty
     #JES = RooRealVar("JES_"+year,"JES_"+year, 0, -5.0, 5.0)
-    JES = RooRealVar("JES","JES", 0, -5.0, 5.0)    # FIXME, update with new recommendations
-    #if (obsName == "nJets"  or ("jet" in obsName)):
-    # if (("jet" in obsName) or ("Jet" in obsName) or ("j1" in obsName) or ("j2" in obsName) or ("4lj" in obsName) or (doJES) ):
+    JES = RooRealVar("JES","JES", 0, -5.0, 5.0)
     logger.error("obs_ifJES = {}".format(obs_ifJES))
     if (obs_ifJES):
         lambda_JES_sig = lambdajesup[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin]
@@ -483,7 +481,9 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         fideff_var[genbin] = RooRealVar("effBin"+str(genbin)+"_"+recobin+"_"+channel+"_"+year,"effBin"+str(genbin)+"_"+recobin+"_"+channel+"_"+year, fideff[genbin]);
 
         logger.error("obs_ifJES: {},  doJES: {}, condition: {}".format(obs_ifJES, doJES, (not (obs_ifJES) or (not doJES))))
-        # sys.exit()
+        logger.info("fideff[genbin]: {}".format(fideff[genbin]))
+        logger.info("model name is   {}".format(modelName))
+
         if( not (obs_ifJES) or (not doJES)) :
             trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1", RooArgList(fideff_var[genbin], lumi) );
         else :
@@ -674,7 +674,6 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     wout = RooWorkspace("w","w")
 
-
     if (year=="2018"):
         if (channel=='2e2mu'):
             getattr(wout,'import')(CMS_zz4l_mean_sig_3_centralValue_2018,RooFit.RecycleConflictNodes())
@@ -754,28 +753,18 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             getattr(wout,'import')(CMS_zz4l_n2_1_centralValue_2016,RooFit.RecycleConflictNodes())
             getattr(wout,'import')(CMS_zz4l_mean_m_err_1_2016,RooFit.RecycleConflictNodes())
 
-
-    # logger.error("check-p0oint")
-    # sys.exit()
-
     for genbin in range(nBins):
         getattr(wout,'import')(trueH_shape[genbin],RooFit.RecycleConflictNodes())
         getattr(wout,'import')(trueH_norm[genbin],RooFit.RecycleConflictNodes())
-    # logger.error("check-p0oint")
 
     if (not usecfactor):
         out_trueH.SetName("out_trueH")
-        logger.error("check-p0oint")
         getattr(wout,'import')(out_trueH, RooFit.RecycleConflictNodes())
-        logger.error("check-p0oint")
         getattr(wout,'import')(out_trueH_norm, RooFit.RecycleConflictNodes())
-        logger.error("check-p0oint")
-    logger.error("check-p0oint")
 
     getattr(wout,'import')(fakeH)
     getattr(wout,'import')(fakeH_norm)
-    logger.error("check-p0oint")
-    # sys.exit()
+
     qqzzTemplatePdf.SetName("bkg_qqzz")
     qqzzTemplatePdf.Print("v")
     getattr(wout,'import')(qqzzTemplatePdf,RooFit.RecycleConflictNodes(), ROOT.RooFit.Silence())

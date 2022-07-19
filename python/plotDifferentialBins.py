@@ -193,8 +193,6 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
                     if (len(years) > 1): AdditionalAllYearText = obsName.replace(' ','_')+"_4e4mu2e2mu_"+year+"_"
                     else: AdditionalAllYearText = ""
                     sbin = AdditionalAllYearText+obsName.replace(' ','_')+"_"+fstate+"S_"+year+"_"+obsName.replace(' ','_')+"_"+fstate+"S_"+str(recobin)+"_"+year
-                    logger.error(sbin)
-                    sys.exit()
                     datacut += "CMS_channel==CMS_channel::"+sbin+" || "
                 datacut = datacut.rstrip(" || ")
                 logger.debug("datacut is :    {}".format(datacut))
