@@ -11,13 +11,15 @@ parser.add_argument( '-b', dest='nbins', default=1, help='nBins for the chosen v
 parser.add_argument( '-o', dest='observation', default=2, help='Observation in the given bin')
 parser.add_argument( '-p', dest='path', default="", help='Path to the folder in which to store the datacards')
 parser.add_argument( '-y', dest='year', default='2018', help='Data taking period')
+parser.add_argument( '-z', dest= "doZZnorm", default = False, help='Include the line containing ZZ norm')
+
 args = parser.parse_args()
 
 channel = args.channel
 observation = int(args.observation)
 nbins = int(args.nbins)
 year = args.year
-
+doZZ = args.doZZnorm
 
 def CollectFromConfig(config_location = 'test.yaml'):
     Process_names = []
@@ -45,7 +47,7 @@ def CollectFromConfig(config_location = 'test.yaml'):
 
     return [Process_names, Process_rate, Nuisances_name, Nuisances_applied_to, Nuisances_type, Nuisances_value]
 
-def DataCardMaker(process_names, process_rate, nbins, current_bin, channel, observation, nuisances_name, nuisances_applied_to, nuisances_type, nuisances_value, path_dir):
+def DataCardMaker(process_names, process_rate, nbins, current_bin, channel, observation, nuisances_name, nuisances_applied_to, nuisances_type, nuisances_value, path_dir, doZZ= False):
         nprocesses = len(process_names)
         bin_name = "a4"
         if channel == "4mu":
@@ -147,8 +149,8 @@ def DataCardMaker(process_names, process_rate, nbins, current_bin, channel, obse
                         line = line + mini_list[idx] + ' ' 
 
                 f.write(line+"\n")
-             
-            f.write('zz_norm_0 rateParam {}_recobin{} bkg_*zz 1 [0,2]'.format(bin_name, current_bin))
+            if (doZZ): 
+                f.write('zz_norm_0 rateParam {}_recobin{} bkg_*zz 1 [0,2]'.format(bin_name, current_bin))
 
 
 Inputs = CollectFromConfig("Inputs/inputs_{}_{}.yml".format(channel, year))
@@ -175,4 +177,4 @@ if not os.path.exists(path_dir):
     
 
 for current_bin in range(nbins):
-    DataCardMaker(process_names, process_rate, nbins, current_bin, channel, observation, nuisances_name, nuisances_applied_to, nuisances_type, nuisances_value, path_dir)
+    DataCardMaker(process_names, process_rate, nbins, current_bin, channel, observation, nuisances_name, nuisances_applied_to, nuisances_type, nuisances_value, path_dir, doZZ)
