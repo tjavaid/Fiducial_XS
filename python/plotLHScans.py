@@ -101,7 +101,9 @@ for obsName in observables:
             if point>0 and len(deltanll)>0:
                 if deltanll[len(deltanll)-1]>5.0 and sigma[len(sigma)-1]>bestfit: break
 
-        fstat = TFile(combineOutputs + "/higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_NoSys"+"_"+opt.ERA+".MultiDimFit.mH125.38.root","READ")
+        NoSystFile = combineOutputs + "/higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_NoSys"+"_"+opt.ERA+".MultiDimFit.mH125.38.root"
+        logger.info("No Syst. File to read: {}".format(NoSystFile))
+        fstat = TFile(NoSystFile, "READ")
         if (fstat==0): continue
 
         limitstat = fstat.Get("limit")
