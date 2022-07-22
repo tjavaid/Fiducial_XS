@@ -24,7 +24,7 @@ Nuissances:
     Applied_To:
       - fakeH
     Type: lnU
-    Value: '10.0' 
+    Value: '10.0'
   101n:
     Name: lumi_13TeV_2017_uncorrelated
     Applied_To:
@@ -48,8 +48,8 @@ Nuissances:
     Applied_To:
       - AllButZX
     Type: lnN
-    Value: '0.915/1.064'  
-  105n: 
+    Value: '0.915/1.064'
+  105n:
     Name: CMS_hzz4e_Zjets_2017
     Applied_To:
       - bkg_zjets
@@ -59,19 +59,19 @@ Nuissances:
     Name: CMS_zz4l_mean_e_sig_2017
     Applied_To:
       - All
-    Type: param 
+    Type: param
     Value: '0.0 1.0'
   107n:
     Name: CMS_zz4l_sigma_e_sig_2017
     Applied_To:
       - All
-    Type: param 
-    Value: '0.0 0.2'
+    Type: param
+    Value: '0.0 0.2 [-1,1]'
   108n:
     Name: CMS_zz4l_n_sig_2_2017
     Applied_To:
       - All
-    Type: param 
+    Type: param
     Value: '0.0 0.05'
   109n:
     Name: QCDscale_ggVV
@@ -81,7 +81,7 @@ Nuissances:
     Value: '1.039/0.961'
   110n:
     Name: QCDscale_VV
-    Applied_To: 
+    Applied_To:
       - bkg_qqzz
     Type: lnN
     Value: '1.0325/0.958'
@@ -99,12 +99,12 @@ Nuissances:
     Value: '1.031/0.966'
   113n:
     Name: kfactor_ggzz
-    Applied_To: 
+    Applied_To:
       - bkg_ggzz
     Type: lnN
     Value: '1.1'
  # 114n:
- #   Name: CMS_zjets_bkgdcompo 
+ #   Name: CMS_zjets_bkgdcompo
  #   Applied_To:
  #     - bkg_zjets
  #   Type: lnN
