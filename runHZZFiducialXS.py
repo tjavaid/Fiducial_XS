@@ -349,7 +349,7 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
             processCmd(command_read_jes, get_linenumber(), os.path.basename(__file__))
         if (not (obsName=="mass4l")):
             logger.debug("Running the datacard_maker.py...")
-            processCmd("python python/datacard_maker.py -c {} -b {}".format(fState, nBins),get_linenumber(), os.path.basename(__file__))
+            processCmd("python python/datacard_maker.py -c {} -b {} -y {}".format(fState, nBins, year),get_linenumber(), os.path.basename(__file__))
             logger.debug("Completed the datacard_maker.py...")
             for obsBin in range(nBins):
                 logger.debug("=="*51)
@@ -388,8 +388,8 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
 
         else:
             logger.debug("Running the datacard_maker.py...")
-            print("python python/datacard_maker.py -c {} -b {}".format(fState, 1))
-            os.system("python python/datacard_maker.py -c {} -b {}".format(fState, 1))
+            print("python python/datacard_maker.py -c {} -b {} -y {}".format(fState, 1, year))
+            os.system("python python/datacard_maker.py -c {} -b {} -y {}".format(fState, 1, year))
             logger.debug("Completed the datacard_maker.py...")
             ndata = createXSworkspace(ListObsName,fState, nBins, 0, observableBins, False, True, modelName, physicalModel, year, obs_ifJES, obs_ifJES2)
             if obsName=='mass4l':

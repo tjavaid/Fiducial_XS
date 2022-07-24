@@ -220,6 +220,10 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     float pt_leadingjet_pt30_eta4p7, pt_leadingjet_pt30_eta4p7_jesdn, pt_leadingjet_pt30_eta4p7_jesup;
     float pt_leadingjet_pt30_eta2p5, pt_leadingjet_pt30_eta2p5_jesdn, pt_leadingjet_pt30_eta2p5_jesup;
 
+    // additional weights
+    float prefiringWeight, pileupWeight, Lumi_Weight; 
+    bool need_Lumi_Weight=false;
+
     // new obs.
     float pT4lj; float pT4ljj;
     float pT4lj_2p5; float pT4ljj_2p5;
@@ -293,6 +297,8 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     tree->SetBranchAddress("LumiSect",&LumiSect);
     tree->SetBranchAddress("Event",&Event);
     tree->SetBranchAddress("eventWeight",&eventWeight);
+    tree->SetBranchAddress("pileupWeight",&pileupWeight);
+    tree->SetBranchAddress("prefiringWeight",&prefiringWeight);
     tree->SetBranchAddress("genWeight",&genWeight);
     tree->SetBranchAddress("k_qqZZ_qcd_M",&k_qqZZ_qcd_M);
     tree->SetBranchAddress("k_qqZZ_ewk",&k_qqZZ_ewk);
@@ -300,6 +306,7 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     tree->SetBranchAddress("crossSection",&crossSection);
     if (tree->GetBranch("dataMCWeight")) {tree->SetBranchAddress("dataMCWeight",&dataMCWeight);}
     if (tree->GetBranch("dataMCWeight_new")) {tree->SetBranchAddress("dataMCWeight_new",&dataMCWeight_new);}
+    if (tree->GetBranch("Lumi_Weight")) {tree->SetBranchAddress("Lumi_Weight",&Lumi_Weight);need_Lumi_Weight=true;}
     tree->SetBranchAddress("passedFullSelection",&passedFullSelection);
     tree->SetBranchAddress("passedZ4lSelection",&passedZ4lSelection);
     tree->SetBranchAddress("passedZXCRSelection",&passedZXCRSelection);
@@ -757,6 +764,9 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
         int nentries_int = static_cast<int>(nentries);
         TMath::Sort(nentries_int, tree->GetV1(), index, false);
     }
+
+    cout<<"need_Lumi_Weight: "<<need_Lumi_Weight<<endl;
+
     for(int iEvt=0; iEvt < nentries; iEvt++){
         if (SORT_EVENTS)
             tree->GetEntry(index[iEvt]);	//index[iEvt]);}// take sorted entries
@@ -769,7 +779,10 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
         // weight
         //if (dataMCWeight==0) dataMCWeight = 1;
         if (dataMCWeight_new==0 || dataMCWeight_new==-1) dataMCWeight_new = 1;
-        float weight = (scale)? genWeight*crossSection*dataMCWeight_new: 1.;
+//        float weight = (scale)? genWeight*crossSection*dataMCWeight_new: 1.;
+        float weight = (scale)? genWeight*crossSection*dataMCWeight_new*pileupWeight*prefiringWeight: 1.;
+        if (need_Lumi_Weight)  weight *=Lumi_Weight;
+
         if (processNameTag == "qqZZ") {
             weight *= k_qqZZ_qcd_M*k_qqZZ_ewk;
         }
