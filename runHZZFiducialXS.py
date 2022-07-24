@@ -99,6 +99,7 @@ def parseOptions():
 
     # prepare the global flag if all the step should be run
     runAllSteps = not(opt.effOnly or opt.templatesOnly or opt.uncertOnly or opt.resultsOnly or opt.finalplotsOnly)
+    # runAllSteps = not(opt.templatesOnly or opt.uncertOnly or opt.resultsOnly or opt.finalplotsOnly)
 
     if (opt.OBSBINS=='' and opt.OBSNAME!='inclusive'):
         parser.error('Bin boundaries not specified for differential measurement. Exiting...')
@@ -453,7 +454,8 @@ def createAsimov_161718(obsName, observableBins, modelName, resultsXS, physicalM
     logger.info("Going to run the combine commands...")
     cmd = ''
     if (physicalModel=="v2"):
-        cmd =  'combine -n '+obsName.replace(' ','_')+'_'+str(year)+' -M MultiDimFit  '+combineOutputs.format(year = "allYear")+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root -m '+opt.ASIMOVMASS+' --setParameters '
+        # combineOutputs.format(year = 'allYear') + '/' +modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root'
+        cmd =  'combine -n '+obsName.replace(' ','_')+'_'+str("allYear")+' -M MultiDimFit  '+combineOutputs.format(year = "allYear")+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root -m '+opt.ASIMOVMASS+' --setParameters '
         logger.debug("command:\n\t{}".format(cmd))
         for fState in fStates:
             for obsBin in range(nBins):
@@ -485,13 +487,14 @@ def createAsimov_161718(obsName, observableBins, modelName, resultsXS, physicalM
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
         # INFO: Move combine output to combineOutputs.format(year = opt.ERA) directory
-        processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root '+combineOutputs.format(year = "allYear")+'/'+modelName+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+physicalModel+'.root', get_linenumber(), os.path.basename(__file__), 1)
+        processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str("allYear")+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root '+combineOutputs.format(year = "allYear")+'/'+modelName+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+physicalModel+'.root', get_linenumber(), os.path.basename(__file__), 1)
 
         #cmd = cmd.replace(' --freezeNuisanceGroups r4muBin0,r4eBin0,r2e2muBin0','')
         #cmd = cmd.replace(' --X-rtd TMCSO_PseudoAsimov=1000000','')
         cmd = cmd + ' --algo=singles --cl=0.68 --robustFit=1'
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
-        processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root '+combineOutputs.format(year = "allYear")+'/', get_linenumber(), os.path.basename(__file__))
+
+        processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str("allYear")+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root '+combineOutputs.format(year = "allYear")+'/', get_linenumber(), os.path.basename(__file__))
 
     # parse the results for all the bins and the given final state
     tmp_resultsXS = {}
@@ -523,14 +526,15 @@ def createAsimov_161718(obsName, observableBins, modelName, resultsXS, physicalM
 
     # run combine with no systematics for stat only uncertainty
     if (opt.SYS):
-        cmd = cmd + ' --freezeParameters '
-        cmd = cmd + 'CMS_fakeH_p1_1'+year+',CMS_fakeH_p1_2'+year+',CMS_fakeH_p1_3'+year+',CMS_fakeH_p3_1'+year+',CMS_fakeH_p3_2'+year+',CMS_fakeH_p3_3'+year+','
-        cmd += 'CMS_eff_e,CMS_eff_m,CMS_hzz2e2mu_Zjets_'+str(year)+',CMS_hzz4e_Zjets_'+str(year)+',CMS_hzz4mu_Zjets_'+str(year)+',QCDscale_VV,QCDscale_ggVV,kfactor_ggzz,lumi_13TeV_'+str(year)+'_uncorrelated,norm_fakeH,pdf_gg,pdf_qqbar,CMS_zz4l_sigma_e_sig_'+str(year)+',CMS_zz4l_sigma_m_sig_'+str(year)+',CMS_zz4l_n_sig_1_'+str(year)+',CMS_zz4l_n_sig_2_'+str(year)+',CMS_zz4l_n_sig_3_'+str(year)+',CMS_zz4l_mean_e_sig_'+str(year)+',CMS_zz4l_mean_m_sig_'+str(year)+',CMS_zz4l_sigma_e_sig_'+str(year)+','
-        if (obs_ifJES):
-            jes_sources_year_updated = [x.replace('year', year) for x in jes_sources]
-            for jes_source in jes_sources:
-                cmd += ",CMS_scale_j_"+ jes_sources_year_updated[jes_sources.index(jes_source)]
-            cmd = cmd + ',lumi_13TeV_correlated_16_17_18,lumi_13TeV_correlated_17_18'
+        cmd = cmd + ' --freezeParameters allConstrainedNuisances'
+        # cmd = cmd + ' --freezeParameters '
+        # cmd = cmd + 'CMS_fakeH_p1_1'+year+',CMS_fakeH_p1_2'+year+',CMS_fakeH_p1_3'+year+',CMS_fakeH_p3_1'+year+',CMS_fakeH_p3_2'+year+',CMS_fakeH_p3_3'+year+','
+        # cmd += 'CMS_eff_e,CMS_eff_m,CMS_hzz2e2mu_Zjets_'+str(year)+',CMS_hzz4e_Zjets_'+str(year)+',CMS_hzz4mu_Zjets_'+str(year)+',QCDscale_VV,QCDscale_ggVV,kfactor_ggzz,lumi_13TeV_'+str(year)+'_uncorrelated,norm_fakeH,pdf_gg,pdf_qqbar,CMS_zz4l_sigma_e_sig_'+str(year)+',CMS_zz4l_sigma_m_sig_'+str(year)+',CMS_zz4l_n_sig_1_'+str(year)+',CMS_zz4l_n_sig_2_'+str(year)+',CMS_zz4l_n_sig_3_'+str(year)+',CMS_zz4l_mean_e_sig_'+str(year)+',CMS_zz4l_mean_m_sig_'+str(year)+',CMS_zz4l_sigma_e_sig_'+str(year)+','
+        # if (obs_ifJES):
+        #     jes_sources_year_updated = [x.replace('year', year) for x in jes_sources]
+        #     for jes_source in jes_sources:
+        #         cmd += ",CMS_scale_j_"+ jes_sources_year_updated[jes_sources.index(jes_source)]
+        #     cmd = cmd + ',lumi_13TeV_correlated_16_17_18,lumi_13TeV_correlated_17_18'
 
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
@@ -548,7 +552,10 @@ def createAsimov_161718(obsName, observableBins, modelName, resultsXS, physicalM
         #sys.exit()
         # processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
-        processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root '+combineOutputs.format(year = "allYear")+'/', get_linenumber(), os.path.basename(__file__))
+        # if os.path.exists('higgsCombine'+obsName.replace(' ','_')+'_'+str("allYear")+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root'):
+        #     logger.error('higgsCombine'+obsName.replace(' ','_')+'_'+str("allYear")+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root')
+        #     sys.exit()
+        processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str("allYear")+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root '+combineOutputs.format(year = "allYear")+'/', get_linenumber(), os.path.basename(__file__))
 
         for fState in fStates:
             for obsBin in range(nBins):
@@ -672,6 +679,9 @@ def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, y
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
         # INFO: Move combine output to combineOutputs.format(year = opt.ERA) directory
+        # if os.path.exists('higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root'):
+        #     logger.error('higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root')
+        #     sys.exit()
         processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root '+combineOutputs.format(year = year)+'/'+modelName+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+physicalModel+'.root', get_linenumber(), os.path.basename(__file__), 1)
 
         #cmd = cmd.replace(' --freezeNuisanceGroups r4muBin0,r4eBin0,r2e2muBin0','')
@@ -714,17 +724,16 @@ def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, y
     # run combine with no systematics for stat only uncertainty
     if (opt.SYS):
         ## Test VM:        cmd = cmd + ' --freezeNuisanceGroups CMS_fakeH_p1_1_8,CMS_fakeH_p1_2_8,CMS_fakeH_p1_3_8,CMS_fakeH_p3_1_8,CMS_fakeH_p3_2_8,CMS_fakeH_p3_3_8 --freezeParameters allConstrainedNuisances'
-        # cmd = cmd + ' --freezeParameters allConstrainedNuisances'
-        # output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
+        cmd = cmd + ' --freezeParameters allConstrainedNuisances'
 
-        cmd = cmd + ' --freezeParameters '
-        cmd = cmd + 'CMS_fakeH_p1_1'+year+',CMS_fakeH_p1_2'+year+',CMS_fakeH_p1_3'+year+',CMS_fakeH_p3_1'+year+',CMS_fakeH_p3_2'+year+',CMS_fakeH_p3_3'+year+','
-        cmd += 'CMS_eff_e,CMS_eff_m,CMS_hzz2e2mu_Zjets_'+str(year)+',CMS_hzz4e_Zjets_'+str(year)+',CMS_hzz4mu_Zjets_'+str(year)+',QCDscale_VV,QCDscale_ggVV,kfactor_ggzz,lumi_13TeV_'+str(year)+'_uncorrelated,norm_fakeH,pdf_gg,pdf_qqbar,CMS_zz4l_sigma_e_sig_'+str(year)+',CMS_zz4l_sigma_m_sig_'+str(year)+',CMS_zz4l_n_sig_1_'+str(year)+',CMS_zz4l_n_sig_2_'+str(year)+',CMS_zz4l_n_sig_3_'+str(year)+',CMS_zz4l_mean_e_sig_'+str(year)+',CMS_zz4l_mean_m_sig_'+str(year)+',CMS_zz4l_sigma_e_sig_'+str(year)+','
-        if (obs_ifJES):
-            jes_sources_year_updated = [x.replace('year', year) for x in jes_sources]
-            for jes_source in jes_sources:
-                cmd += ",CMS_scale_j_"+ jes_sources_year_updated[jes_sources.index(jes_source)]
-	        cmd = cmd + 'lumi_13TeV_correlated_16_17_18,lumi_13TeV_correlated_17_18'
+        # cmd = cmd + ' --freezeParameters '
+        # cmd = cmd + 'CMS_fakeH_p1_1'+year+',CMS_fakeH_p1_2'+year+',CMS_fakeH_p1_3'+year+',CMS_fakeH_p3_1'+year+',CMS_fakeH_p3_2'+year+',CMS_fakeH_p3_3'+year+','
+        # cmd += 'CMS_eff_e,CMS_eff_m,CMS_hzz2e2mu_Zjets_'+str(year)+',CMS_hzz4e_Zjets_'+str(year)+',CMS_hzz4mu_Zjets_'+str(year)+',QCDscale_VV,QCDscale_ggVV,kfactor_ggzz,lumi_13TeV_'+str(year)+'_uncorrelated,norm_fakeH,pdf_gg,pdf_qqbar,CMS_zz4l_sigma_e_sig_'+str(year)+',CMS_zz4l_sigma_m_sig_'+str(year)+',CMS_zz4l_n_sig_1_'+str(year)+',CMS_zz4l_n_sig_2_'+str(year)+',CMS_zz4l_n_sig_3_'+str(year)+',CMS_zz4l_mean_e_sig_'+str(year)+',CMS_zz4l_mean_m_sig_'+str(year)+',CMS_zz4l_sigma_e_sig_'+str(year)+','
+        # if (obs_ifJES):
+        #     jes_sources_year_updated = [x.replace('year', year) for x in jes_sources]
+        #     for jes_source in jes_sources:
+        #         cmd += ",CMS_scale_j_"+ jes_sources_year_updated[jes_sources.index(jes_source)]
+	    #     cmd = cmd + 'lumi_13TeV_correlated_16_17_18,lumi_13TeV_correlated_17_18'
 
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
@@ -1142,7 +1151,7 @@ def runFiducialXS():
     # INFO: Call read bins to parse the input bins information
     observableBins = read_bins(opt.OBSBINS)
     logger.info("Parsed bins: {}".format(observableBins))
-    logger.info("Bin size = "+str(len(observableBins)))
+    logger.debug("Bin size = "+str(len(observableBins)))
     nBins = len(observableBins) -1
     if len(ListObsName) == 2:    # INFO: for 2D this list size == 2
         nBins = len(observableBins)
@@ -1154,7 +1163,7 @@ def runFiducialXS():
     with open(opt.inYAMLFile, 'r') as ymlfile:
         cfg = yaml.load(ymlfile)
         if ( ("Observables" not in cfg) or (ObsToStudy not in cfg['Observables']) ) :
-            print('''No section named 'observable' or sub-section name '1D-Observable' or '2D-Observable' found in file {}.
+            logger.error('''No section named 'observable' or sub-section name '1D-Observable' or '2D-Observable' found in file {}.
                      Please check your YAML file format!!!'''.format(opt.inYAMLFile))
 
         ifJES = cfg['Observables'][ObsToStudy][opt.OBSNAME]['ifJES']
@@ -1163,15 +1172,11 @@ def runFiducialXS():
         obs_ifJES = eval(ifJES.split(" vs ")[0])
         obs_ifJES2 = eval(ifJES.split(" vs ")[1])
 
-        print "obs_ifJES: ", obs_ifJES, "obs2_ifJES2: ", obs_ifJES2
-
     else:
         obs_ifJES = eval(str(ifJES))
         obs_ifJES2 = ''
 
-        print "obs_ifJES: ", obs_ifJES
-
-    logger.info("obs_ifJES: {}, obs2_ifJES2: {}".format(obs_ifJES, obs_ifJES2))
+    logger.debug("obs_ifJES: {}, obs2_ifJES2: {}".format(obs_ifJES, obs_ifJES2))
 
     ## Prepare templates for all reco bins and final states
     logger.debug("Options:\n\trunAllSteps: {}\n\topt.templatesOnly {}\n\topt.resultsOnly\n".format(runAllSteps, opt.templatesOnly, opt.resultsOnly))
@@ -1184,6 +1189,11 @@ def runFiducialXS():
     if (obsName == "mass4l"): physicalModels = ["v2","v3"]
     else: physicalModels = ["v3"]
 
+    # FIXME: Understand why in step 4; runAllSteps is False, while in step 5 its True
+    logger.error((runAllSteps or opt.templatesOnly) and year.isdigit())
+    if ((runAllSteps or opt.templatesOnly) and year.isdigit()): # Don't run this for all year. "year.isdigit()" is added to skip when "allYear" option is provided
+        extractBackgroundTemplatesAndFractions(obsName, observableBins, year, obs_ifJES, obs_ifJES2)
+
     logger.debug("resultsXS: {}".format(resultsXS))
     if year == "allYear":
         logger.info("Option opt: Combination of all years.")
@@ -1195,10 +1205,6 @@ def runFiducialXS():
             if (opt.UNBLIND): cmd = cmd + ' --unblind'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
             logger.debug(output)
-
-    # FIXME: Understand why in step 4; runAllSteps is False, while in step 5 its True
-    if ((runAllSteps or opt.templatesOnly) and year.isdigit()): # Don't run this for all year. "year.isdigit()" is added to skip when "allYear" option is provided
-        extractBackgroundTemplatesAndFractions(obsName, observableBins, year, obs_ifJES, obs_ifJES2)
 
     ## Create the asimov dataset
     if (runAllSteps and year != "allYear"):
@@ -1381,19 +1387,19 @@ def runFiducialXS():
 
                 # cmd = "combine -n "+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+"_NoSys"+'_'+str(year)+" -M MultiDimFit -d "+combineOutputs.format(year = year)+"/SM_125_all_13TeV_xs_"+obsName.replace(' ','_')+"_bin_"+physicalModel+"_result.root -w w --snapshotName \"MultiDimFit\" -m 125.38 -D toy_asimov --setParameters MH=125.38 -P SigmaBin"+str(obsBin)+" --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:SigmaBin"+str(obsBin)+"=0.0,3.0 --redefineSignalPOI SigmaBin"+str(obsBin)+" --algo=grid --points=50 --autoRange 4 --freezeParameters allConstrainedNuisances "
                 cmd = "combine -n "+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+"_NoSys"+'_'+str(year)+" -M MultiDimFit -d "+combineOutputs.format(year = year)+"/SM_125_all_13TeV_xs_"+obsName.replace(' ','_')+"_bin_"+physicalModel+"_result.root -w w --snapshotName \"MultiDimFit\" -m 125.38 -D toy_asimov --setParameters MH=125.38 -P SigmaBin"+str(obsBin)+" --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:SigmaBin"+str(obsBin)+"=0.0,3.0 --redefineSignalPOI SigmaBin"+str(obsBin)+" --algo=grid --points=50 --autoRange 4 "
-                # cmd += " --freezeParameters allConstrainedNuisances "
-                cmd = cmd + ' --freezeParameters '
-                loopYear = []
-                if year == "allYear": loopYear = ['2016', '2017','2018']
-                else: loopYear = [str(year)]
-                for year_ in loopYear:
-                    cmd = cmd + 'CMS_fakeH_p1_1'+year_+',CMS_fakeH_p1_2'+year_+',CMS_fakeH_p1_3'+year_+',CMS_fakeH_p3_1'+year_+',CMS_fakeH_p3_2'+year_+',CMS_fakeH_p3_3'+year_+','
-                    cmd += 'CMS_eff_e,CMS_eff_m,CMS_hzz2e2mu_Zjets_'+str(year_)+',CMS_hzz4e_Zjets_'+str(year_)+',CMS_hzz4mu_Zjets_'+str(year_)+',QCDscale_VV,QCDscale_ggVV,kfactor_ggzz,lumi_13TeV_'+str(year_)+'_uncorrelated,norm_fakeH,pdf_gg,pdf_qqbar,CMS_zz4l_sigma_e_sig_'+str(year_)+',CMS_zz4l_sigma_m_sig_'+str(year_)+',CMS_zz4l_n_sig_1_'+str(year_)+',CMS_zz4l_n_sig_2_'+str(year_)+',CMS_zz4l_n_sig_3_'+str(year_)+',CMS_zz4l_mean_e_sig_'+str(year_)+',CMS_zz4l_mean_m_sig_'+str(year_)+',CMS_zz4l_sigma_e_sig_'+str(year_)+','
-                    if (obs_ifJES):
-                        jes_sources_year_updated = [x.replace('year', year_) for x in jes_sources]
-                        for jes_source in jes_sources:
-                            cmd += "CMS_scale_j_"+ jes_sources_year_updated[jes_sources.index(jes_source)]+','
-                cmd = cmd + 'lumi_13TeV_correlated_16_17_18,lumi_13TeV_correlated_17_18'
+                cmd += " --freezeParameters allConstrainedNuisances "
+                # cmd = cmd + ' --freezeParameters '
+                # loopYear = []
+                # if year == "allYear": loopYear = ['2016', '2017','2018']
+                # else: loopYear = [str(year)]
+                # for year_ in loopYear:
+                #     cmd = cmd + 'CMS_fakeH_p1_1'+year_+',CMS_fakeH_p1_2'+year_+',CMS_fakeH_p1_3'+year_+',CMS_fakeH_p3_1'+year_+',CMS_fakeH_p3_2'+year_+',CMS_fakeH_p3_3'+year_+','
+                #     cmd += 'CMS_eff_e,CMS_eff_m,CMS_hzz2e2mu_Zjets_'+str(year_)+',CMS_hzz4e_Zjets_'+str(year_)+',CMS_hzz4mu_Zjets_'+str(year_)+',QCDscale_VV,QCDscale_ggVV,kfactor_ggzz,lumi_13TeV_'+str(year_)+'_uncorrelated,norm_fakeH,pdf_gg,pdf_qqbar,CMS_zz4l_sigma_e_sig_'+str(year_)+',CMS_zz4l_sigma_m_sig_'+str(year_)+',CMS_zz4l_n_sig_1_'+str(year_)+',CMS_zz4l_n_sig_2_'+str(year_)+',CMS_zz4l_n_sig_3_'+str(year_)+',CMS_zz4l_mean_e_sig_'+str(year_)+',CMS_zz4l_mean_m_sig_'+str(year_)+',CMS_zz4l_sigma_e_sig_'+str(year_)+','
+                #     if (obs_ifJES):
+                #         jes_sources_year_updated = [x.replace('year', year_) for x in jes_sources]
+                #         for jes_source in jes_sources:
+                #             cmd += "CMS_scale_j_"+ jes_sources_year_updated[jes_sources.index(jes_source)]+','
+                # cmd = cmd + 'lumi_13TeV_correlated_16_17_18,lumi_13TeV_correlated_17_18'
 
                 output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
                 processCmd("mv higgsCombine"+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+"_NoSys"+'_'+str(year)+".MultiDimFit.mH125.38.root "+ combineOutputs.format(year = year) + '/', get_linenumber(), os.path.basename(__file__))

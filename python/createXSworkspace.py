@@ -122,7 +122,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
     # recobin = "recobin"+str(obsBin)
 
-    doJES = 1
+    doJES = 0
 
     # Load some libraries
     gSystem.AddIncludePath("-I$CMSSW_BASE/src/")
