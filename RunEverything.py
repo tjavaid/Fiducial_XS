@@ -166,8 +166,8 @@ with open(InputYAMLFile, 'r') as ymlfile:
 
                 command = ''
                 if args.nohup: command = 'nohup '
-                command += 'python -u runHZZFiducialXS.py --obsName="{obsName}" --obsBins="{obsBins}"  --calcSys --asimovMass {HiggsMass} --modelNames {modelNames} --year="{year}"'.format(
-                        obsName = obsName, obsBins = obsBin['bins'], HiggsMass = args.HiggsMass, modelNames= args.modelNames, year = args.year
+                command += 'python -u runHZZFiducialXS.py --dir="{NtupleDir}"  --obsName="{obsName}" --obsBins="{obsBins}"  --calcSys --asimovMass {HiggsMass} --modelNames {modelNames} --year="{year}"'.format(
+                        NtupleDir = dirMC[args.year], obsName = obsName, obsBins = obsBin['bins'], HiggsMass = args.HiggsMass, modelNames= args.modelNames, year = args.year
                 )
                 if args.nohup: command += ' >& log_{year}/step_7_{obsName}.log &'.format(obsName = obsName, year = args.year)
                 logger.info("Command: {}".format(command))
