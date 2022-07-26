@@ -10,21 +10,21 @@ Processes:
     Rate: '1.0'
   3:
     Name: bkg_qqzz
-    Rate: '57.733528598806714'
+    Rate: '58.57501950241214'
   4:
     Name: bkg_ggzz
-    Rate: '5.73092810718811'
+    Rate: '5.814458838609841'
   5:
     Name: bkg_zjets
-    Rate: '20.3338168859482'
+    Rate: '20.092799931764603'
 
 Nuissances:
-  100n:
-    Name: norm_fakeH
-    Applied_To:
-      - fakeH
-    Type: lnU
-    Value: '10.0'
+#  100n:
+#    Name: norm_fakeH
+#    Applied_To:
+#      - fakeH
+#    Type: lnU
+#    Value: '10.0'
   101n:
     Name: lumi_13TeV_2018_uncorrelated
     Applied_To:
@@ -56,13 +56,13 @@ Nuissances:
     Type: lnN
     Value: '0.69554/1.30465'
   106n:
-    Name: CMS_zz4l_mean_m_sig_2018
+    Name: CMS_zz4l_mean_m_sig
     Applied_To:
       - All
     Type: param
     Value: '0.0 1.0'
   107n:
-    Name: CMS_zz4l_sigma_m_sig_2018
+    Name: CMS_zz4l_sigma_m_sig
     Applied_To:
       - All
     Type: param
