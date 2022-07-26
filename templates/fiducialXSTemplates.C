@@ -221,7 +221,7 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
     float pt_leadingjet_pt30_eta2p5, pt_leadingjet_pt30_eta2p5_jesdn, pt_leadingjet_pt30_eta2p5_jesup;
 
     // additional weights
-    float prefiringWeight, pileupWeight, Lumi_Weight; 
+    float prefiringWeight, pileupWeight, Lumi_Weight;
     bool need_Lumi_Weight=false;
 
     // new obs.
@@ -888,6 +888,13 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
     }
     sigTree->Add(processFileName);
 
+    std::cout << "Entries: " << sigTree->GetEntries() << std::endl;
+
+    if (sigTree->GetEntries() <= 1){
+        cout << "Input file#929: " << processFileName << " is empty. nentries <=0" << endl;
+        exit(0);
+    }
+
     // tree for a set of variables, for selected events
     TString fOption = "RECREATE";
     TString templateNameTag = getTemplateNameTag(processNameTag);
@@ -897,11 +904,28 @@ int getTemplateXS(TString processNameTag, TString processFileName, TString sqrts
     }
     std::cout << "[DEBUG: fiducialXSTemplates.C#441]  fLocation: " << fLocation << std::endl;
     TFile *fTemplateTree = new TFile(fLocation + "/" + templateNameTag + "_" + sfinalState + ".root", fOption);
+    if (fTemplateTree->IsZombie())
+    {
+        std::cout << "No input file found (templateNameTag): " << fLocation + "/" + templateNameTag + "_" + sfinalState + ".root" << std::endl;
+        exit(0);
+    }
+    else{
+        std::cout << "Input file found (templateNameTag): " << fLocation + "/" + templateNameTag + "_" + sfinalState + ".root" << std::endl;
+    }
     TTree* TT = new TTree("selectedEvents","selectedEvents");
 
     //nEvents
     if ((processNameTag != "Data")&&(processNameTag != "ZJetsCR")) {
+        std::cout << "Input file found (processFileName): " << processFileName << std::endl;
         TFile *f = TFile::Open(processFileName);
+        if (f->IsZombie())
+        {
+            std::cout << "No input file found: " << processFileName << std::endl;
+            exit(0);
+        }
+        else{
+            std::cout << "Input file found: " << processFileName << std::endl;
+        }
         TH1D* hNEvents = (TH1D*) f->Get("Ana/nEvents");
         nEvents = hNEvents->GetBinContent(1);
     }
@@ -1042,7 +1066,6 @@ void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TStri
     TString treeWeightedCut; treeWeightedCut = sWeight + treeCut;
     TT->Draw(treeReq.Data(), treeWeightedCut.Data(), "goff");
 
-    // std::cout << "==>#582 fLocation: " << fLocation << std::endl;
     TString templateLocation = fLocation + "/" + templateNameTag + "_" + sfinalState + "_" + obsTag + ".root";
     TFile* fTemplate = new TFile(templateLocation, fOption);
     fTemplate->cd();

@@ -133,7 +133,7 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
 
     fStates = ['4mu','4e','2e2mu']
     for fState in fStates:
-        logger.error("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_trueH"+fState+"Bin0")
+        logger.debug("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_trueH"+fState+"Bin0")
         trueH_asimov[fState] = w_asimov.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_trueH"+fState+"Bin0")
         zjets_asimov[fState] = w_asimov.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_bkg_zjets")
         ggzz_asimov[fState] = w_asimov.function("n_exp_final_bin"+obsName.replace(' ','_')+"_"+fState+"S_"+year+"_proc_bkg_ggzz")

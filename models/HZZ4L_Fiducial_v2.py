@@ -216,7 +216,7 @@ class DifferentialFiducialV2( PhysicsModel ):
 
              if not self.DC.isSignal[process]: return 1
 
-             print "getYieldScale",process
+             #print "getYieldScale",process
              name = "fiducial_%s" % process
              
              self.modelBuilder.factory_('expr::%s("@0", r_%s)' % (name, process))
@@ -225,7 +225,7 @@ class DifferentialFiducialV2( PhysicsModel ):
 	     #if process in [ "trueH2e2muBin0","trueH4eBin0","trueH4muBin0","trueH2e2muBin1","trueH4eBin1","trueH4muBin1","trueH2e2muBin2","trueH4eBin2","trueH4muBin2","trueH2e2muBin3","trueH4eBin3","trueH4muBin3","trueH2e2muBin4","trueH4eBin4","trueH4muBin4","trueH2e2muBin5","trueH4eBin5","trueH4muBin5","trueH2e2muBin6","trueH4eBin6","trueH4muBin6"]:
 	     #if process in [ "trueH2e2muBin0","trueH4eBin0","trueH4muBin0","trueH2e2muBin1","trueH4eBin1","trueH4muBin1","trueH2e2muBin2","trueH4eBin2","trueH4muBin2","trueH2e2muBin3","trueH4eBin3","trueH4muBin3","trueH2e2muBin4","trueH4eBin4","trueH4muBin4","trueH2e2muBin5","trueH4eBin5","trueH4muBin5","trueH2e2muBin6","trueH4eBin6","trueH4muBin6","trueH2e2muBin7","trueH4eBin7","trueH4muBin7"]:
 	     if process in [ "trueH2e2muBin0","trueH4eBin0","trueH4muBin0","trueH2e2muBin1","trueH4eBin1","trueH4muBin1","trueH2e2muBin2","trueH4eBin2","trueH4muBin2","trueH2e2muBin3","trueH4eBin3","trueH4muBin3","trueH2e2muBin4","trueH4eBin4","trueH4muBin4","trueH2e2muBin5","trueH4eBin5","trueH4muBin5","trueH2e2muBin6","trueH4eBin6","trueH4muBin6","trueH2e2muBin7","trueH4eBin7","trueH4muBin7","trueH2e2muBin8","trueH4eBin8","trueH4muBin8","trueH2e2muBin9","trueH4eBin9","trueH4muBin9"]:
-                print "getYieldScale scaling",process,name
+                #print "getYieldScale scaling",process,name
                 return name
                 
              else : return 1

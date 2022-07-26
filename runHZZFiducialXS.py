@@ -214,6 +214,12 @@ def extractBackgroundTemplatesAndFractions(obsName, observableBins, year, obs_if
             print('[INFO] tmp_fracs: {}'.format(tmp_fracs))
             logger.debug('Length of observables bins: {}'.format(observableBins))
             logger.debug('Length of observables bins: {}'.format(len(observableBins)))
+            # for lines_ in tmp_fracs:
+            if (" does not exists" in tmp_fracs[0]):
+                """INFO: Sometime template maker
+                """
+                logger.error("Seems like template maker did not finish as expected. Please check!!!")
+                sys.exit(0)
             for obsBin in range(0,len(observableBins)-1):
                 fractionBkg[sample_tag+'_'+bkg_samples_fStates[sample_tag]+'_'+obsName+'_recobin'+str(obsBin)] = 0
                 lambdajesupBkg[sample_tag+'_'+bkg_samples_fStates[sample_tag]+'_'+obsName+'_recobin'+str(obsBin)] = 0
@@ -848,7 +854,7 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
 
     # pathOfCard = combineOutputs.format(year = year)
     pathOfCard = "."
-    logger.error("obsName: "+obsName)
+    logger.info("obsName: "+obsName)
     # combine 3 final state cards
     if year != "allYear": cmd = 'combineCards.py ' + obsName + '_4muS_'+year + '='+pathOfCard+'/hzz4l_4muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt '+ obsName + '_4eS_'+year +'='+pathOfCard+'/hzz4l_4eS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt ' + obsName + '_2e2muS_'+year + '='+pathOfCard+'/hzz4l_2e2muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt > '+pathOfCard+'/hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
     if year != "allYear": processCmd(cmd, get_linenumber(), os.path.basename(__file__), 1)
@@ -1190,7 +1196,7 @@ def runFiducialXS():
     else: physicalModels = ["v3"]
 
     # FIXME: Understand why in step 4; runAllSteps is False, while in step 5 its True
-    logger.error((runAllSteps or opt.templatesOnly) and year.isdigit())
+    logger.debug("(runAllSteps or opt.templatesOnly) and year.isdigit() = {}".format((runAllSteps or opt.templatesOnly) and year.isdigit()))
     if ((runAllSteps or opt.templatesOnly) and year.isdigit()): # Don't run this for all year. "year.isdigit()" is added to skip when "allYear" option is provided
         extractBackgroundTemplatesAndFractions(obsName, observableBins, year, obs_ifJES, obs_ifJES2)
 

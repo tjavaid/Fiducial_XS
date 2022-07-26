@@ -467,7 +467,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     # nuisance describes the jet energy scale uncertainty
     #JES = RooRealVar("JES_"+year,"JES_"+year, 0, -5.0, 5.0)
     JES = RooRealVar("JES","JES", 0, -5.0, 5.0)
-    logger.error("obs_ifJES = {}".format(obs_ifJES))
+    logger.debug("obs_ifJES = {}".format(obs_ifJES))
     if (obs_ifJES):
         lambda_JES_sig = lambdajesup[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin]
         lambda_JES_sig_var = RooRealVar("lambda_sig_"+modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin+"_"+year, "lambda_sig_"+modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin+"_"+year, lambda_JES_sig)
@@ -480,7 +480,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         else: fideff[genbin] = eff[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(genbin)+"_"+recobin]
         fideff_var[genbin] = RooRealVar("effBin"+str(genbin)+"_"+recobin+"_"+channel+"_"+year,"effBin"+str(genbin)+"_"+recobin+"_"+channel+"_"+year, fideff[genbin]);
 
-        logger.error("obs_ifJES: {},  doJES: {}, condition: {}".format(obs_ifJES, doJES, (not (obs_ifJES) or (not doJES))))
+        logger.debug("obs_ifJES: {},  doJES: {}, condition: {}".format(obs_ifJES, doJES, (not (obs_ifJES) or (not doJES))))
         logger.info("fideff[genbin]: {}".format(fideff[genbin]))
         logger.info("model name is   {}".format(modelName))
 
@@ -526,7 +526,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             SigmaHBin['4mu'+str(genbin)] = RooFormulaVar("Sigma4muBin"+str(genbin),"(@0*(1.0-@1*@2)*@3*@4/(1.0-@1))", RooArgList(SigmaBin[str(genbin)], fracSM4eBin[str(genbin)], K1Bin[str(genbin)], K2Bin[str(genbin)], fracSM4muBin[str(genbin)]))
             SigmaHBin['2e2mu'+str(genbin)] = RooFormulaVar("Sigma2e2muBin"+str(genbin),"(@0*(1.0-@1*@2)*(1.0-@3*@4/(1.0-@1)))", RooArgList(SigmaBin[str(genbin)], fracSM4eBin[str(genbin)], K1Bin[str(genbin)], K2Bin[str(genbin)], fracSM4muBin[str(genbin)]))
 
-            logger.error("obs_ifJES: {},  doJES: {}, condition: {}".format(obs_ifJES, doJES, (not (obs_ifJES) or (not doJES))))
+            logger.debug("obs_ifJES: {},  doJES: {}, condition: {}".format(obs_ifJES, doJES, (not (obs_ifJES) or (not doJES))))
             if (obs_ifJES):
                 trueH_norm_final[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+recobin+"_final","@0*@1*@2*(1-@3)" ,RooArgList(SigmaHBin[channel+str(genbin)],fideff_var[genbin],lumi,JES_sig_rfv))
             else:

@@ -2,6 +2,7 @@ import os
 import argparse
 import yaml
 import datetime
+import sys
 
 # INFO: Following items are imported from either python directory or Inputs
 # FIXME: Seems like try-except not implemented correctly
@@ -41,7 +42,7 @@ parser.add_argument( '-test', dest='TestVar', default="", type=str, help="Name o
 parser.add_argument('-n', dest="nohup", action='store_true', help='if want to run using nohup')
 parser.add_argument(
      "--log-level",
-     default=logging.DEBUG,
+     default=logging.ERROR,
      type=lambda x: getattr(logging, x),
      help="Configure the logging level."
      )
@@ -49,6 +50,15 @@ args = parser.parse_args()
 
 # Setup logger level
 logger.setLevel(args.log_level)
+
+if args.log_level == 30: # ('==> logging.WARNING: ', 30) # WARNING: 0
+    logLevel = 0
+elif args.log_level == 20: # ('==> logging.INFO: ', 20) # INFO: 1
+    logLevel = 1
+elif args.log_level == 10: # ('==> logging.DEBUG: ', 10) # DEBUG: 2
+    logLevel = 2
+elif args.log_level == 40:  # ('==> logging.ERROR: ', 40) # ERROR: 3
+    logLevel = 3
 
 # create a directory named "log" to save nohup outputs.
 GetDirectory("log")
@@ -148,8 +158,8 @@ with open(InputYAMLFile, 'r') as ymlfile:
                 # FIXME: Check if we need modelNames in step-4 or not
                 command = ''
                 if args.nohup: command = 'nohup '
-                command += 'python -u runHZZFiducialXS.py --dir="{NtupleDir}" --obsName="{obsName}" --obsBins="{obsBins}" --modelNames {modelNames} --year="{year}" --redoTemplates --templatesOnly '.format(
-                        obsName = obsName, obsBins = obsBin['bins'], NtupleDir = dirMC[args.year], modelNames= args.modelNames, year = args.year
+                command += 'python -u runHZZFiducialXS.py --dir="{NtupleDir}" --obsName="{obsName}" --obsBins="{obsBins}" --modelNames {modelNames} --year="{year}" --redoTemplates --templatesOnly  --logLevel {logLevel}'.format(
+                        obsName = obsName, obsBins = obsBin['bins'], NtupleDir = dirMC[args.year], modelNames= args.modelNames, year = args.year, logLevel=logLevel
                 )
                 if args.nohup: command += ' >& log_{year}/step_6_{obsName}.log &'.format(obsName = obsName, year = args.year)
                 logger.info("Command: {}".format(command))
@@ -166,8 +176,8 @@ with open(InputYAMLFile, 'r') as ymlfile:
 
                 command = ''
                 if args.nohup: command = 'nohup '
-                command += 'python -u runHZZFiducialXS.py --dir="{NtupleDir}"  --obsName="{obsName}" --obsBins="{obsBins}"  --calcSys --asimovMass {HiggsMass} --modelNames {modelNames} --year="{year}"'.format(
-                        NtupleDir = dirMC[args.year], obsName = obsName, obsBins = obsBin['bins'], HiggsMass = args.HiggsMass, modelNames= args.modelNames, year = args.year
+                command += 'python -u runHZZFiducialXS.py --dir="{NtupleDir}"  --obsName="{obsName}" --obsBins="{obsBins}"  --calcSys --asimovMass {HiggsMass} --modelNames {modelNames} --year="{year}"   --logLevel {logLevel}'.format(
+                        NtupleDir = dirMC[args.year], obsName = obsName, obsBins = obsBin['bins'], HiggsMass = args.HiggsMass, modelNames= args.modelNames, year = args.year, logLevel=logLevel
                 )
                 if args.nohup: command += ' >& log_{year}/step_7_{obsName}.log &'.format(obsName = obsName, year = args.year)
                 logger.info("Command: {}".format(command))
