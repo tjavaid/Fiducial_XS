@@ -17,7 +17,7 @@ def callback_rootargs(option, opt, value, parser):
 ### Define function for parsing options
 def parseOptions():
 
-    global opt, args, runAllSteps
+    global opt, args
 
     usage = ('usage: %prog [options]\n'
              + '%prog -h for help')
@@ -28,6 +28,7 @@ def parseOptions():
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
     parser.add_option('',   '--lumiscale', type='string', dest='LUMISCALE', default='1.0', help='Scale yields')
     parser.add_option('-y', '--year', dest="ERA", type = 'string', default = '2018', help='Specifies the data taking period')
+    parser.add_option('',   '--unblind', action='store_true', dest='UNBLIND', default=False, help='Use real data')
     parser.add_option("-l",action="callback",callback=callback_rootargs)
     parser.add_option("-q",action="callback",callback=callback_rootargs)
     parser.add_option("-b",action="callback",callback=callback_rootargs)
@@ -40,7 +41,7 @@ def parseOptions():
     combineOutputs = combineOutputs.format(year = opt.ERA)
 
 # parse the arguments and options
-global opt, args, runAllSteps
+global opt, args
 parseOptions()
 sys.argv = grootargs
 
@@ -256,8 +257,10 @@ for obsName in observables:
         latex2.DrawLatex(0.30, 0.95, "Preliminary")
         latex2.SetTextFont(42)
         latex2.SetTextSize(0.45*c.GetTopMargin())
-        latex2.DrawLatex(0.37,0.78, "#sigma_{fid.} = "+str(round(bestfit,3))+" ^{+"+str(cl68upstat)+"}_{-"+str(cl68dnstat)+"} (stat.) ^{+"+str(sysup)+"}_{-"+str(sysdn)+"} (sys.)")
-
+        if( not opt.UNBLIND):
+            latex2.DrawLatex(0.37,0.78, "Expected: #sigma_{fid.} = "+str(round(bestfit,3))+" ^{+"+str(cl68upstat)+"}_{-"+str(cl68dnstat)+"} (stat.) ^{+"+str(sysup)+"}_{-"+str(sysdn)+"} (sys.)")
+        else:
+            latex2.DrawLatex(0.37,0.78, "Observed: #sigma_{fid.} = "+str(round(bestfit,3))+" ^{+"+str(cl68upstat)+"}_{-"+str(cl68dnstat)+"} (stat.) ^{+"+str(sysup)+"}_{-"+str(sysdn)+"} (sys.)")
 
         if (obsName=="mass4l"):
             if (obsbin=="SigmaBin0"):
@@ -274,8 +277,12 @@ for obsName in observables:
         OutputPath = LHScanPlots.format(year = opt.ERA, obsName = obsName.replace(' ','_'))
         GetDirectory(OutputPath)
 
-        c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+".pdf")
-        c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+".png")
+        if( not opt.UNBLIND):
+            c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+".pdf")
+            c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+".png")
+        else:
+            c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+"_Unblind.pdf")
+            c.SaveAs(OutputPath+"/lhscan_"+obsName.replace(' ','_')+"_"+obsbin+"_Unblind.png")
 
         # FIXME: currently its sending the modules to the python directory.
         #        we should fix this. Instead of sending this to python send

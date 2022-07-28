@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from Input_Info import datacardInputs
 from Utils import *
 
+
 def parseOptions():
 
     global opt, args, runAllSteps
@@ -177,7 +178,7 @@ if __name__ == "__main__":
     global opt, args
     parseOptions()
     year=opt.YEAR
-    datacardInputs='./'+str(year)+'/datacardInputs/'
+    datacardInputs = './'+datacardInputs.format(year = year)
 
     observableBins = {0:(opt.OBSBINS.split("|")[1:(len(opt.OBSBINS.split("|"))-1)]),1:['0','inf']}[opt.OBSBINS=='inclusive']
     nbins = len(observableBins)

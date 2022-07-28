@@ -18,7 +18,8 @@ Lumi_Run2 = 137.1
 
 ################################
 # Name of output directories
-datacardInputs = "{year}/datacardInputs"
+# datacardInputs = "{year}/datacardInputs"
+datacardInputs = "datacardInputs/{year}"
 
 combineOutputs = "xs_125.0_{year}"
 

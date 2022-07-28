@@ -1272,7 +1272,7 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
             label = label[0]
             unit2 = unit[1]
             unit = unit[0]
-        border_msg("Label name: {}, Unit: {}".format(label, unit))
+        # border_msg("Label name: {}, Unit: {}".format(label, unit))
 
     c = TCanvas("c",obsName, 1400, 1400)
     if(opt.SETLOG): c.SetLogy()

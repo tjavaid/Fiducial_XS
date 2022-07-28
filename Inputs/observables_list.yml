@@ -73,7 +73,7 @@ Observables:
      ifJES: False
 
     massZ1:
-     bins: "|40.0|65.0|73.0|80.0|85.0|90.0|120.0|"
+     bins: "|40.0|65.0|75.0|85.0|92.0|120.0|"
      label: "m(Z_{1})"
      unit: "GeV"
      gen: "GENmassZ1"
@@ -81,7 +81,7 @@ Observables:
      ifJES: False
 
     massZ2:
-     bins: "|12.0|22.0|25.0|28.0|30.0|32.0|35.0|40.0|50.0|65.0|"
+     bins: "|12.0|20.0|25.0|28.0|32.0|40.0|50.0|65.0|"
      label: "m(Z_{2})"
      unit: "GeV"
      gen: "GENmassZ2"
@@ -104,21 +104,21 @@ Observables:
      ifAbs: False
      ifJES: True
 
-    pt_leadingjet_pt30_eta2p5:
-     bins: "|-2.0|30.0|55.0|95.0|200.0|13000.0|"
-     label: "p_{T}(jet) (p_{T}>30 GeV, |#eta|<2.5)"
-     unit: "GeV"
-     gen: "GENpt_leadingjet_pt30_eta2p5"
-     ifAbs: False
-     ifJES: True
+    #pt_leadingjet_pt30_eta2p5:
+    # bins: "|-2.0|30.0|55.0|95.0|200.0|13000.0|"
+    # label: "p_{T}(jet) (p_{T}>30 GeV, |#eta|<2.5)"
+    # unit: "GeV"
+    # gen: "GENpt_leadingjet_pt30_eta2p5"
+    # ifAbs: False
+    # ifJES: True
 
-    njets_pt30_eta2p5:
-     bins: "|0.0|1.0|2.0|3.0|4.0|10.0|"
-     label: "N(jets) ( p_{T}>30 GeV, |#eta|<2.5)"
-     unit: ""
-     gen: "GENnjets_pt30_eta2p5"
-     ifAbs: False
-     ifJES: True
+    #njets_pt30_eta2p5:
+    # bins: "|0.0|1.0|2.0|3.0|4.0|10.0|"
+    # label: "N(jets) ( p_{T}>30 GeV, |#eta|<2.5)"
+    # unit: ""
+    # gen: "GENnjets_pt30_eta2p5"
+    # ifAbs: False
+    # ifJES: True
 
     pTj2:
      bins: "|-11|30|40|65|90|inf|"
@@ -128,13 +128,13 @@ Observables:
      ifAbs: False
      ifJES: True
 
-    pTj2_2p5:
-     bins: "|-11|30|40|65|90|inf|"
-     label: "p_{T}(jet2) |#eta|<4.7"
-     unit: "GeV"
-     gen: "GENpTj2_2p5"
-     ifAbs: False
-     ifJES: True
+    #pTj2_2p5:
+    # bins: "|-11|30|40|65|90|inf|"
+    # label: "p_{T}(jet2) |#eta|<4.7"
+    # unit: "GeV"
+    # gen: "GENpTj2_2p5"
+    # ifAbs: False
+    # ifJES: True
 
     pT4lj:
      bins: "|-2|0|30|60|110|inf|"
@@ -144,13 +144,13 @@ Observables:
      ifAbs: False
      ifJES: True
 
-    pT4lj_2p5:
-     bins: "|-2|0|30|60|110|inf|"
-     label: "p_{T}(Hj) p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
-     unit: "GeV"
-     gen: "GENpT4lj_2p5"
-     ifAbs: False
-     ifJES: True
+    #pT4lj_2p5:
+    # bins: "|-2|0|30|60|110|inf|"
+    # label: "p_{T}(Hj) p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
+    # unit: "GeV"
+    # gen: "GENpT4lj_2p5"
+    # ifAbs: False
+    # ifJES: True
 
     pT4ljj:
      bins: "|-2|0|20|60|inf|"
@@ -160,13 +160,13 @@ Observables:
      ifAbs: False
      ifJES: True
 
-    pT4ljj_2p5:
-     bins: "|-2|0|20|60|inf|"
-     label: "p_{T}(Hjj) p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
-     unit: "GeV"
-     gen: "GENpT4ljj_2p5"
-     ifAbs: False
-     ifJES: True
+    #pT4ljj_2p5:
+    # bins: "|-2|0|20|60|inf|"
+    # label: "p_{T}(Hjj) p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
+    # unit: "GeV"
+    # gen: "GENpT4ljj_2p5"
+    # ifAbs: False
+    # ifJES: True
 
     mass4lj:
      bins: "|-11.0|110|180|220|300|400|600|3000|"
@@ -176,13 +176,13 @@ Observables:
      ifAbs: False
      ifJES: True
 
-    mass4lj_2p5:
-     bins: "|-2.0|110|180|220|300|400|600|3000|"
-     label: "m_{Hj} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
-     unit: "GeV"
-     gen: "GENmass4lj_2p5"
-     ifAbs: False
-     ifJES: True
+    #mass4lj_2p5:
+    # bins: "|-2.0|110|180|220|300|400|600|3000|"
+    # label: "m_{Hj} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
+    # unit: "GeV"
+    # gen: "GENmass4lj_2p5"
+    # ifAbs: False
+    # ifJES: True
 
     mj1j2:
      bins: "|-1000|0|120|300|inf|"
@@ -192,29 +192,29 @@ Observables:
      ifAbs: False
      ifJES: True
 
-    mj1j2_2p5:
-     bins: "|-11|0|120|300|inf|"
-     label: "m_{j1j2} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
-     unit: "GeV"
-     gen: "GENmj1j2_2p5"
-     ifAbs: False
-     ifJES: True
+    #mj1j2_2p5:
+    # bins: "|-11|0|120|300|inf|"
+    # label: "m_{j1j2} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
+    # unit: "GeV"
+    # gen: "GENmj1j2_2p5"
+    # ifAbs: False
+    # ifJES: True
 
     dEtaj1j2:
-     bins: "|-10000|0|0.7|1.6|3|inf|"
+     bins: "|-10000|0|1.6|3.0|inf|"
      label: "#Delta#eta_{j1j2} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
      unit: ""
      gen: "GENdEtaj1j2"
      ifAbs: False
      ifJES: True
 
-    dEtaj1j2_2p5:
-     bins: "|-10000|0|0.7|1.6|3|inf|"
-     label: "#Delta#eta_{j1j2} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
-     unit: ""
-     gen: "GENdEtaj1j2_2p5"
-     ifAbs: False
-     ifJES: True
+    #dEtaj1j2_2p5:
+    # bins: "|-10000|0|1.6|3.0|inf|"
+    # label: "#Delta#eta_{j1j2} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
+    # unit: ""
+    # gen: "GENdEtaj1j2_2p5"
+    # ifAbs: False
+    # ifJES: True
 
     #mass4ljj:
     # bins: "||"
@@ -224,21 +224,23 @@ Observables:
 
 
     dPhij1j2:
-     bins: "|-10000|-TMath::Pi()|-TMath::Pi()/2|0|TMath::Pi()/2|TMath::Pi()|"
+     # bins: "|-10000|-TMath::Pi()|-TMath::Pi()/2|0|TMath::Pi()/2|TMath::Pi()|"
+     bins: "|-10000|-3.14159265359|-1.5707963268|0|1.5707963268|3.14159265359|"
      label: "#Delta#phi_{j1j2} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
      unit: ""
      gen: "GENdPhij1j2"
      ifAbs: False
      ifJES: True
 
-    dPhij1j2_2p5:
-     bins: "|-10000|-TMath::Pi()|-TMath::Pi()/2|0|TMath::Pi()/2|TMath::Pi()|"
-     label: "#Delta#phi_{j1j2} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
-     unit: ""
-     gen: "GENdPhij1j2_2p5"
-     ifAbs: False
-     ifJES: True
- 
+    #dPhij1j2_2p5:
+    # # bins: "|-10000|-TMath::Pi()|-TMath::Pi()/2|0|TMath::Pi()/2|TMath::Pi()|"
+    # bins: "|-10000|-3.14159265359|-1.5707963268|0|1.5707963268|3.14159265359|"
+    # label: "#Delta#phi_{j1j2} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
+    # unit: ""
+    # gen: "GENdPhij1j2_2p5"
+    # ifAbs: False
+    # ifJES: True
+
     D_0m:
      bins: "|0|0.4|0.5|0.6|0.7|0.8|0.9|1.0|"
      label: "D_{0-}^{dec}"
@@ -246,15 +248,15 @@ Observables:
      gen: "GEND_0m"
      ifAbs: False
      ifJES: False
- 
+
     D_CP:
-     bins: "|-0.75|-0.25|-0.1|0|0.1|0.25|0.75|"
-     label: "D_{cp}^{dec}"
-     unit: ""
-     gen: "GEND_CP"
-     ifAbs: False
-     ifJES: False
- 
+      bins: "|-0.75|-0.25|-0.1|0|0.1|0.25|0.75|"
+      label: "D_{cp}^{dec}"
+      unit: ""
+      gen: "GEND_CP"
+      ifAbs: False
+      ifJES: False
+
     D_0hp:
      bins: "|0|0.35|0.4|0.45|0.55|0.65|0.75|1|"
      label: "D_{0+}^{dec}"
@@ -262,7 +264,7 @@ Observables:
      gen: "GEND_0hp"
      ifAbs: False
      ifJES: False
- 
+
     D_int:
      bins: "|0|0.7|0.8|0.9|0.95|1|"
      label: "D_{int}^{dec}"
@@ -270,7 +272,7 @@ Observables:
      gen: "GEND_int"
      ifAbs: False
      ifJES: False
- 
+
     D_L1:
      bins: "|0|0.45|0.5|0.6|0.7|1|"
      label: "D_{#Lambda1}^{dec}"
@@ -278,7 +280,7 @@ Observables:
      gen: "GEND_L1"
      ifAbs: False
      ifJES: False
- 
+
     D_L1Zg:
      bins: "|0|0.35|0.45|0.5|0.55|0.65|1.0|"
      label: "D_{#Lambda1}^{Z#gamma,dec}"
@@ -296,12 +298,12 @@ Observables:
      ifJES: False
 
     TauB_Inc_0j_pTWgt:
-     bins: "|-10000|30|70|130|250|400|inf|"
-     label: "TBjmax"
-     unit: "GeV"
-     gen: "GEN_TauB_Inc_0j_pTWgt"
-     ifAbs: False
-     ifJES: False
+      bins: "|-10000|30|70|130|250|400|inf|"
+      label: "TBjmax"
+      unit: "GeV"
+      gen: "GEN_TauB_Inc_0j_pTWgt"
+      ifAbs: False
+      ifJES: False
 
 
   2D_Observables:
@@ -345,6 +347,7 @@ Observables:
 
       "TauC_Inc_0j_EnergyWgt vs pT4l":
         bins: "|-10000|15| vs |0|15|30|45|70|120|inf| / |15|25| vs |0|120|inf| / |25|40| vs |0|120|inf| / |40|inf| vs |0|200|inf|"
+        bins_VM: "|-10000|15|25|40|inf| vs |0|15|30|45|70|120|inf| / |0|120|inf| / |0|120|inf| / |0|200|inf|"
         label: ["TCjmax", "p_{T}(H)"]
         unit: ["GeV", "GeV"]
         gen: "GEN_TauC_Inc_0j_EnergyWgt vs GENpT4l"

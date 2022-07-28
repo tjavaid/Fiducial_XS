@@ -1,0 +1,3 @@
+[submodule "datacardInputs"]
+	path = datacardInputs
+	url = git@github.com:ram1123/HIG_21_009_datacardInputs.git

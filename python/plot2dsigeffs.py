@@ -69,7 +69,7 @@ with open(opt.inYAMLFile, 'r') as ymlfile:
                  Please check your YAML file format!!!'''.format(InputYAMLFile))
 
     label = cfg['Observables'][ObsToStudy][obsName]['label']
-    border_msg("Label name: {}".format(label))
+    # border_msg("Label name: {}".format(label))
 
 
 obs_bins = read_bins(opt.OBSBINS)

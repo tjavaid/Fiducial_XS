@@ -100,6 +100,10 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         # obsNameOrig = obsName
         obsBin_low = observableBins[obsBin]
         obsBin_high = observableBins[obsBin+1]
+        if obsBin_high == 'inf':
+            obsBin_high_inf = 10000
+        else:
+            obsBin_high_inf = obsBin_high
 
         obs_bin_lowest = observableBins[0]
         obs_bin_highest = observableBins[len(observableBins)-1]
@@ -189,10 +193,15 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
 
     if (year=='2018'):
-        CMS_zz4l_mean_m_sig_2018 = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
-        CMS_zz4l_mean_e_sig_2018 = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
-        CMS_zz4l_sigma_m_sig_2018 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
-        CMS_zz4l_sigma_e_sig_2018 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
+        # CMS_zz4l_mean_m_sig_2018 = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
+        # CMS_zz4l_mean_e_sig_2018 = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
+        # CMS_zz4l_sigma_m_sig_2018 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
+        # CMS_zz4l_sigma_e_sig_2018 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
+
+        CMS_zz4l_mean_m_sig_2018 = RooRealVar("CMS_zz4l_mean_m_sig","CMS_zz4l_mean_m_sig",0.0)
+        CMS_zz4l_mean_e_sig_2018 = RooRealVar("CMS_zz4l_mean_e_sig","CMS_zz4l_mean_e_sig",0.0)
+        CMS_zz4l_sigma_m_sig_2018 = RooRealVar("CMS_zz4l_sigma_m_sig","CMS_zz4l_sigma_m_sig",0.0)
+        CMS_zz4l_sigma_e_sig_2018 = RooRealVar("CMS_zz4l_sigma_e_sig","CMS_zz4l_sigma_e_sig",0.0)
         CMS_zz4l_n_sig_1_2018 = RooRealVar("CMS_zz4l_n_sig_1_"+year,"CMS_zz4l_n_sig_1_"+year,0.0)
         CMS_zz4l_n_sig_2_2018 = RooRealVar("CMS_zz4l_n_sig_2_"+year,"CMS_zz4l_n_sig_2_"+year,0.0)
         CMS_zz4l_n_sig_3_2018 = RooRealVar("CMS_zz4l_n_sig_3_"+year,"CMS_zz4l_n_sig_3_"+year,0.0)
@@ -204,10 +213,15 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         CMS_zz4l_mean_e_err_3_2018 = RooRealVar("CMS_zz4l_mean_e_err_3_"+year,"CMS_zz4l_mean_e_err_3_"+year,0.003,0.003,0.003)
 
     elif (year=='2017'):
-        CMS_zz4l_mean_m_sig_2017 = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
-        CMS_zz4l_mean_e_sig_2017 = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
-        CMS_zz4l_sigma_m_sig_2017 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
-        CMS_zz4l_sigma_e_sig_2017 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
+        # CMS_zz4l_mean_m_sig_2017 = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
+        # CMS_zz4l_mean_e_sig_2017 = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
+        # CMS_zz4l_sigma_m_sig_2017 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
+        # CMS_zz4l_sigma_e_sig_2017 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
+
+        CMS_zz4l_mean_m_sig_2017 = RooRealVar("CMS_zz4l_mean_m_sig","CMS_zz4l_mean_m_sig",0.0)
+        CMS_zz4l_mean_e_sig_2017 = RooRealVar("CMS_zz4l_mean_e_sig","CMS_zz4l_mean_e_sig",0.0)
+        CMS_zz4l_sigma_m_sig_2017 = RooRealVar("CMS_zz4l_sigma_m_sig","CMS_zz4l_sigma_m_sig",0.0)
+        CMS_zz4l_sigma_e_sig_2017 = RooRealVar("CMS_zz4l_sigma_e_sig","CMS_zz4l_sigma_e_sig",0.0)
         CMS_zz4l_n_sig_1_2017 = RooRealVar("CMS_zz4l_n_sig_1_"+year,"CMS_zz4l_n_sig_1_"+year,0.0)
         CMS_zz4l_n_sig_2_2017 = RooRealVar("CMS_zz4l_n_sig_2_"+year,"CMS_zz4l_n_sig_2_"+year,0.0)
         CMS_zz4l_n_sig_3_2017 = RooRealVar("CMS_zz4l_n_sig_3_"+year,"CMS_zz4l_n_sig_3_"+year,0.0)
@@ -219,10 +233,14 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         CMS_zz4l_mean_e_err_3_2017 = RooRealVar("CMS_zz4l_mean_e_err_3_"+year,"CMS_zz4l_mean_e_err_3_"+year,0.003,0.003,0.003)
 
     else:
-        CMS_zz4l_mean_m_sig_2016 = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
-        CMS_zz4l_mean_e_sig_2016 = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
-        CMS_zz4l_sigma_m_sig_2016 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
-        CMS_zz4l_sigma_e_sig_2016 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
+        # CMS_zz4l_mean_m_sig_2016 = RooRealVar("CMS_zz4l_mean_m_sig_"+year,"CMS_zz4l_mean_m_sig_"+year,0.0)
+        # CMS_zz4l_mean_e_sig_2016 = RooRealVar("CMS_zz4l_mean_e_sig_"+year,"CMS_zz4l_mean_e_sig_"+year,0.0)
+        # CMS_zz4l_sigma_m_sig_2016 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
+        # CMS_zz4l_sigma_e_sig_2016 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
+        CMS_zz4l_mean_m_sig_2016 = RooRealVar("CMS_zz4l_mean_m_sig","CMS_zz4l_mean_m_sig",0.0)
+        CMS_zz4l_mean_e_sig_2016 = RooRealVar("CMS_zz4l_mean_e_sig","CMS_zz4l_mean_e_sig",0.0)
+        CMS_zz4l_sigma_m_sig_2016 = RooRealVar("CMS_zz4l_sigma_m_sig","CMS_zz4l_sigma_m_sig",0.0)
+        CMS_zz4l_sigma_e_sig_2016 = RooRealVar("CMS_zz4l_sigma_e_sig","CMS_zz4l_sigma_e_sig",0.0)
         CMS_zz4l_n_sig_1_2016 = RooRealVar("CMS_zz4l_n_sig_1_"+year,"CMS_zz4l_n_sig_1_"+year,0.0)
         CMS_zz4l_n_sig_2_2016 = RooRealVar("CMS_zz4l_n_sig_2_"+year,"CMS_zz4l_n_sig_2_"+year,0.0)
         CMS_zz4l_n_sig_3_2016 = RooRealVar("CMS_zz4l_n_sig_3_"+year,"CMS_zz4l_n_sig_3_"+year,0.0)
@@ -425,11 +443,11 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
 
     if (addfakeH):
-        inc_wrongfrac_ggH=inc_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_qqH=inc_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_WH=inc_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_ZH=inc_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-        inc_wrongfrac_ttH=inc_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ggH=inc_wrongfrac["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_qqH=inc_wrongfrac["VBF_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_WH=inc_wrongfrac["WH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ZH=inc_wrongfrac["ZH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+        inc_wrongfrac_ttH=inc_wrongfrac["ttH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
     else:
         inc_wrongfrac_ggH=0.0
         inc_wrongfrac_qqH=0.0
@@ -437,11 +455,11 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         inc_wrongfrac_ZH=0.0
         inc_wrongfrac_ttH=0.0
 
-    binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_qqH=binfrac_wrongfrac["VBF_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_WH=binfrac_wrongfrac["WH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_ZH=binfrac_wrongfrac["ZH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
-    binfrac_wrongfrac_ttH=binfrac_wrongfrac["ttH_powheg_JHUgen_125_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ggH=binfrac_wrongfrac["ggH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_qqH=binfrac_wrongfrac["VBF_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_WH=binfrac_wrongfrac["WH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ZH=binfrac_wrongfrac["ZH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
+    binfrac_wrongfrac_ttH=binfrac_wrongfrac["ttH_powheg_JHUgen_125.38_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+"_"+recobin]
 
     if (channel=='4e'):
         n_fakeH = (0.24*inc_wrongfrac_WH*binfrac_wrongfrac_WH+0.20*inc_wrongfrac_ZH*binfrac_wrongfrac_ZH+0.10*inc_wrongfrac_ttH*binfrac_wrongfrac_ttH)
@@ -647,10 +665,13 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
        ggzz_norm = RooFormulaVar("bkg_ggzz_norm", "@0*(1-@1)", RooArgList(frac_ggzz_var, JES_ggzz_rfv) )
        zjets_norm = RooFormulaVar("bkg_zjets_norm", "@0*(1-@1)", RooArgList(frac_zjets_var, JES_zjets_rfv) )
 
-
-    if (year == '2016'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2016/data_UL2016_all_noDuplicates_slimmed_newMuSF_add2p5_workspace.root')
-    elif (year == '2017'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2017/Slimmed_2p5/DataUL2017_all_noDuplicates_slimmed_newMuSF_add2p5_slimmed_newMuSF_add2p5_workspace.root')
-    elif (year == '2018'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2018/Slimmed_2p5/DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5_slimmed_newMuSF_add2p5_workspace.root')
+    # There is some issue with the data root file. So, temporarily we are using Tahir varsion.
+    # if (year == '2016'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2016/data_UL2016_all_noDuplicates_slimmed_newMuSF_add2p5_workspace.root')
+    # elif (year == '2017'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2017/Slimmed_2p5/DataUL2017_all_noDuplicates_slimmed_newMuSF_add2p5_slimmed_newMuSF_add2p5_workspace.root')
+    # elif (year == '2018'): data_obs_file = TFile('/eos/user/q/qguo/newNTuple_UL/2018/Slimmed_2p5/DataUL2018_all_noDuplicates_slimmed_newMuSF_add2p5_slimmed_newMuSF_add2p5_workspace.root')
+    if (year == '2016'): data_obs_file = TFile('/afs/cern.ch/user/t/tjavaid/public/data_UL2016_noDuplicates_created.root')
+    elif (year == '2017'): data_obs_file = TFile('/afs/cern.ch/user/t/tjavaid/public/data_UL2017_noDuplicates_created.root')
+    elif (year == '2018'): data_obs_file = TFile('/afs/cern.ch/user/t/tjavaid/public/data_UL2018_noDuplicates_created.root')
 
     data_obs_tree = data_obs_file.Get('passedEvents')
 
@@ -660,17 +681,17 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         if (obsName == "mass4l" ): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu),"(mass4mu>"+str(m4l_low)+" && mass4mu<"+str(m4l_high)+")")
         elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),"(mass4mu>"+str(m4l_low)+" && mass4mu<"+mass_high+" && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
         elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable,observable2),"(mass4mu>"+str(m4l_low)+" && mass4mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsNameOrig[1]+")<"+obsBin_high2+")")
-        else:                  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),                    "(mass4mu>"+str(m4l_low)+" && mass4mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
+        else:                  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4mu,observable),                    "(mass4mu>"+str(m4l_low)+" && mass4mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+str(obsBin_high_inf)+")")
     if (channel=='4e'):
         if (obsName == "mass4l"): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+")")
         elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+" && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
         elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable,observable2),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsNameOrig[1]+")<"+obsBin_high2+")")
-        else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
+        else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass4e,observable),"(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+str(obsBin_high_inf)+")")
     if (channel=='2e2mu'):
         if (obsName == "mass4l" ): data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+")")
         elif (obsName.startswith("abs")):  data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+" && "+obsName+">="+obsBin_low+" && "+obsName+"<"+obsBin_high+")")
         elif is2DObs: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable,observable2),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+" && abs("+obsNameOrig[1]+")>="+obsBin_low2+" && abs("+obsNameOrig[1]+")<"+obsBin_high2+")")
-        else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+obsBin_high+")")
+        else: data_obs = RooDataSet("data_obs","data_obs",data_obs_tree,RooArgSet(m,mass2e2mu,observable),"(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+" && abs("+obsName+")>="+obsBin_low+" && abs("+obsName+")<"+str(obsBin_high_inf)+")")
 
     wout = RooWorkspace("w","w")
 

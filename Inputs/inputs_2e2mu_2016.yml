@@ -66,7 +66,7 @@ Nuissances:
     Applied_To:
       - All
     Type: param
-    Value: '0.0 0.2 [-1,1]'
+    Value: '0.0 0.03 [-1,1]'  # Ref: slide 10: https://indico.cern.ch/event/1154424/contributions/4862783/attachments/2439275/4178136/04052022_higgsmasswidth_leptonscaleandresolution.pdf
   108n:
     Name: CMS_zz4l_n_sig_3_2016
     Applied_To:
@@ -126,4 +126,4 @@ Nuissances:
     Applied_To:
       - All
     Type: param
-    Value: '0.0 0.2 [-1,1]'
+    Value: '0.0 0.1 [-1,1]' # Ref: slide 10: https://indico.cern.ch/event/1154424/contributions/4862783/attachments/2439275/4178136/04052022_higgsmasswidth_leptonscaleandresolution.pdf

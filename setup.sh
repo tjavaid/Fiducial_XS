@@ -15,7 +15,7 @@ export PYTHONPATH=$PYTHONPATH:$(pwd)/Inputs
 # Compile the template maker
 cd $(pwd)/templates
 echo "Remove the executable main_fiducialXSTemplates if exists"
-rm main_fiducialXSTemplates
+rm -f main_fiducialXSTemplates
 echo "Compile fiducialXSTemplates"
 make
 echo "Done."

@@ -54,7 +54,7 @@ Nuissances:
     Applied_To:
       - All
     Type: param
-    Value: '0.0 0.2 [-1,1]'
+    Value: '0.0 0.03 [-1,1]'
   106n:
     Name: CMS_zz4l_n_sig_1_8
     Applied_To:

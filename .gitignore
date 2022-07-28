@@ -30,7 +30,7 @@ inputs_bkg_*.py
 resultsXS*.py
 
 # ignore directory created by script
-datacardInputs/
+#datacardInputs/
 templatesXS/
 xs_*/
 plots/

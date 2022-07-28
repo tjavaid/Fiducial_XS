@@ -433,14 +433,13 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
 
         label = cfg['Observables'][ObsToStudy][obsName]['label']
         unit = cfg['Observables'][ObsToStudy][obsName]['unit']
-        border_msg("Label name: {}, Unit: {}".format(label, unit))
+        # border_msg("Label name: {}, Unit: {}".format(label, unit))
 
     latex2 = TLatex()
     latex2.SetNDC()
     latex2.SetTextSize(0.5*c.GetTopMargin())
     latex2.SetTextFont(42)
     latex2.SetTextAlign(31) # align right
-    print opt.LUMISCALE
     if (not opt.LUMISCALE=="1.0"):
         if (opt.ERA=='2016') : lumi = round(35.9*float(opt.LUMISCALE),1)
         elif (opt.ERA=='2017') : lumi = round(41.7*float(opt.LUMISCALE),1)

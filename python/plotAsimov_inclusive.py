@@ -103,7 +103,6 @@ def plotAsimov(asimovDataModel, asimovPhysicalModel, modelName, physicalModel, o
     f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
     if (not opt.UNBLIND):
         data = f_asimov.Get("toys/toy_asimov");
-    #data.Print("v");
     w_asimov = f_asimov.Get("w")
     if (opt.UNBLIND):
         data = w.data("data_obs")
