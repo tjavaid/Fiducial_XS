@@ -52,6 +52,7 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(ColorLogFormatter())
 logger.addHandler(stream_handler)
 logger.setLevel( logging.DEBUG)
+#logger.setLevel( logging.ERROR)
 
 # log_level_map = {
 #     "0": logging.WARNING,

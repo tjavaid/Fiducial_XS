@@ -373,16 +373,11 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     GetDirectory(OutputPath)
     # c.SaveAs("test.pdf")
     if (not opt.UNBLIND):
-        print("test")
-        c.SaveAs("test.png")
+        c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".pdf")
+        c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".png")
     else:
-        print("test2")
-        c.SaveAs("test2.png")
-        # c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".pdf")
-    #     c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".png")
-    # else:
-    #     c.SaveAs(OutputPath+"/data_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".pdf")
-    #     c.SaveAs(OutputPath+"/data_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".png")
+        c.SaveAs(OutputPath+"/data_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".pdf")
+        c.SaveAs(OutputPath+"/data_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".png")
 
 
 # fStates = ["4e","4mu","2e2mu","4l"]

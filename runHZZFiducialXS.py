@@ -391,15 +391,13 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
                     for keys, values in d.items():
                         if (keys == obsName.replace(' ','_') + '_' + str(obsBin)):
                             for value in values:
-                                # INFO: or FIXME: Here, I added 5 - manually in the cards for background process
-                                # command_append = "echo '"+str(value)+" - - - - -' >> " +combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
                                 command_append = "echo '"+str(value)+" ' >> " +combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
                                 os.system(command_append)
 
         else:
             logger.debug("Running the datacard_maker.py...")
-            print("python python/datacard_maker.py -c {} -b {} -y {}".format(fState, 1, year))
-            os.system("python python/datacard_maker.py -c {} -b {} -y {}".format(fState, 1, year))
+            dataCardMakerCommand = "python python/datacard_maker.py -c {} -b {} -y {}".format(fState, 1, year)
+            processCmd(dataCardMakerCommand, get_linenumber(), os.path.basename(__file__))
             logger.debug("Completed the datacard_maker.py...")
             ndata = createXSworkspace(ListObsName,fState, nBins, 0, observableBins, False, True, modelName, physicalModel, year, obs_ifJES, obs_ifJES2)
             if obsName=='mass4l':
@@ -463,7 +461,6 @@ def createAsimov_161718(obsName, observableBins, modelName, resultsXS, physicalM
     logger.info("Going to run the combine commands...")
     cmd = ''
     if (physicalModel=="v2"):
-        # combineOutputs.format(year = 'allYear') + '/' +modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root'
         cmd =  'combine -n '+obsName.replace(' ','_')+'_'+str("allYear")+unblindString+' -M MultiDimFit  '+combineOutputs.format(year = "allYear")+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root -m '+opt.ASIMOVMASS+' --setParameters '
         logger.debug("command:\n\t{}".format(cmd))
         for fState in fStates:
@@ -731,7 +728,7 @@ def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, y
 
     # run combine with no systematics for stat only uncertainty
     if (opt.SYS):
-        ## Test VM:        cmd = cmd + ' --freezeNuisanceGroups CMS_fakeH_p1_1_8,CMS_fakeH_p1_2_8,CMS_fakeH_p1_3_8,CMS_fakeH_p3_1_8,CMS_fakeH_p3_2_8,CMS_fakeH_p3_3_8 --freezeParameters allConstrainedNuisances'
+        # Test VM:        cmd = cmd + ' --freezeNuisanceGroups CMS_fakeH_p1_1_8,CMS_fakeH_p1_2_8,CMS_fakeH_p1_3_8,CMS_fakeH_p3_1_8,CMS_fakeH_p3_2_8,CMS_fakeH_p3_3_8 --freezeParameters allConstrainedNuisances'
         cmd = cmd + ' --freezeParameters allConstrainedNuisances'
 
         # cmd = cmd + ' --freezeParameters '
@@ -1391,7 +1388,6 @@ def runFiducialXS():
                 output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
                 processCmd("mv higgsCombine"+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+'_'+str(year)+".MultiDimFit.mH125.38.root "+ combineOutputs.format(year = year) + '/', get_linenumber(), os.path.basename(__file__))
 
-                # cmd = "combine -n "+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+"_NoSys"+'_'+str(year)+" -M MultiDimFit -d "+combineOutputs.format(year = year)+"/SM_125_all_13TeV_xs_"+obsName.replace(' ','_')+"_bin_"+physicalModel+"_result.root -w w --snapshotName \"MultiDimFit\" -m 125.38 -D toy_asimov --setParameters MH=125.38 -P SigmaBin"+str(obsBin)+" --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:SigmaBin"+str(obsBin)+"=0.0,3.0 --redefineSignalPOI SigmaBin"+str(obsBin)+" --algo=grid --points=50 --autoRange 4 --freezeParameters allConstrainedNuisances "
                 cmd = "combine -n "+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+"_NoSys"+'_'+str(year)+unblindString+" -M MultiDimFit -d "+combineOutputs.format(year = year)+"/SM_125_all_13TeV_xs_"+obsName.replace(' ','_')+"_bin_"+physicalModel+"_result.root -w w --snapshotName \"MultiDimFit\" -m 125.38 -D toy_asimov --setParameters MH=125.38 -P SigmaBin"+str(obsBin)+" --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:SigmaBin"+str(obsBin)+"=0.0,3.0 --redefineSignalPOI SigmaBin"+str(obsBin)+" --algo=grid --points=50 --autoRange 4 "
                 cmd += " --freezeParameters allConstrainedNuisances "
                 # cmd = cmd + ' --freezeParameters '
@@ -1410,12 +1406,13 @@ def runFiducialXS():
                 output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
                 processCmd("mv higgsCombine"+obsName.replace(' ','_')+"_SigmaBin"+str(obsBin)+"_NoSys"+'_'+str(year)+".MultiDimFit.mH125.38.root "+ combineOutputs.format(year = year) + '/', get_linenumber(), os.path.basename(__file__))
 
-        cmd = 'python python/plotLHScans.py -l -q -b --obsName="{}" --obsBins="{}" --year="{}" '.format(
+        cmd = 'python python/plotLHScans.py -l -q -b --obsName="{}" --obsBins="{}" --year="{}"'.format(
             obsName.replace(' ','_'),  opt.OBSBINS, year
         )
         if (opt.UNBLIND): cmd = cmd + ' --unblind'
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
+        # For now, this part was moved to "RunEverything.py" as step-8
         # for modelName in modelNames:
         #     if (not opt.FIXMASS=="False"):
         #         cmd = 'python python/producePlots.py -l -q -b --obsName="'+obsName.replace(' ','_')+'" --obsBins="'+opt.OBSBINS+'" --unfoldModel="'+modelName+'" --theoryMass="'+opt.FIXMASS+'"'+ ' --year="'+ year + '"'
