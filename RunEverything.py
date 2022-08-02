@@ -38,8 +38,9 @@ parser.add_argument( '-m', dest='HiggsMass', default=125.38, type=float, help='H
 parser.add_argument( '-y', dest='year', default='2018', type=str, choices=["2016", "2017", "2018", "allYear", "all"], help='dataset year: 2016, 2017, 2018, allYear, all')
 parser.add_argument( '-r', dest='RunCommand', default=0, type=int, choices=[0, 1], help="if 1 then it will run the commands else it will just print the commands")
 parser.add_argument( '-obs', dest='OneDOr2DObs', default=1, type=int, choices=[1, 2], help="1 for 1D obs, 2 for 2D observable")
-parser.add_argument( '-test', dest='TestVar', default="", type=str, help="Name of test variables to run over. For example: mass4l")
+parser.add_argument( '--test', dest='TestVar', default="", type=str, help="Name of test variables to run over. For example: mass4l")
 parser.add_argument('--unblind', action='store_true', dest='UNBLIND', default=False, help='Use real data')
+parser.add_argument('--checkDuplicate', action='store_true', dest='checkDuplicate', default=False, help='Use real data')
 parser.add_argument('-n', dest="nohup", action='store_true', help='if want to run using nohup')
 parser.add_argument(
      "--log-level",
@@ -78,8 +79,8 @@ if  args.year == "2016":  years = ["2016"]
 elif  args.year == "2017":  years = ["2017"]
 elif  args.year == "2018":  years = ["2018"]
 elif  args.year == "allYear":  years = ["allYear"]
-elif  args.year == "all":  years = ["2016", "2017", "2018"]
-# elif  args.year == "all":  years = ["2016", "2017", "2018", "allYear"]
+#elif  args.year == "all":  years = ["2016", "2017", "2018"]
+elif  args.year == "all":  years = ["2016", "2017", "2018", "allYear"]
 else:
     logger.error("Invalid year. Please check!!!")
 
@@ -102,11 +103,12 @@ for year in  years:
                 logger.info("Observable: {:11} Bins: {}".format(obsName, obsBin['bins']))
                 # plots/LHScanPlots/2017/D_int/
                 dirSearch = 'plots/LHScanPlots/{}/{}'.format(year, obsName)
-                #if (os.path.exists(dirSearch)):
-                #    logger.info("Directory {} exists".format(dirSearch))
-                #    continue
-                #else:
-                #    logger.error("Directory {} does not exists".format(dirSearch))
+                if (args.checkDuplicate):
+                    if (os.path.exists(dirSearch)):
+                        logger.info("Directory {} exists".format(dirSearch))
+                        continue
+                    else:
+                        logger.error("Directory {} does not exists".format(dirSearch))
                 if (args.step == 1):
                     border_msg_output = border_msg("Running efficiencies step: "+ obsName + "   YEAR: " + str( year))
                     f.write("\n{}\n".format(border_msg_output))
@@ -206,8 +208,8 @@ for year in  years:
                     )
                     logString = ''
                     if args.UNBLIND: command += ' --unblind '
-                    if args.UNBLIND: logString = 'unblind'
-                    command += ' >& log_{year}/step_7_{obsName}{logString}.log '.format(obsName = obsName, year = year, logString = "_"+logString)
+                    if args.UNBLIND: logString = '_unblind'
+                    if (args.checkDuplicate): command += ' >& log_{year}/step_7_{obsName}{logString}.log '.format(obsName = obsName, year = year, logString = logString)
                     # if args.nohup: command += ' >& log_{year}/step_7_{obsName}.log '.format(obsName = obsName, year = year)
                     # if args.nohup: command += ' >& log_{year}/step_7_{obsName}.log &'.format(obsName = obsName, year = year)
                     logger.info("Command: {}".format(command))

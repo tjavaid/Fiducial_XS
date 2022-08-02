@@ -40,10 +40,13 @@ def parseOptions():
     parser.add_option("-b",action="callback",callback=callback_rootargs)
 
     # store options and arguments as global variables
-    global opt, args, combineOutputs
+    global opt, args, combineOutputs, unblindString
     (opt, args) = parser.parse_args()
 
     combineOutputs = combineOutputs.format(year = opt.ERA)
+
+    unblindString = ""
+    if (opt.UNBLIND): unblindString = "_unblind"
 
 # parse the arguments and options
 global opt, args, runAllSteps
@@ -107,7 +110,7 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 
     # FIXME: Improve the directory naming/pointer of hardcoded directory
-    inFile = combineOutputs+"/"+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root'
+    inFile = combineOutputs+"/"+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+unblindString+'.root'
     f_asimov = TFile(inFile, 'READ')
     logger.debug("Asimov file is :  {}".format(inFile))
 
@@ -218,6 +221,8 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     else:
         CustomBinInfo = [float(observableBins[i]) for i in range(nBins+1)]
         # CustomBinInfo[0] = 0.0
+        if str(CustomBinInfo[-1]) == "inf": # if the value is "inf" set it to large number
+            CustomBinInfo[-1] = 10000
         logger.debug("nBins: {}, CustomBinInfo: {}".format(nBins, CustomBinInfo))
         h_data = TH1D("h_data","h_data",nBins,array('d',CustomBinInfo))
         h_sig = TH1D("h_sig","h_xig",nBins,array('d',CustomBinInfo))
@@ -287,13 +292,16 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
         cfg = yaml.load(ymlfile)
         if ( ("Observables" not in cfg) or ("1D_Observables" not in cfg['Observables']) ) :
             print('''No section named 'observable' or sub-section name '1D-Observable' found in file {}.
-                    Please check your YAML file format!!!'''.format(InputYAMLFile))
+                    Please check your YAML file format!!!'''.format(opt.inYAMLFile))
 
         label = cfg['Observables']['1D_Observables'][obsName]['label']
         unit = cfg['Observables']['1D_Observables'][obsName]['unit']
         # border_msg("Label name: {}, Unit: {}".format(label, unit))
 
 
+    if str(observableBins[nBins]) == "inf":
+        observableBins[nBins] = 10000
+    logger.debug("boundary and bins: nBins: {}, bin start val: {}, last bin val: {}".format(nBins, float(observableBins[0]),float(observableBins[nBins])))
     if (obsName.startswith("njets")):
         dummy = TH1D("","",nBins,0,nBins)
     else:
@@ -330,15 +338,15 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     latex2.SetTextFont(42)
     latex2.SetTextAlign(31) # align right
     if (not opt.LUMISCALE=="1.0"):
-        if (opt.ERA=='2016') : lumi = round(35.9*float(opt.LUMISCALE),1)
-        elif (opt.ERA=='2017') : lumi = round(41.7*float(opt.LUMISCALE),1)
+        if (opt.ERA=='2016') : lumi = round(Lumi_2016*float(opt.LUMISCALE),1)
+        elif (opt.ERA=='2017') : lumi = round(Lumi_2017*float(opt.LUMISCALE),1)
         else  : lumi = round(58.5*float(opt.LUMISCALE),1)
         latex2.DrawLatex(0.94, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
     else:
-        if (opt.ERA=='2016') : latex2.DrawLatex(0.94, 0.94,"35.9 fb^{-1} (13 TeV)")
-        elif (opt.ERA=='2017') : latex2.DrawLatex(0.94, 0.94,"41.7 fb^{-1} (13 TeV)")
-        elif (opt.ERA=='2018') : latex2.DrawLatex(0.94, 0.94,"58.8 fb^{-1} (13 TeV)")
-        else : latex2.DrawLatex(0.94, 0.94,"137 fb^{-1} (13 TeV)")
+        if (opt.ERA=='2016') : latex2.DrawLatex(0.94, 0.94, str(Lumi_2016) + " fb^{-1} (13 TeV)")
+        elif (opt.ERA=='2017') : latex2.DrawLatex(0.94, 0.94, str(Lumi_2017) + " fb^{-1} (13 TeV)")
+        elif (opt.ERA=='2018') : latex2.DrawLatex(0.94, 0.94, str(Lumi_2018) + " fb^{-1} (13 TeV)")
+        else : latex2.DrawLatex(0.94, 0.94, str(Lumi_Run2) + " fb^{-1} (13 TeV)")
 
     latex2.SetTextSize(0.9*c.GetTopMargin())
     latex2.SetTextFont(62)
@@ -371,7 +379,6 @@ def plotDifferentialBins(asimovDataModel, asimovPhysicalModel, obsName, fstate, 
     logger.debug("asimovPhysicalModel: {}".format(asimovPhysicalModel))
     logger.debug(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".pdf")
     GetDirectory(OutputPath)
-    # c.SaveAs("test.pdf")
     if (not opt.UNBLIND):
         c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".pdf")
         c.SaveAs(OutputPath+"/asimovdata_"+asimovDataModel+"_"+asimovPhysicalModel+"_"+obsName.replace(' ','_')+'_'+fstate+".png")

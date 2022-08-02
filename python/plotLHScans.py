@@ -34,11 +34,14 @@ def parseOptions():
     parser.add_option("-b",action="callback",callback=callback_rootargs)
 
     # store options and arguments as global variables
-    global opt, args, datacardInputs, combineOutputs
+    global opt, args, datacardInputs, combineOutputs, unblindString
     (opt, args) = parser.parse_args()
 
     datacardInputs = datacardInputs.format(year = opt.ERA)
     combineOutputs = combineOutputs.format(year = opt.ERA)
+
+    unblindString = ""
+    if (opt.UNBLIND): unblindString = "_unblind"
 
 # parse the arguments and options
 global opt, args
@@ -79,7 +82,7 @@ for obsName in observables:
         # FIXME: Why continue for `cosTheta1`
         if (obsName=="cosTheta1" and obsbin=="0"): continue
 
-        inFile = combineOutputs + "/higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_"+opt.ERA+".MultiDimFit.mH125.38.root"
+        inFile = combineOutputs + "/higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_"+opt.ERA+unblindString+".MultiDimFit.mH125.38.root"
         logger.info("File to read: {}".format(inFile))
         f = TFile(inFile,"READ")
         if (f==0): continue
@@ -102,7 +105,7 @@ for obsName in observables:
             if point>0 and len(deltanll)>0:
                 if deltanll[len(deltanll)-1]>5.0 and sigma[len(sigma)-1]>bestfit: break
 
-        NoSystFile = combineOutputs + "/higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_NoSys"+"_"+opt.ERA+".MultiDimFit.mH125.38.root"
+        NoSystFile = combineOutputs + "/higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_NoSys"+"_"+opt.ERA+unblindString+".MultiDimFit.mH125.38.root"
         logger.info("No Syst. File to read: {}".format(NoSystFile))
         fstat = TFile(NoSystFile, "READ")
         if (fstat==0): continue
