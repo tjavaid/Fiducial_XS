@@ -43,10 +43,13 @@ def parseOptions():
     parser.add_option('-y', '--year', dest='ERA',  type='string',default='2018',   help='year(s) of processing, e.g. 2016, 2017, 2018 or Full ')
 
     # store options and arguments as global variables
-    global opt, args, combineOutputs
+    global opt, args, combineOutputs, unblindString
     (opt, args) = parser.parse_args()
 
     combineOutputs = combineOutputs.format(year = opt.ERA)
+
+    unblindString = ""
+    if (opt.UNBLIND): unblindString = "_unblind"
 
 # parse the arguments and options
 global opt, args, runAllSteps
@@ -96,8 +99,8 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
 
     RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING)
 
-    logger.debug (combineOutputs+"/"+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root')
-    f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root','READ')
+    logger.debug (combineOutputs+"/"+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+unblindString+'.root')
+    f_asimov = TFile(combineOutputs+'/'+asimovDataModel+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+unblindString+'.root','READ')
 
     if (not opt.UNBLIND):
         data = f_asimov.Get("toys/toy_asimov");

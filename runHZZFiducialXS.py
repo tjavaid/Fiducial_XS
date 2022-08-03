@@ -884,7 +884,7 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
     os.chdir(currentDir)
 
     pathOfCard = combineOutputs.format(year = year)
-    cmd = 'root -l -b -q "src/addToyDataset.C(\\"'+pathOfCard+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root\\",\\"'+pathOfCard+'/'+asimovModelName+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+'.root\\",\\"toy_asimov\\",\\"'+pathOfCard+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_exp.root\\")"'
+    cmd = 'root -l -b -q "src/addToyDataset.C(\\"'+pathOfCard+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root\\",\\"'+pathOfCard+'/'+asimovModelName+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+unblindString+'.root\\",\\"toy_asimov\\",\\"'+pathOfCard+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_exp.root\\")"'
     processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
     # Run the Combine
