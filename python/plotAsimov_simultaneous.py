@@ -185,8 +185,8 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
         n_qqzz_asimov["4l"] += qqzz_asimov[fState].getVal()
         n_zz_asimov["4l"] += n_ggzz_asimov[fState]+n_qqzz_asimov[fState]
 
-    logger.debug(combineOutputs+"/"+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_result.root')
-    f_modelfit = TFile(combineOutputs+"/"+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'_result.root','READ')
+    logger.debug(combineOutputs+"/"+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+unblindString+'_result.root')
+    f_modelfit = TFile(combineOutputs+"/"+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+unblindString+'_result.root','READ')
     w_modelfit = f_modelfit.Get("w")
     sim = w_modelfit.pdf("model_s")
     #sim.Print("v")
