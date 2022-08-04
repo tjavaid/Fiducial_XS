@@ -35,7 +35,7 @@ parser.add_argument( '-c', dest='channels', nargs="+",  default=["4mu", "4e", "2
 parser.add_argument( '-model', dest='modelNames', default="SM_125",
                         help='Names of models for unfolding, separated by , (comma) . Default is "SM_125"')
 parser.add_argument( '-m', dest='HiggsMass', default=125.38, type=float, help='Higgs mass')
-parser.add_argument( '-y', dest='year', default='2018', type=str, choices=["2016", "2017", "2018", "allYear", "all"], help='dataset year: 2016, 2017, 2018, allYear, all')
+parser.add_argument( '-y', dest='year', default='2018', type=str, choices=["2016", "2017", "2018", "allYear", "all"], help='dataset year: 2016, 2017, 2018, allYear (combination), all (for running all three years and combination)')
 parser.add_argument( '-r', dest='RunCommand', default=0, type=int, choices=[0, 1], help="if 1 then it will run the commands else it will just print the commands")
 parser.add_argument( '-obs', dest='OneDOr2DObs', default=1, type=int, choices=[1, 2], help="1 for 1D obs, 2 for 2D observable")
 parser.add_argument( '--test', dest='TestVar', default="", type=str, help="Name of test variables to run over. For example: mass4l")
@@ -100,6 +100,7 @@ for year in  years:
                     """If the test variable is given, then only run over that variable"""
                     continue
                 logger.info("="*51)
+                logger.info("Time now: {}".format(ct))
                 logger.info("Observable: {:11} Bins: {}".format(obsName, obsBin['bins']))
                 # plots/LHScanPlots/2017/D_int/
                 dirSearch = 'plots/LHScanPlots/{}/{}'.format(year, obsName)
@@ -207,11 +208,11 @@ for year in  years:
                             obsName = obsName, obsBins = obsBin['bins'], HiggsMass = args.HiggsMass, modelNames= args.modelNames, year = year, logLevel=logLevel
                     )
                     logString = ''
-                    if args.UNBLIND: command += ' --unblind '
-                    if args.UNBLIND: logString = '_unblind'
-                    if (args.checkDuplicate): command += ' >& log_{year}/step_7_{obsName}{logString}.log '.format(obsName = obsName, year = year, logString = logString)
-                    # if args.nohup: command += ' >& log_{year}/step_7_{obsName}.log '.format(obsName = obsName, year = year)
-                    # if args.nohup: command += ' >& log_{year}/step_7_{obsName}.log &'.format(obsName = obsName, year = year)
+                    if args.UNBLIND:
+                        command += ' --unblind '
+                        logString = '_unblind'
+                    if (not args.checkDuplicate): command += ' |& tee  log_{year}/step_7_{obsName}{logString}.log '.format(obsName = obsName, year = year, logString = logString)
+                    if (args.checkDuplicate): command += ' >& tee  log_{year}/step_7_{obsName}{logString}.log '.format(obsName = obsName, year = year, logString = logString)
                     logger.info("Command: {}".format(command))
                     f.write("\n{}\n".format(command))
                     if (args.RunCommand): os.system(command)

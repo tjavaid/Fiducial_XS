@@ -684,9 +684,6 @@ def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, y
         output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
         # INFO: Move combine output to combineOutputs.format(year = opt.ERA) directory
-        # if os.path.exists('higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root'):
-        #     logger.error('higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root')
-        #     sys.exit()
         processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+unblindString+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.123456.root '+combineOutputs.format(year = year)+'/'+modelName+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+physicalModel+unblindString+'.root', get_linenumber(), os.path.basename(__file__), 1)
 
         #cmd = cmd.replace(' --freezeNuisanceGroups r4muBin0,r4eBin0,r2e2muBin0','')
@@ -884,7 +881,10 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
     os.chdir(currentDir)
 
     pathOfCard = combineOutputs.format(year = year)
-    cmd = 'root -l -b -q "src/addToyDataset.C(\\"'+pathOfCard+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root\\",\\"'+pathOfCard+'/'+asimovModelName+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+unblindString+'.root\\",\\"toy_asimov\\",\\"'+pathOfCard+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+unblindString+'_exp.root\\")"'
+    toyFileName = "toy_asimov"
+    # if (opt.UNBLIND):
+        # toyFileName = "data_obs"
+    cmd = 'root -l -b -q "src/addToyDataset.C(\\"'+pathOfCard+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.root\\",\\"'+pathOfCard+'/'+asimovModelName+'_all_'+obsName.replace(' ','_')+'_13TeV_Asimov_'+asimovPhysicalModel+unblindString+'.root\\",\\"'+toyFileName+'\\",\\"'+pathOfCard+'/'+modelName+'_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+unblindString+'_exp.root\\")"'
     processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
     # Run the Combine
