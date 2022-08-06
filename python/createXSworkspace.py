@@ -391,54 +391,44 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
 
     # Wrong signal combination events
-
     if (year=='2018'):
         if (channel=='4mu'):
-            p1_12018 = RooRealVar("CMS_fakeH_p1_1"+year,"p1_1"+year,165.0, 145.0, 185.0)
-            p3_12018 = RooRealVar("CMS_fakeH_p3_1"+year,"p3_1"+year,89.0, 84.0,94.0)
-            p2_12018 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"0.72*@0-@1",RooArgList(p1_12018,p3_12018))
+            p1_12018 = RooFormulaVar("CMS_fakeH_p1_1"+year,"p1_1"+year,"137.63080525+0.20718*(@0-125)",ROOT.RooArgList(MH))
+            p2_12018 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"17.73939875+(-0.0113475)*(@0-125)",ROOT.RooArgList(MH))
             fakeH = RooLandau("fakeH", "landau", m, p1_12018, p2_12018)
         if (channel=='4e'):
-            p1_22018 = RooRealVar("CMS_fakeH_p1_2"+year,"p1_2"+year,165.0, 145.0, 185.0)
-            p3_22018 = RooRealVar("CMS_fakeH_p3_2"+year,"p3_2"+year,89.0, 84.0,94.0)
-            p2_22018 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"0.72*@0-@1",RooArgList(p1_22018,p3_22018))
+            p1_22018 = RooFormulaVar("CMS_fakeH_p1_2"+year,"p1_2"+year,"136.9123585+-0.020945*(@0-125)",ROOT.RooArgList(MH))
+            p2_22018 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"16.10426275+0.080675*(@0-125)",ROOT.RooArgList(MH))
             fakeH = RooLandau("fakeH", "landau", m, p1_22018, p2_22018)
         if (channel=='2e2mu'):
-            p1_32018 = RooRealVar("CMS_fakeH_p1_3"+year,"p1_3"+year,165.0, 145.0, 185.0)
-            p3_32018 = RooRealVar("CMS_fakeH_p3_3"+year,"p3_3"+year,89.0, 84.0,94.0)
-            p2_32018 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"0.72*@0-@1",RooArgList(p1_32018,p3_32018))
+            p1_32018 = RooFormulaVar("CMS_fakeH_p1_3"+year,"p1_3"+year,"139.11565075+0.2334875*(@0-125)",ROOT.RooArgList(MH))
+            p2_32018 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"17.39454325+0.27387*(@0-125)",ROOT.RooArgList(MH))
             fakeH = RooLandau("fakeH", "landau", m, p1_32018, p2_32018)
     elif (year=='2017'):
         if (channel=='4mu'):
-            p1_12017 = RooRealVar("CMS_fakeH_p1_1"+year,"p1_1"+year,165.0, 145.0, 185.0)
-            p3_12017 = RooRealVar("CMS_fakeH_p3_1"+year,"p3_1"+year,89.0, 84.0,94.0)
-            p2_12017 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"0.72*@0-@1",RooArgList(p1_12017,p3_12017))
+            p1_12017 = RooFormulaVar("CMS_fakeH_p1_1"+year,"p1_1"+year,"137.5872+-0.0187475*(@0-125)",ROOT.RooArgList(MH))
+            p2_12017 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"18.05642225+-0.182495*(@0-125)",ROOT.RooArgList(MH))
             fakeH = RooLandau("fakeH", "landau", m, p1_12017, p2_12017)
         if (channel=='4e'):
-            p1_22017 = RooRealVar("CMS_fakeH_p1_2"+year,"p1_2"+year,165.0, 145.0, 185.0)
-            p3_22017 = RooRealVar("CMS_fakeH_p3_2"+year,"p3_2"+year,89.0, 84.0,94.0)
-            p2_22017 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"0.72*@0-@1",RooArgList(p1_22017,p3_22017))
+            p1_22017 = RooFormulaVar("CMS_fakeH_p1_2"+year,"p1_2"+year,"133.98211375+0.790945*(@0-125)",ROOT.RooArgList(MH))
+            p2_22017 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"16.82234175+-0.2156775*(@0-125)",ROOT.RooArgList(MH))
             fakeH = RooLandau("fakeH", "landau", m, p1_22017, p2_22017)
         if (channel=='2e2mu'):
-            p1_32017 = RooRealVar("CMS_fakeH_p1_3"+year,"p1_3"+year,165.0, 145.0, 185.0)
-            p3_32017 = RooRealVar("CMS_fakeH_p3_3"+year,"p3_3"+year,89.0, 84.0,94.0)
-            p2_32017 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"0.72*@0-@1",RooArgList(p1_32017,p3_32017))
+            p1_32017 = RooFormulaVar("CMS_fakeH_p1_3"+year,"p1_3"+year,"139.4166885+0.149575*(@0-125)",ROOT.RooArgList(MH))
+            p2_32017 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"17.0934935+0.2527325*(@0-125)",ROOT.RooArgList(MH))
             fakeH = RooLandau("fakeH", "landau", m, p1_32017, p2_32017)
     else:
         if (channel=='4mu'):
-            p1_12016 = RooRealVar("CMS_fakeH_p1_1"+year,"p1_1"+year,165.0, 145.0, 185.0)
-            p3_12016 = RooRealVar("CMS_fakeH_p3_1"+year,"p3_1"+year,89.0, 84.0,94.0)
-            p2_12016 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"0.72*@0-@1",RooArgList(p1_12016,p3_12016))
+            p1_12016 = RooFormulaVar("CMS_fakeH_p1_1"+year,"p1_1"+year,"136.7719185+0.3965175*(@0-125)",ROOT.RooArgList(MH))
+            p2_12016 = RooFormulaVar("CMS_fakeH_p2_1"+year,"p2_1"+year,"17.86584175+-0.0833375*(@0-125)",ROOT.RooArgList(MH))
             fakeH = RooLandau("fakeH", "landau", m, p1_12016, p2_12016)
         if (channel=='4e'):
-            p1_22016 = RooRealVar("CMS_fakeH_p1_2"+year,"p1_2"+year,165.0, 145.0, 185.0)
-            p3_22016 = RooRealVar("CMS_fakeH_p3_2"+year,"p3_2"+year,89.0, 84.0,94.0)
-            p2_22016 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"0.72*@0-@1",RooArgList(p1_22016,p3_22016))
+            p1_22016 = RooFormulaVar("CMS_fakeH_p1_2"+year,"p1_2"+year,"135.6637315+1.07089*(@0-125)",ROOT.RooArgList(MH))
+            p2_22016 = RooFormulaVar("CMS_fakeH_p2_2"+year,"p2_2"+year,"15.976523+0.3065*(@0-125)",ROOT.RooArgList(MH))
             fakeH = RooLandau("fakeH", "landau", m, p1_22016, p2_22016)
         if (channel=='2e2mu'):
-            p1_32016 = RooRealVar("CMS_fakeH_p1_3"+year,"p1_3"+year,165.0, 145.0, 185.0)
-            p3_32016 = RooRealVar("CMS_fakeH_p3_3"+year,"p3_3"+year,89.0, 84.0,94.0)
-            p2_32016 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"0.72*@0-@1",RooArgList(p1_32016,p3_32016))
+            p1_32016 = RooFormulaVar("CMS_fakeH_p1_3"+year,"p1_3"+year,"139.007959+0.569655*(@0-125)",ROOT.RooArgList(MH))
+            p2_32016 = RooFormulaVar("CMS_fakeH_p2_3"+year,"p2_3"+year,"18.213078+0.378485*(@0-125)",ROOT.RooArgList(MH))
             fakeH = RooLandau("fakeH", "landau", m, p1_32016, p2_32016)
 
 

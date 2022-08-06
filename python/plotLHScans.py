@@ -77,6 +77,7 @@ for obsName in observables:
 
     logger.debug("obsName: {:12}, obsBins: {}".format(obsName, obsbins))
 
+    binCounter = 0
     for obsbin in obsbins:
 
         # FIXME: Why continue for `cosTheta1`
@@ -264,6 +265,7 @@ for obsName in observables:
             latex2.DrawLatex(0.37,0.78, "Expected: #sigma_{fid.} = "+str(round(bestfit,3))+" ^{+"+str(cl68upstat)+"}_{-"+str(cl68dnstat)+"} (stat.) ^{+"+str(sysup)+"}_{-"+str(sysdn)+"} (sys.)")
         else:
             latex2.DrawLatex(0.37,0.78, "Observed: #sigma_{fid.} = "+str(round(bestfit,3))+" ^{+"+str(cl68upstat)+"}_{-"+str(cl68dnstat)+"} (stat.) ^{+"+str(sysup)+"}_{-"+str(sysdn)+"} (sys.)")
+        latex2.DrawLatex(0.5, 0.68, "{} < {} < {}".format(observableBins[binCounter], obsName, observableBins[binCounter+1]))
 
         if (obsName=="mass4l"):
             if (obsbin=="SigmaBin0"):
@@ -300,3 +302,4 @@ for obsName in observables:
         else:
             with open(datacardInputs+'/resultsXS_LHScan_'+obsName.replace(' ','_')+'_v3.py', 'w') as f:
                 f.write('resultsXS = '+str(resultsXS)+' \n')
+    binCounter += 1

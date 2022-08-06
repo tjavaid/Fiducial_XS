@@ -1339,34 +1339,34 @@ def runFiducialXS():
             #### These commands for observed data
             # 4e
             # with systematics
-            cmd = 'combine -n mass4l_r4eBin0'+'_'+str(year)+unblindString+' -M MultiDimFit '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4eBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4eBin0=0.0,5.0 --redefineSignalPOI r4eBin0 --algo=grid --points=100'
+            cmd = 'combine -n mass4l_r4eBin0'+'_'+str(year)+unblindString+' -M MultiDimFit '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4eBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4eBin0=0.0,5.0 --redefineSignalPOI r4eBin0 --algo=grid --points=300'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
             processCmd("mv higgsCombinemass4l_r4eBin0"+'_'+str(year)+unblindString+".MultiDimFit.mH125.38.root "+ combineOutputs.format(year = year) + '/', get_linenumber(), os.path.basename(__file__))
 
             # no systematics
-            cmd = 'combine -n mass4l_r4eBin0_NoSys'+'_'+str(year)+unblindString+' -M MultiDimFit -d '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4eBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4eBin0=0.0,5.0 --redefineSignalPOI r4eBin0 --algo=grid --points=100  --freezeParameters allConstrainedNuisances'
+            cmd = 'combine -n mass4l_r4eBin0_NoSys'+'_'+str(year)+unblindString+' -M MultiDimFit -d '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4eBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4eBin0=0.0,5.0 --redefineSignalPOI r4eBin0 --algo=grid --points=300  --freezeParameters allConstrainedNuisances'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
             processCmd("mv higgsCombinemass4l_r4eBin0_NoSys"+'_'+str(year)+unblindString+".MultiDimFit.mH125.38.root "+ combineOutputs.format(year = year) + '/', get_linenumber(), os.path.basename(__file__))
 
             # 4mu
             # with systematics
-            cmd = 'combine -n mass4l_r4muBin0'+'_'+str(year)+unblindString+' -M MultiDimFit '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4muBin0=0.0,5.0 --redefineSignalPOI r4muBin0 --algo=grid --points=100'
+            cmd = 'combine -n mass4l_r4muBin0'+'_'+str(year)+unblindString+' -M MultiDimFit '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4muBin0=0.0,5.0 --redefineSignalPOI r4muBin0 --algo=grid --points=300'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
             processCmd("mv higgsCombinemass4l_r4muBin0"+'_'+str(year)+unblindString+".MultiDimFit.mH125.38.root "+ combineOutputs.format(year = year) + '/', get_linenumber(), os.path.basename(__file__))
 
             # no systematics
-            cmd = 'combine -n mass4l_r4muBin0_NoSys'+'_'+str(year)+unblindString+' -M MultiDimFit -d '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4muBin0=0.0,5.0 --redefineSignalPOI r4muBin0 --algo=grid --points=100  --freezeParameters allConstrainedNuisances'
+            cmd = 'combine -n mass4l_r4muBin0_NoSys'+'_'+str(year)+unblindString+' -M MultiDimFit -d '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r4muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r4muBin0=0.0,5.0 --redefineSignalPOI r4muBin0 --algo=grid --points=300  --freezeParameters allConstrainedNuisances'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
             processCmd("mv higgsCombinemass4l_r4muBin0_NoSys"+'_'+str(year)+unblindString+".MultiDimFit.mH125.38.root "+ combineOutputs.format(year = year) + '/', get_linenumber(), os.path.basename(__file__))
 
             # 2e2mu
             # with systematics
-            cmd = 'combine -n mass4l_r2e2muBin0'+'_'+str(year)+unblindString+' -M MultiDimFit '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r2e2muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r2e2muBin0=0.0,5.0 --redefineSignalPOI r2e2muBin0 --algo=grid --points=100'
+            cmd = 'combine -n mass4l_r2e2muBin0'+'_'+str(year)+unblindString+' -M MultiDimFit '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_exp.root -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r2e2muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r2e2muBin0=0.0,5.0 --redefineSignalPOI r2e2muBin0 --algo=grid --points=300'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
             processCmd("mv higgsCombinemass4l_r2e2muBin0"+'_'+str(year)+unblindString+".MultiDimFit.mH125.38.root "+ combineOutputs.format(year = year) + '/', get_linenumber(), os.path.basename(__file__))
 
             # no systematics
-            cmd = 'combine -n mass4l_r2e2muBin0_NoSys'+'_'+str(year)+unblindString+' -M MultiDimFit -d '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r2e2muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r2e2muBin0=0.0,5.0 --redefineSignalPOI r2e2muBin0 --algo=grid --points=100  --freezeParameters allConstrainedNuisances'
+            cmd = 'combine -n mass4l_r2e2muBin0_NoSys'+'_'+str(year)+unblindString+' -M MultiDimFit -d '+combineOutputs.format(year = year)+'/SM_125_all_13TeV_xs_mass4l_bin_v2'+unblindString+'_result.root -w w --snapshotName "MultiDimFit" -m 125.38 -D '+DatasetForObservedLimit+' --setParameters MH=125.38 -P r2e2muBin0 --floatOtherPOIs=1 --saveWorkspace --setParameterRanges MH=125.38,125.38:r2e2muBin0=0.0,5.0 --redefineSignalPOI r2e2muBin0 --algo=grid --points=300  --freezeParameters allConstrainedNuisances'
             output = processCmd(cmd, get_linenumber(), os.path.basename(__file__))
             processCmd("mv higgsCombinemass4l_r2e2muBin0_NoSys"+'_'+str(year)+unblindString+".MultiDimFit.mH125.38.root "+ combineOutputs.format(year = year) + '/', get_linenumber(), os.path.basename(__file__))
 
