@@ -108,7 +108,8 @@ int fillEmptyBinsHist1D(TH1D* &h1D, double floor = .00001);
 void loadKFactorGraphs();
 double getGluGluZZKFactor(double m4l);
 // proposed variable template binning
-int nbinsX=35; const int nbinsY=35;
+int nbinsX=20;//35 changed to 20 for easier comparison with LLR, this one is used for mass4l
+const int nbinsY=35;
 
 double nEvents = -1;
 
@@ -799,10 +800,9 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
 
         // for the predefined mass window only
         if ((PROCESSING_TYPE!="XSTreeZ4l")&&(CUT_M4LLOW > mass4l || mass4l > CUT_M4LHIGH)) continue;
-
         // in case of Z+X temaplte include fake rate factors
         double fr4, fr3;
-        if (iFinState==5) {
+        if (processNameTag == "ZJetsCR") {
             // fake rate factor for L4
             if ((abs(idL4) == 11) && (abs(etaL4) < 1.47)) fr4 = getFakeRateWeight("el", "EB", pTL4);
             if ((abs(idL4) == 11) && (abs(etaL4) > 1.47)) fr4 = getFakeRateWeight("el", "EE", pTL4);
@@ -818,9 +818,8 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
             if (0. >= fr3 || fr3 >= 1.) continue;
             if (0. >= fr4 || fr4 >= 1.) continue;
             // test-only
-            // weight = weight * fr3 * fr4;
+            weight = weight * fr3 * fr4;
         }
-
         nEvtMassWindow++;
 
         // fill 2D hists
