@@ -11,10 +11,10 @@ INPUT_m4l_low = 105.0
 INPUT_m4l_high = 160.0
 
 # Lumi for each year
-Lumi_2016 = 35.9
+Lumi_2016 = 36.6
 Lumi_2017 = 41.5
 Lumi_2018 = 59.7
-Lumi_Run2 = 137.1
+Lumi_Run2 = 138
 
 ################################
 # Name of output directories
