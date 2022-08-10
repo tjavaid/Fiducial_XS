@@ -429,14 +429,14 @@ for obsbin in obsbins:
 
 
     c = TCanvas("c","c",1000,800)
-    gStyle.SetOptTitle(0)
-    c.SetHighLightColor(2)
-    c.SetBorderMode(0)
-    c.SetBorderSize(2)
-    c.SetLeftMargin(0.1454155)
-    c.SetRightMargin(0.07378224)
-    c.SetFrameBorderMode(0)
-    c.SetFrameBorderMode(0)
+    # gStyle.SetOptTitle(0)
+    # c.SetHighLightColor(2)
+    # c.SetBorderMode(0)
+    # c.SetBorderSize(2)
+    # c.SetLeftMargin(0.1454155)
+    # c.SetRightMargin(0.07378224)
+    # c.SetFrameBorderMode(0)
+    # c.SetFrameBorderMode(0)
 
     dummy = TH1D("dummy","dummy",1,0.0,sigmastat_asimov[len(sigmastat_asimov)-1]+0.2)
     dummy.SetMinimum(0.0)
@@ -637,19 +637,12 @@ for obsbin in obsbins:
     latex2.SetTextSize(0.04)
     latex2.SetTextFont(42)
     latex2.SetTextAlign(31) # align right
-    # print opt.LUMISCALE
-    # if (not opt.LUMISCALE=="1.0"):
-    #     lumi = round(137.1*float(opt.LUMISCALE),1)
-    #     latex2.DrawLatex(0.87, 0.94,str(lumi)+" fb^{-1} (13 TeV)")
-    # else:
-    if(opt.YEAR=='2016'):
-        latex2.DrawLatex(0.92, 0.95,"35.9 fb^{-1} (13 TeV)")
-    if(opt.YEAR=='2017'):
-        latex2.DrawLatex(0.92, 0.95,"41.5 fb^{-1} (13 TeV)")
-    if(opt.YEAR=='2018'):
-        latex2.DrawLatex(0.92, 0.95,"59.7 fb^{-1} (13 TeV)")
-    if(opt.YEAR=='Full'):
-        latex2.DrawLatex(0.92, 0.95,"137 fb^{-1} (13 TeV)")
+
+    if (str(opt.YEAR) == "2016"): latex2.DrawLatex(0.92, 0.95,str(Lumi_2016) + " fb^{-1} (13 TeV)")
+    if (str(opt.YEAR) == "2017"): latex2.DrawLatex(0.92, 0.95,str(Lumi_2017) + " fb^{-1} (13 TeV)")
+    if (str(opt.YEAR) == "2018"): latex2.DrawLatex(0.92, 0.95,str(Lumi_2018) + " fb^{-1} (13 TeV)")
+    if (str(opt.YEAR) == "allYear"): latex2.DrawLatex(0.92, 0.95,str(Lumi_Run2) + " fb^{-1} (13 TeV)")
+
     latex2.SetTextSize(0.8*c.GetTopMargin())
     latex2.SetTextFont(62)
     latex2.SetTextAlign(11) # align right
@@ -657,7 +650,7 @@ for obsbin in obsbins:
     latex2.SetTextSize(0.6*c.GetTopMargin())
     latex2.SetTextFont(52)
     latex2.SetTextAlign(11)
-    # latex2.DrawLatex(0.30, 0.95, "Preliminary")
+    latex2.DrawLatex(0.30, 0.95, "Preliminary")
     latex2.SetTextFont(42)
     latex2.SetTextSize(0.45*c.GetTopMargin())
     # latex2.DrawLatex(0.50,0.85, obsName+" Bin"+obsbin)

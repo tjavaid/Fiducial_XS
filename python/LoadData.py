@@ -11,9 +11,10 @@ dirMC = {}
 dirMC['2018'] = '/eos/user/q/qguo/newNTuple_UL/2018/Slimmed_2p5/'
 dirMC['2017'] = '/eos/user/q/qguo/newNTuple_UL/2017/Slimmed_2p5/'
 #This one contains signal, beware! VM dirMC['2016'] = '/eos/cms/store/group/phys_muon/TagAndProbe/HZZ4L/2016/UL/MC/postVFP/'
-dirMC['2016'] = '/eos/user/q/qguo/newNTuple_UL/2016/Slimmed_2p5_LumiWeight/'
+# dirMC['2016'] = '/eos/user/q/qguo/newNTuple_UL/2016/Slimmed_2p5_LumiWeight/' # Not skimmed
+dirMC['2016'] = '/eos/cms/store/group/phys_muon/TagAndProbe/HZZ4L/2016/UL/MC/' # Updated ntuples by Tahir; issue fixed and with JES
 
-dirData_94 = '/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/'  
+dirData_94 = '/eos/home-v/vmilosev/Skim_2018_HZZ/WoW/'
 
 border_msg("samples directory: "+dirMC['2018'])
 
