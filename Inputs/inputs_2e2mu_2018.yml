@@ -13,7 +13,7 @@ Processes:
     Rate: '75.00978761909306'
   4:
     Name: bkg_ggzz
-    Rate: '5.800239876605836'
+    Rate: '7.45668586491471'
   5:
     Name: bkg_zjets
     Rate: '26.00533634424211'
