@@ -13,7 +13,7 @@ except ImportError as e:
     raise ImportError("Check if you run `source setup.sh`. If not please run it.\n")
 
 try:
-    from Utils import logging, logger, border_msg, GetDirectory
+    from Utils import logging, logger, border_msg, GetDirectory, processCmd, get_linenumber
 except Exception as e:
     print (e)
     raise ImportError("Check if you run `source setup.sh`. If not please run it.\n")
@@ -30,7 +30,7 @@ from LoadData import dirMC
 
 parser = argparse.ArgumentParser(description='Input arguments')
 parser.add_argument( '-i', dest='inYAMLFile', default="Inputs/observables_list.yml", type=str, help='Input YAML file having observable names and bin information')
-parser.add_argument( '-s', dest='step', default=1, choices=[1, 2, 3, 4, 5, 6, 7,8], type=int, help='Which step to run')
+parser.add_argument( '-s', dest='step', default=1, choices=[1, 2, 3, 4, 5, 6, 7,8,9], type=int, help='Which step to run')
 parser.add_argument( '-c', dest='channels', nargs="+",  default=["4mu", "4e", "2e2mu", "4l"], help='list of channels')
 parser.add_argument( '-model', dest='modelNames', default="SM_125",
                         help='Names of models for unfolding, separated by , (comma) . Default is "SM_125"')
@@ -110,6 +110,10 @@ for year in  years:
                         continue
                     else:
                         logger.error("Directory {} does not exists".format(dirSearch))
+
+                # create a directory to save log files, if it does not exists
+                GetDirectory("log_{year}".format(year = year))
+
                 if (args.step == 1):
                     border_msg_output = border_msg("Running efficiencies step: "+ obsName + "   YEAR: " + str( year))
                     f.write("\n{}\n".format(border_msg_output))
@@ -193,7 +197,6 @@ for year in  years:
                     if (args.RunCommand): os.system(command)
 
                 if (args.step == 7):
-                    GetDirectory("log_{year}".format(year = year))
                     border_msg_output = border_msg("Running final measurement and plotters: " + obsName + "   YEAR: " + str( year))
                     f.write("\n{}\n".format(border_msg_output))
                     # Copy model from model directory to combine path
@@ -212,7 +215,7 @@ for year in  years:
                         command += ' --unblind '
                         logString = '_unblind'
                     if (not args.checkDuplicate): command += ' |& tee  log_{year}/step_7_{obsName}{logString}.log '.format(obsName = obsName, year = year, logString = logString)
-                    if (args.checkDuplicate): command += ' >& tee  log_{year}/step_7_{obsName}{logString}.log '.format(obsName = obsName, year = year, logString = logString)
+                    if (args.checkDuplicate): command += ' >&   log_{year}/step_7_{obsName}{logString}.log  '.format(obsName = obsName, year = year, logString = logString)
                     logger.info("Command: {}".format(command))
                     f.write("\n{}\n".format(command))
                     if (args.RunCommand): os.system(command)
@@ -226,9 +229,27 @@ for year in  years:
                     command += 'python python/producePlots.py -l -q -b --obsName="{obsName}" --obsBins="{obsBins}" --unfoldModel="{modelNames}" --theoryMass="125.38" --year="{year}" --setLog'.format(
                             obsName = obsName, obsBins = obsBin['bins'], modelNames= args.modelNames, year = year
                     )
-                    if args.nohup: command += ' >& log_{year}/step_8_{obsName}_0630.log &'.format(obsName = obsName, year = year)
+                    logString = ''
+                    if args.UNBLIND:
+                        command += ' --unblind '
+                        logString = '_unblind'
+                    if (not args.checkDuplicate): command += ' |& log_{year}/step_8_{obsName}{logString}.log '.format(obsName = obsName, year = year, logString = logString)
+                    if args.checkDuplicate: command += ' >& log_{year}/step_8_{obsName}{logString}.log '.format(obsName = obsName, year = year, logString = logString)
                     logger.info("Command: {}".format(command))
                     f.write("\n{}\n".format(command))
                     if (args.RunCommand): os.system(command)
+                # if (args.step == 9):
+                #     border_msg_output = border_msg("Running impact plots: " + obsName)
+                #     cmd1 = 'combineTool.py -M Impacts -d xs_125.0_{year}/SM_125_all_13TeV_xs_{obs}_bin_v3_exp.root -m 125.38 -D {toy_or_data} --setParameters MH=125.38 --setParameterRanges MH=125.38,125.38:SigmaBin0=2.5,3.5 --doInitialFit --robustFit 1'
+                #     processCmd(cmd1.format(year = year, obs = obsName, toy_or_data = "toy_asimov" ) , get_linenumber(), os.path.basename(__file__))
+
+                #     cmd2 = 'combineTool.py -M Impacts -d xs_125.0_{year}/SM_125_all_13TeV_xs_{obs}_bin_v3_exp.root -m 125.38 -D {toy_or_data} --setParameters MH=125.38 --setParameterRanges MH=125.38,125.38:SigmaBin0=2.5,3.5  --robustFit 1 --setCrossingTolerance 0.001 --autoRange 2 --doFits --parallel 4'
+                #     processCmd(cmd2.format(year = year, obs = obsName, toy_or_data = "toy_asimov" ) , get_linenumber(), os.path.basename(__file__))
+
+                #     cmd3 = 'combineTool.py -M Impacts -d xs_125.0_{year}/SM_125_all_13TeV_xs_{obs}_bin_v3_exp.root -m 125.38 -D {toy_or_data} --setParameters MH=125.38 --setParameterRanges MH=125.38,125.38:SigmaBin0=2.5,3.5  -o impacts_{obs}_{year}_{toy_or_data}.json'
+                #     processCmd(cmd3.format(year = year, obs = obsName, toy_or_data = "toy_asimov" ) , get_linenumber(), os.path.basename(__file__))
+
+                #     cmd4 = 'plotImpacts.py -i impacts_{obs}_{year}_{toy_or_data}.json -o impacts_{obs}_{year}_{toy_or_data} --POI SigmaBin0'
+                #     processCmd(cmd4.format(year = year, obs = obsName, toy_or_data = "toy_asimov" ) , get_linenumber(), os.path.basename(__file__))
 
 f.close()

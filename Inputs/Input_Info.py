@@ -4,6 +4,9 @@ necessary in this framework.
 
 For example: Directory name, etc.
 """
+
+channels_central = ['4e', '4mu', '2e2mu']
+
 ################################
 # Mass 4l boundary
 INPUT_m4l_bins = 55
@@ -11,7 +14,7 @@ INPUT_m4l_low = 105.0
 INPUT_m4l_high = 160.0
 
 # Lumi for each year
-Lumi_2016 = 36.6
+Lumi_2016 = 36.33
 Lumi_2017 = 41.5
 Lumi_2018 = 59.7
 Lumi_Run2 = 138
