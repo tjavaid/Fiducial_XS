@@ -1,4 +1,6 @@
 # Byte-compiled / optimized / DLL files
+resultsXS*.py
+allYear/
 *LHScan*.py
 *.pyc
 __pycache__/
