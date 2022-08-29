@@ -30,7 +30,7 @@ from LoadData import dirMC
 
 parser = argparse.ArgumentParser(description='Input arguments')
 parser.add_argument( '-i', dest='inYAMLFile', default="Inputs/observables_list.yml", type=str, help='Input YAML file having observable names and bin information')
-parser.add_argument( '-s', dest='step', default=1, choices=[1, 2, 3, 4, 5, 6, 7,8,9], type=int, help='Which step to run')
+parser.add_argument( '-s', dest='step', default=1, choices=[1, 2, 3, 4, 5, 6, 7,8,9,10], type=int, help='Which step to run')
 parser.add_argument( '-c', dest='channels', nargs="+",  default=["4mu", "4e", "2e2mu", "4l"], help='list of channels')
 parser.add_argument( '-model', dest='modelNames', default="SM_125",
                         help='Names of models for unfolding, separated by , (comma) . Default is "SM_125"')
@@ -251,5 +251,17 @@ for year in  years:
 
                 #     cmd4 = 'plotImpacts.py -i impacts_{obs}_{year}_{toy_or_data}.json -o impacts_{obs}_{year}_{toy_or_data} --POI SigmaBin0'
                 #     processCmd(cmd4.format(year = year, obs = obsName, toy_or_data = "toy_asimov" ) , get_linenumber(), os.path.basename(__file__))
+
+            # background templates' plotter in differential bins
+                if (args.step == 10): 
+                    border_msg("Running background template plotter for : " + args.TestVar)
+    
+                    command = 'python python/run_plotXSTemplates.py --obsName="{obsName}" --year="{year}"'.format(
+                            obsName = args.TestVar, year = year
+                    )   
+                    logger.info("Command: {}".format(command))
+                    if (args.RunCommand): os.system(command)
+
+
 
 f.close()
