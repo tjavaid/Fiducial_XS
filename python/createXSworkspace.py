@@ -19,6 +19,9 @@ m4l_bins = INPUT_m4l_bins
 m4l_low = INPUT_m4l_low
 m4l_high = INPUT_m4l_high
 
+# FIXME: This is temporary bool. If we are running with LLR template keep it True.
+ifLLR = True
+
 def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel, year, obs_ifJES, obs_ifJES2, zzFloatType = ''):
     """Create workspace
     this script is called once for each reco bin (obsBin)
@@ -35,7 +38,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         modelName (str): Name of model. For example "SM_125"
         physicalModel (str): physical model. For example: "v2"
     """
-    global combineOutputs
+    global combineOutputs, ifLLR
     logger.info("""Input arguments to createXSworkspace module:
         obsName: {obsName}
         obsType: {obsType}
@@ -81,6 +84,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
                     obsBin_low, obsBin_high, obs_bin_lowest, obs_bin_highest
                     ))
         SuffixOfRootFile = obsNameOrig[0]+"_"+obsBin_low+"_"+obsBin_high
+        if (ifLLR): SuffixOfRootFile = SuffixOfRootFile.replace("ZZ","zz").replace(".0","")
         logger.debug("SuffixOfRootFile: {}".format(SuffixOfRootFile))
 
         obsBin_low2 = observableBins[obsBin][1][0]
@@ -94,6 +98,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
                     obsBin_low2, obsBin_high2, obs_bin_lowest2, obs_bin_highest2
                     ))
         SuffixOfRootFile = SuffixOfRootFile + '_' + obsNameOrig[1] + "_" + obsBin_low2 + "_" + obsBin_high2
+        if (ifLLR): SuffixOfRootFile = SuffixOfRootFile.replace("ZZ","zz").replace(".0","")
         logger.debug("SuffixOfRootFile: {}".format(SuffixOfRootFile))
     else:
         logger.info("This is recognised as 1D observable...")
@@ -115,6 +120,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
                     obsBin_low, obsBin_high, obs_bin_lowest, obs_bin_highest
                     ))
         SuffixOfRootFile = obsNameOrig[0]+"_"+obsBin_low+"_"+obsBin_high
+        if (ifLLR): SuffixOfRootFile = SuffixOfRootFile.replace("ZZ","zz").replace(".0","")
         logger.info("SuffixOfRootFile: {}".format(SuffixOfRootFile))
 
     # print "workspace: working path is:      ",os.getcwd()
@@ -218,17 +224,17 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         # CMS_zz4l_sigma_m_sig_2017 = RooRealVar("CMS_zz4l_sigma_m_sig_"+year,"CMS_zz4l_sigma_m_sig_"+year,0.0)
         # CMS_zz4l_sigma_e_sig_2017 = RooRealVar("CMS_zz4l_sigma_e_sig_"+year,"CMS_zz4l_sigma_e_sig_"+year,0.0)
 
-        CMS_zz4l_mean_m_sig_2017 = RooRealVar("CMS_zz4l_mean_m_sig","CMS_zz4l_mean_m_sig",0.0)
-        CMS_zz4l_mean_e_sig_2017 = RooRealVar("CMS_zz4l_mean_e_sig","CMS_zz4l_mean_e_sig",0.0)
-        CMS_zz4l_sigma_m_sig_2017 = RooRealVar("CMS_zz4l_sigma_m_sig","CMS_zz4l_sigma_m_sig",0.0)
-        CMS_zz4l_sigma_e_sig_2017 = RooRealVar("CMS_zz4l_sigma_e_sig","CMS_zz4l_sigma_e_sig",0.0)
-        CMS_zz4l_n_sig_1_2017 = RooRealVar("CMS_zz4l_n_sig_1_"+year,"CMS_zz4l_n_sig_1_"+year,0.0)
-        CMS_zz4l_n_sig_2_2017 = RooRealVar("CMS_zz4l_n_sig_2_"+year,"CMS_zz4l_n_sig_2_"+year,0.0)
-        CMS_zz4l_n_sig_3_2017 = RooRealVar("CMS_zz4l_n_sig_3_"+year,"CMS_zz4l_n_sig_3_"+year,0.0)
+        CMS_zz4l_mean_m_sig_2017 = RooRealVar("CMS_zz4l_mean_m_sig","CMS_zz4l_mean_m_sig", -10, 10)
+        CMS_zz4l_mean_e_sig_2017 = RooRealVar("CMS_zz4l_mean_e_sig","CMS_zz4l_mean_e_sig", -10, 10)
+        CMS_zz4l_sigma_m_sig_2017 = RooRealVar("CMS_zz4l_sigma_m_sig","CMS_zz4l_sigma_m_sig", -10, 10)
+        CMS_zz4l_sigma_e_sig_2017 = RooRealVar("CMS_zz4l_sigma_e_sig","CMS_zz4l_sigma_e_sig", -10, 10)
+        CMS_zz4l_n_sig_1_2017 = RooRealVar("CMS_zz4l_n_sig_1_"+year,"CMS_zz4l_n_sig_1_"+year, -10, 10)
+        CMS_zz4l_n_sig_2_2017 = RooRealVar("CMS_zz4l_n_sig_2_"+year,"CMS_zz4l_n_sig_2_"+year, -10, 10)
+        CMS_zz4l_n_sig_3_2017 = RooRealVar("CMS_zz4l_n_sig_3_"+year,"CMS_zz4l_n_sig_3_"+year, -10, 10)
 
         # scale systematics
-        CMS_zz4l_mean_m_err_1_2017 = RooRealVar("CMS_zz4l_mean_m_err_1_"+year,"CMS_zz4l_mean_m_err_1_"+year,0.0004,0.0004,0.0004)
-        CMS_zz4l_mean_e_err_2_2017 = RooRealVar("CMS_zz4l_mean_e_err_2_"+year,"CMS_zz4l_mean_e_err_2_"+year,0.003,0.003,0.003)
+        CMS_zz4l_mean_m_err_1_2017 = RooRealVar("CMS_zz4l_mean_m_err_1_"+year,"CMS_zz4l_mean_m_err_1_"+year,0.0001,0.0001,0.0001)
+        CMS_zz4l_mean_e_err_2_2017 = RooRealVar("CMS_zz4l_mean_e_err_2_"+year,"CMS_zz4l_mean_e_err_2_"+year,0.006,0.006,0.006)
         CMS_zz4l_mean_m_err_3_2017 = RooRealVar("CMS_zz4l_mean_m_err_3_"+year,"CMS_zz4l_mean_m_err_3_"+year,0.0004,0.0004,0.0004)
         CMS_zz4l_mean_e_err_3_2017 = RooRealVar("CMS_zz4l_mean_e_err_3_"+year,"CMS_zz4l_mean_e_err_3_"+year,0.003,0.003,0.003)
 
@@ -368,7 +374,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
                                                                 "(1.154259+0.00825*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_m_sig_2017))
 
             CMS_zz4l_alpha_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"(1.257942+0.00418*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.059605+(-0.01752)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1_2017))
+            CMS_zz4l_n_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.059605+-0.01752*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1_2017))
             CMS_zz4l_alpha2_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"(1.962162+0.00080*(@0-125))",RooArgList(MH))
             CMS_zz4l_n2_1_centralValue_2017 = RooFormulaVar("CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"(2.463661+0.00254*(@0-125))",RooArgList(MH))
 
@@ -382,9 +388,9 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
                                                                 "(1.153763+0.01344*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_sigma_m_sig_2016))
 
             CMS_zz4l_alpha_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha_1_centralValue_"+channel+recobin+year,"(1.259665+0.00540*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.051191+(-0.01579)*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1_2016))
+            CMS_zz4l_n_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n_1_centralValue_"+channel+recobin+year,"(2.051191+-0.01579*(@0-125))*(1+@1)",RooArgList(MH,CMS_zz4l_n_sig_1_2016))
             CMS_zz4l_alpha2_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_alpha2_1_centralValue_"+channel+recobin+year,"(1.871168+0.00937*(@0-125))",RooArgList(MH))
-            CMS_zz4l_n2_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"(2.676450+(-0.01358)*(@0-125))",RooArgList(MH))
+            CMS_zz4l_n2_1_centralValue_2016 = RooFormulaVar("CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"CMS_zz4l_n2_1_centralValue_"+channel+recobin+year,"(2.676450+-0.01358*(@0-125))",RooArgList(MH))
 
             # true signal shape
             trueH = RooDoubleCB("trueH","trueH",m,CMS_zz4l_mean_sig_1_centralValue_2016,CMS_zz4l_sigma_sig_1_centralValue_2016,CMS_zz4l_alpha_1_centralValue_2016,CMS_zz4l_n_1_centralValue_2016,CMS_zz4l_alpha2_1_centralValue_2016,CMS_zz4l_n2_1_centralValue_2016)
@@ -536,7 +542,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
             if( not (obs_ifJES) or (not doJES)) :
                 # trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1", RooArgList(fideff_var[genbin], lumi) );
-                trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1@2", RooArgList(SigmaHBin[channel+str(genbin)], fideff_var[genbin], lumi) );
+                trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1*@2", RooArgList(SigmaHBin[channel+str(genbin)], fideff_var[genbin], lumi) );
             else :
                 trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1*(1-@2)", RooArgList(fideff_var[genbin], lumi, JES_sig_rfv) )
 
@@ -616,16 +622,22 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
         template_zjetsName = "./templates/templatesXS_"+str(year)+"/DTreeXS_"+obsNameDictKey+"/13TeV/XSBackground_ZJetsCR_AllChans_"+SuffixOfRootFile+".root"
     else:
         template_zjetsName = "./templates/templatesXS_"+str(year)+"/DTreeXS_"+obsNameDictKey+"/13TeV/XSBackground_ZJetsCR_"+channel+"_"+SuffixOfRootFile+".root"
+    if (ifLLR): template_qqzzName = template_qqzzName.replace("ZZ","zz")
     qqzzTempFile = TFile(template_qqzzName,"READ")
-    qqzzTemplate = qqzzTempFile.Get("m4l_"+SuffixOfRootFile)
+    if (not ifLLR): qqzzTemplate = qqzzTempFile.Get("m4l_"+SuffixOfRootFile)
+    if (ifLLR): qqzzTemplate = qqzzTempFile.Get("m4l_"+SuffixOfRootFile.replace("ZZ","zz").replace(".0",""))
     logger.info('qqZZ bins : {}, {}, {}'.format(qqzzTemplate.GetNbinsX(),qqzzTemplate.GetBinLowEdge(1),qqzzTemplate.GetBinLowEdge(qqzzTemplate.GetNbinsX()+1)))
 
+    if (ifLLR): template_ggzzName = template_ggzzName.replace("ZZ","zz")
     ggzzTempFile = TFile(template_ggzzName,"READ")
-    ggzzTemplate = ggzzTempFile.Get("m4l_"+SuffixOfRootFile)
+    if (not ifLLR): ggzzTemplate = ggzzTempFile.Get("m4l_"+SuffixOfRootFile)
+    if (ifLLR): ggzzTemplate = ggzzTempFile.Get("m4l_"+SuffixOfRootFile.replace("ZZ","zz").replace(".0",""))
     logger.info('ggZZ bins : {}, {}, {}'.format(ggzzTemplate.GetNbinsX(),ggzzTemplate.GetBinLowEdge(1),ggzzTemplate.GetBinLowEdge(ggzzTemplate.GetNbinsX()+1)))
 
+    if (ifLLR): template_zjetsName = template_zjetsName.replace("ZZ","zz")
     zjetsTempFile = TFile(template_zjetsName,"READ")
-    zjetsTemplate = zjetsTempFile.Get("m4l_"+SuffixOfRootFile)
+    if (not ifLLR): zjetsTemplate = zjetsTempFile.Get("m4l_"+SuffixOfRootFile)
+    if (ifLLR): zjetsTemplate = zjetsTempFile.Get("m4l_"+SuffixOfRootFile.replace("ZZ","zz").replace(".0",""))
     logger.info('zjets bins: {}, {}, {}'.format(zjetsTemplate.GetNbinsX(),zjetsTemplate.GetBinLowEdge(1),zjetsTemplate.GetBinLowEdge(zjetsTemplate.GetNbinsX()+1)))
 
     binscale = 3 # FIXME: Why number 3 hardcoded?

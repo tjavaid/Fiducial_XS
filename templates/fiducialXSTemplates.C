@@ -30,6 +30,9 @@
 
 using namespace std;
 
+// # FIXME: This is temporary bool. If we are running with LLR template keep it True.
+const bool ifLLR = true;
+
 //--------------Global definitions---------------//
 // default cuts
 const double CUT_ELPT = 7.;
@@ -818,7 +821,7 @@ int getHistTreesXS(TChain* tree, TString processNameTag, TString sqrtsTag, TTree
             if (0. >= fr3 || fr3 >= 1.) continue;
             if (0. >= fr4 || fr4 >= 1.) continue;
             // test-only
-            weight = weight * fr3 * fr4;
+            if (!ifLLR) weight = weight * fr3 * fr4;
         }
         nEvtMassWindow++;
 
