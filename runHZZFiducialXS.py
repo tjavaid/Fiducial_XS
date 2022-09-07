@@ -17,7 +17,7 @@ import yaml
 # INFO: Following items are imported from either python directory or Inputs
 from createXSworkspace import createXSworkspace
 from higgs_xsbr_13TeV import filtereff, higgs4l_br, higgs_xs, higgsZZ_br
-from Input_Info import combineOutputs, datacardInputs
+from Input_Info import combineOutputs, datacardInputs, channels_central
 from read_bins import read_bins
 from ROOT import *
 from sample_shortnames import background_samples, sample_shortnames
@@ -333,7 +333,7 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
     ListObsName = (''.join(obsName.split())).split('vs')
     logger.debug('ListObsName: {}'.format(ListObsName))
 
-    fStates = ['2e2mu','4mu','4e']
+    fStates = channels_central
 
     # INFO: in case of 2D obs nbins is n else its n-1
     logger.debug("len(observableBins): = "+str(len(observableBins)))
@@ -429,7 +429,7 @@ def createAsimov_161718(obsName, observableBins, modelName, resultsXS, physicalM
 
     GetDirectory(combineOutputs.format(year = 'allYear'))
 
-    fStates = ['2e2mu','4mu','4e']
+    fStates = channels_central
     AllChannelCombinedDataCards = 'hzz4l_all_13TeV_xs_{obsName}_bin_{physicalModel}.txt '
     cmd = 'combineCards.py '
     for year in years:
@@ -616,7 +616,7 @@ def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, y
 
     # Run combineCards and text2workspace
     currentDir = os.getcwd(); os.chdir('./'+combineOutputs.format(year = year)+'/') # FIXME: Hardcoded directory
-    fStates = ['2e2mu','4mu','4e']
+    fStates = channels_central
     for fState in fStates:
         """Combine cards for all bins corresponding to each final state.
         """
@@ -628,8 +628,12 @@ def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, y
         processCmd(cmd, get_linenumber(),  os.path.basename(__file__), 1)
 
     # combine 3 final state cards
-    cmd = 'combineCards.py ' + obsName + '_4muS_'+year + '=hzz4l_4muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt '+ obsName + '_4eS_'+year +'=hzz4l_4eS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt ' + obsName + '_2e2muS_'+year + '=hzz4l_2e2muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt > hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
+    cmd = 'combineCards.py '
+    for channels_ in fStates:
+        cmd += obsName + '_' + channels_ + 'S_' + year + '=hzz4l_' + channels_ + 'S_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt  '
+    cmd += ' >  hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
     processCmd(cmd, get_linenumber(), os.path.basename(__file__), 1)
+
     if (not opt.LUMISCALE=="1.0"):
         os.system('echo "    " >> hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt')
         os.system('echo "lumiscale rateParam * * '+opt.LUMISCALE+'" >> hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt')
@@ -819,7 +823,7 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
     logger.debug("nBins: = "+str(nBins))
 
     currentDir = os.getcwd(); os.chdir(combineOutputs.format(year = year))
-    fStates = ['2e2mu','4mu','4e']
+    fStates = channels_central
     AllChannelCombinedDataCards = 'hzz4l_all_13TeV_xs_{obsName}_bin_{physicalModel}.txt '
 
     for fState in fStates:
@@ -852,8 +856,12 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
     pathOfCard = "."
     logger.info("obsName: "+obsName)
     # combine 3 final state cards
-    if year != "allYear": cmd = 'combineCards.py ' + obsName + '_4muS_'+year + '='+pathOfCard+'/hzz4l_4muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt '+ obsName + '_4eS_'+year +'='+pathOfCard+'/hzz4l_4eS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt ' + obsName + '_2e2muS_'+year + '='+pathOfCard+'/hzz4l_2e2muS_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt > '+pathOfCard+'/hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
-    if year != "allYear": processCmd(cmd, get_linenumber(), os.path.basename(__file__), 1)
+    if year != "allYear":
+        cmd = 'combineCards.py '
+        for channels_ in fStates:
+            cmd += obsName + '_' + channels_ + 'S_' + year + '='+ pathOfCard + '/hzz4l_' + channels_ + 'S_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt  '
+        cmd += ' >  ' + pathOfCard + '/hzz4l_all_13TeV_xs_'+obsName.replace(' ','_')+'_bin_'+physicalModel+'.txt'
+        processCmd(cmd, get_linenumber(), os.path.basename(__file__), 1)
 
     # cmd = 'combineCards.py '
     # for year_ in ['2016', '2017', '2018']:
@@ -1024,7 +1032,7 @@ def extractResults(obsName, observableBins, modelName, physicalModel, asimovMode
         cmd = cmd + ' --algo=singles --cl=0.68 --robustFit=1'
         output=processCmd(cmd, get_linenumber(), os.path.basename(__file__))
         processCmd('mv higgsCombine'+obsName.replace(' ','_')+'_'+str(year)+unblindString+'.MultiDimFit.mH'+opt.ASIMOVMASS.rstrip('.0')+'.root '+pathOfCard+'/', get_linenumber(), os.path.basename(__file__))
-
+        # sys.exit()
     # parse the results for all the bins
     logger.debug("resultsXS: {}".format(resultsXS))
     for obsBin in range(nBins):
@@ -1091,14 +1099,14 @@ def addModelIndependenceUncert(obsName, observableBins, resultsXS, asimovDataMod
     modelIndependenceUncert = {}
     if (physicalModel=="v2"):
         for obsBin in range(nBins):
-            for fState in ['4e','4mu','2e2mu']:
+            for fState in channels_central:
                 modelIndependenceUncert[DataModel + obsName.replace(' ','_') +'_'+fState+ '_genbin'+str(obsBin)] = {'uncerDn':0.0, 'uncerUp':0.0}
 
         logger.debug ("modelIndependenceUncert: {}".format(modelIndependenceUncert))
         for key, value in resultsXS.iteritems():
             if (opt.UNBLIND and key.startswith('Asimov')): continue
             for obsBin in range(nBins):
-                for fState in ['4e','4mu','2e2mu']:
+                for fState in channels_central:
                     binTag = str(obsBin)
                     if (obsName.replace(' ','_')+'_'+fState+'_genbin'+binTag) in key:
                         asimCent = resultsXS[DataModel + obsName.replace(' ','_') + '_' + fState+'_genbin'+binTag]['central']

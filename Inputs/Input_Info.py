@@ -5,7 +5,7 @@ necessary in this framework.
 For example: Directory name, etc.
 """
 
-channels_central = ['4e', '4mu', '2e2mu']
+channels_central = ['2e2mu','4mu','4e']
 
 ################################
 # Mass 4l boundary

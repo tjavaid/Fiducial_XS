@@ -83,8 +83,8 @@ higgs4l_br = _temp.higgs4l_br
 higgs_xs = _temp.higgs_xs
 higgs4l_br['125.38_4l'] = higgs4l_br['125.38_2e2mu']+higgs4l_br['125.38_4e']+higgs4l_br['125.38_4mu']
 
-if (obsName=="mass4l"): fStates = ['4e','4mu','2e2mu','4l']
-else: fStates = ['4e','4mu','2e2mu']
+if (obsName=="mass4l"): fStates = channels_central+ ['4l']     # ['4e','4mu','2e2mu','4l']
+else: fStates = channels_central
 
 for fState in fStates:
 
