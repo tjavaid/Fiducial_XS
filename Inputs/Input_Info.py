@@ -14,7 +14,8 @@ INPUT_m4l_low = 105.0
 INPUT_m4l_high = 160.0
 
 # Lumi for each year
-Lumi_2016 = 36.33
+# Reference: https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM#SummaryTable
+Lumi_2016 = 36.31
 Lumi_2017 = 41.48
 Lumi_2018 = 59.83
 Lumi_Run2 = 138
