@@ -96,6 +96,7 @@ for obsName in observables:
         inFile = combineOutputs + "/higgsCombine"+obsName.replace(' ','_')+"_"+obsbin+"_"+opt.ERA+".MultiDimFit.mH125.38.root"
         f_asimov = TFile(inFile,"READ")
         if (f_asimov==0): continue
+        logger.info("File to read: {}".format(inFile))
 
         # limit = f.Get("limit")
         # npoints = limit.GetEntries()

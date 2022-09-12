@@ -20,7 +20,7 @@ m4l_low = INPUT_m4l_low
 m4l_high = INPUT_m4l_high
 
 # FIXME: This is temporary bool. If we are running with LLR template keep it True.
-ifLLR = True
+ifLLR = False
 
 def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel, year, obs_ifJES, obs_ifJES2, zzFloatType = ''):
     """Create workspace

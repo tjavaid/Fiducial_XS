@@ -31,7 +31,7 @@
 using namespace std;
 
 // # FIXME: This is temporary bool. If we are running with LLR template keep it True.
-const bool ifLLR = true;
+const bool ifLLR = false;        // 
 
 //--------------Global definitions---------------//
 // default cuts
