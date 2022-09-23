@@ -10,13 +10,16 @@ Processes:
     Rate: '1.0'
   3:
     Name: bkg_qqzz
-    Rate: '40.747288373288356'
+    Rate: '40.747288373288356' # xBF
+    #Rate: '40.4237000744' # LLR
   4:
     Name: bkg_ggzz
-    Rate: '4.76385695289011'
+    Rate: '4.76385695289011' # xBF
+    #Rate: '4.64728657653' # LLR
   5:
     Name: bkg_zjets
-    Rate: '15.659146626'
+    Rate: '13.6283392012119' # xBF
+    #Rate: '15.659146626' # LLR
 
 Nuissances:
 #  100n:

@@ -101,13 +101,21 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
     higgs4l_br = _temp.higgs4l_br
     if (opt.FIXFRAC): floatfix = '_fixfrac'
     else: floatfix = ''
+
+    if (opt.UNBLIND):
+	ext = '_observed_'
+    else:
+	ext = '_expected_'
+#   resultsXS_LHScan_observed_mass4l_v3.py
     if (obsName == "mass4l"):
-        _temp = __import__('resultsXS_'+obsName+'_v3'+floatfix, globals(), locals(), ['modelNames', 'asimovDataModelName', 'resultsXS', 'modelIndUncert'], -1)
+        #_temp = __import__('resultsXS_'+obsName+'_v3'+floatfix, globals(), locals(), ['modelNames', 'asimovDataModelName', 'resultsXS', 'modelIndUncert'], -1)
+        _temp = __import__('resultsXS_LHScan'+ext+obsName+'_v3'+floatfix, globals(), locals(), ['modelNames', 'asimovDataModelName', 'resultsXS', 'modelIndUncert'], -1)
         modelNames = _temp.modelNames
         asimovDataModelName = _temp.asimovDataModelName
         resultsXS = _temp.resultsXS
         modelIndUncert = _temp.modelIndUncert
-        _temp = __import__('resultsXS_'+obsName+'_v2'+floatfix, globals(), locals(), ['modelNames', 'asimovDataModelName', 'resultsXS', 'modelIndUncert'], -1)
+        #_temp = __import__('resultsXS_'+obsName+'_v2'+floatfix, globals(), locals(), ['modelNames', 'asimovDataModelName', 'resultsXS', 'modelIndUncert'], -1)
+        _temp = __import__('resultsXS_LHScan'+ext+obsName+'_v2'+floatfix, globals(), locals(), ['modelNames', 'asimovDataModelName', 'resultsXS', 'modelIndUncert'], -1)
         modelNames_v2 = _temp.modelNames
         asimovDataModelName_v2 = _temp.asimovDataModelName
         resultsXS_v2 = _temp.resultsXS
@@ -117,7 +125,8 @@ def plotXS(obsName, obs_bins, obs_bins_boundaries, year):
         modelNames = _temp.modelNames
         asimovDataModelName = _temp.asimovDataModelName
         modelIndUncert = _temp.modelIndUncert
-        _temp = __import__('resultsXS_LHScan_'+obsName+'_v3'+floatfix, globals(), locals(), ['modelNames', 'asimovDataModelName', 'resultsXS', 'modelIndUncert'], -1)
+        _temp = __import__('resultsXS_LHScan'+ext+obsName+'_v3'+floatfix, globals(), locals(), ['modelNames', 'asimovDataModelName', 'resultsXS', 'modelIndUncert'], -1)
+        #_temp = __import__('resultsXS_LHScan_expected_'+obsName+'_v3'+floatfix, globals(), locals(), ['modelNames', 'asimovDataModelName', 'resultsXS', 'modelIndUncert'], -1)
         resultsXS = _temp.resultsXS
 
     acc_ggH_powheg = {}

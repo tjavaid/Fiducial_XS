@@ -75,6 +75,7 @@ for obsName in observables:
         obsbins = ['SigmaBin0','r2e2muBin0','r4muBin0','r4eBin0']
     else:
         obsbins = ["SigmaBin"+str(bins_) for bins_ in range(0, nBins)]
+        #obsbins = ["r_smH_PTH_"+str(bins_) for bins_ in range(0, nBins)] ## temporary, for LLR scans
 
     logger.debug("obsName: {:12}, obsBins: {}".format(obsName, obsbins))
 
@@ -487,4 +488,4 @@ for obsName in observables:
                 f.write('resultsXS = '+str(resultsXS)+' \n')
             with open(datacardInputs+'/resultsXS_LHScan_observed_'+obsName.replace(' ','_')+'_v3.py', 'w') as f:
                 f.write('resultsXS = '+str(resultsXS_data)+' \n')
-    binCounter += 1
+        binCounter += 1
