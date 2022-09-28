@@ -316,7 +316,8 @@ def extractUncertainties(obsName, observableBinDn, observableBinUp):
     #processCmd(cmd, get_linenumber(), os.path.basename(__file__))
 
 ### Produce datacards for given obs and bin, for all final states
-def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJES, obs_ifJES2, year):
+#def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJES, obs_ifJES2, year):
+def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJES, obs_ifJES2, obs_ifAbs, obs_ifAbs2, year):
     """Produce workspace/datacards for the given observable and bins
 
     Args:
@@ -372,7 +373,8 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
                     \tmodelName = {}, physicalModel = {},
                     \tobs_ifJES = {}, obs_ifJES2 = {}
                     """.format(ListObsName, fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel, obs_ifJES, obs_ifJES2))
-                ndata = createXSworkspace(ListObsName, fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel, year, obs_ifJES, obs_ifJES2)
+                #ndata = createXSworkspace(ListObsName, fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel, year, obs_ifJES, obs_ifJES2)
+                ndata = createXSworkspace(ListObsName, fState, nBins, obsBin, observableBins, False, True, modelName, physicalModel, year, obs_ifJES, obs_ifJES2, obs_ifAbs, obs_ifAbs2)
                 CopyDataCardToOutputDir = "cp xs_125.0_"+str(nBins)+"bins/hzz4l_"+fState+"S_13TeV_xs_bin"+str(obsBin)+".txt "+combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
                 processCmd(CopyDataCardToOutputDir, get_linenumber(), os.path.basename(__file__))
                 UpdateObservationValue = "sed -i 's~observation [0-9]*~observation "+str(ndata)+"~g' "+combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName.replace(' ','_')+"_bin"+str(obsBin)+"_"+physicalModel+".txt"
@@ -399,7 +401,8 @@ def produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJE
             dataCardMakerCommand = "python python/datacard_maker.py -c {} -b {} -y {}".format(fState, 1, year)
             processCmd(dataCardMakerCommand, get_linenumber(), os.path.basename(__file__))
             logger.debug("Completed the datacard_maker.py...")
-            ndata = createXSworkspace(ListObsName,fState, nBins, 0, observableBins, False, True, modelName, physicalModel, year, obs_ifJES, obs_ifJES2)
+            #ndata = createXSworkspace(ListObsName,fState, nBins, 0, observableBins, False, True, modelName, physicalModel, year, obs_ifJES, obs_ifJES2)
+            ndata = createXSworkspace(ListObsName,fState, nBins, 0, observableBins, False, True, modelName, physicalModel, year, obs_ifJES, obs_ifJES2, obs_ifAbs, obs_ifAbs2)
             if obsName=='mass4l':
                 CopyDataCardToOutputDir = "cp xs_125.0_1bin/hzz4l_"+fState+"S_13TeV_xs_inclusive_bin0.txt "+combineOutputs.format(year = year)+"/hzz4l_"+fState+"S_13TeV_xs_"+obsName+"_bin0_"+physicalModel+".txt"
                 processCmd(CopyDataCardToOutputDir, get_linenumber(), os.path.basename(__file__))
@@ -590,7 +593,8 @@ def createAsimov_161718(obsName, observableBins, modelName, resultsXS, physicalM
     return resultsXS
 
 ### Create the asimov dataset and return fit results
-def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, year = 2018, obs_ifJES = False):
+#def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, year = 2018, obs_ifJES = False):
+def createAsimov(obsName, observableBins, modelName, resultsXS, physicalModel, year = 2018, obs_ifJES = False, obs_ifAbs = False):
     """Create the Asimov dataset and return the fit results.
 
     Args:
@@ -1169,6 +1173,10 @@ def runFiducialXS():
 
     obs_ifJES = ''
     obs_ifJES2 = ''
+
+    obs_ifAbs = ''
+    obs_ifAbs2 = ''
+
     ObsToStudy = "1D_Observables" if (len(ListObsName) == 1) else "2D_Observables"
     with open(opt.inYAMLFile, 'r') as ymlfile:
         cfg = yaml.load(ymlfile)
@@ -1177,14 +1185,22 @@ def runFiducialXS():
                      Please check your YAML file format!!!'''.format(opt.inYAMLFile))
 
         ifJES = cfg['Observables'][ObsToStudy][opt.OBSNAME]['ifJES']
+        ifAbs = cfg['Observables'][ObsToStudy][opt.OBSNAME]['ifAbs'] # FIXME for 2D
 
     if 'vs' in opt.OBSNAME:
         obs_ifJES = eval(ifJES.split(" vs ")[0])
         obs_ifJES2 = eval(ifJES.split(" vs ")[1])
 
+        obs_ifAbs = eval(ifAbs.split(" vs ")[0])
+        obs_ifAbs2 = eval(ifAbs.split(" vs ")[1])
+
     else:
         obs_ifJES = eval(str(ifJES))
         obs_ifJES2 = ''
+
+        obs_ifAbs = eval(str(ifAbs))
+        obs_ifAbs2 = ''
+
 
     logger.debug("obs_ifJES: {}, obs2_ifJES2: {}".format(obs_ifJES, obs_ifJES2))
 
@@ -1228,7 +1244,8 @@ def runFiducialXS():
             asimovPhysicalModel = {}""".format(obsName, observableBins, asimovDataModelName, asimovPhysicalModel))
         logger.info("Going to produce datacards...")
         # INFO: Pass the updated bins information here
-        produceDatacards(obsName, observableBins, asimovDataModelName, asimovPhysicalModel, obs_ifJES, obs_ifJES2, year)
+        #produceDatacards(obsName, observableBins, asimovDataModelName, asimovPhysicalModel, obs_ifJES, obs_ifJES2, year)
+        produceDatacards(obsName, observableBins, asimovDataModelName, asimovPhysicalModel, obs_ifJES, obs_ifJES2, obs_ifAbs, obs_ifAbs2, year)
         logger.info("Create the Asimov dataset...")
         resultsXS = createAsimov(obsName, observableBins, asimovDataModelName, resultsXS, asimovPhysicalModel, year, obs_ifJES)
         logger.debug("resultsXS: {}".format(resultsXS))
@@ -1254,7 +1271,8 @@ def runFiducialXS():
                     observableBins = {}
                     asimovDataModelName = {}
                     asimovPhysicalModel = {}""".format(obsName, observableBins, modelName, physicalModel))
-                if (year != "allYear"): produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJES, obs_ifJES2, year)
+                #if (year != "allYear"): produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJES, obs_ifJES2, year)
+                if (year != "allYear"): produceDatacards(obsName, observableBins, modelName, physicalModel, obs_ifJES, obs_ifJES2, obs_ifAbs, obs_ifAbs2, year)
                 logger.debug("Extract results for physicsModel - {}, and modelName - {}".format(physicalModel, modelName))
                 resultsXS = extractResults(obsName, observableBins, modelName, physicalModel, asimovDataModelName, asimovPhysicalModel, resultsXS, year)
                 # plot the fit results

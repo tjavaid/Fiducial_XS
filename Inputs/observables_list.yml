@@ -29,7 +29,7 @@ Observables:
      label: "|y(H)|"
      unit: ""
      gen: "GENrapidity4l"
-     ifAbs: False
+     ifAbs: True
      ifJES: False
 
     cosTheta1:
@@ -205,7 +205,7 @@ Observables:
      label: "#Delta#eta_{j1j2} p_{T}_{j}>30 GeV |#eta_{j}|<4.7"
      unit: ""
      gen: "GENdEtaj1j2"
-     ifAbs: False
+     ifAbs: True
      ifJES: True
 
     #dEtaj1j2_2p5:

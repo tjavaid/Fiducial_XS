@@ -22,7 +22,7 @@ m4l_high = INPUT_m4l_high
 # FIXME: This is temporary bool. If we are running with LLR template keep it True.
 ifLLR = False
 
-def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel, year, obs_ifJES, obs_ifJES2, zzFloatType = ''):
+def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel, year, obs_ifJES, obs_ifJES2, obs_ifAbs, obs_ifAbs2, zzFloatType = ''):
     """Create workspace
     this script is called once for each reco bin (obsBin)
     in each reco bin there are (nBins) signals (one for each gen bin)
@@ -180,8 +180,14 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     mass4e = RooRealVar("mass4e", "mass4e", m4l_low, m4l_high)
     mass4mu = RooRealVar("mass4mu", "mass4mu", m4l_low, m4l_high)
     mass2e2mu = RooRealVar("mass2e2mu", "mass2e2mu",m4l_low, m4l_high)
+
+    
     if (not obsName=="mass4l"):
-        observable   = RooRealVar(obsName,obsName,float(obs_bin_lowest),float(obs_bin_highest))
+	logger.debug("obs_ifAbs = {}".format(obs_ifAbs))
+	if obs_ifAbs:
+	    observable = RooRealVar(obsName,obsName,-1.0*float(obs_bin_highest),float(obs_bin_highest)) 
+	else:
+	    observable   = RooRealVar(obsName,obsName,float(obs_bin_lowest),float(obs_bin_highest))
         observable.Print()
         if is2DObs:
             observable2 = RooRealVar(obsNameOrig[1],obsNameOrig[1],float(obs_bin_lowest2),float(obs_bin_highest2))
@@ -541,8 +547,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
             SigmaHBin['2e2mu'+str(genbin)] = RooFormulaVar("Sigma2e2muBin"+str(genbin),"(@0*(1.0-@1*@2)*(1.0-@3*@4/(1.0-@1)))", RooArgList(SigmaBin[str(genbin)], fracSM4eBin[str(genbin)], K1Bin[str(genbin)], K2Bin[str(genbin)], fracSM4muBin[str(genbin)]))
 
             if( not (obs_ifJES) or (not doJES)) :
-                # trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1", RooArgList(fideff_var[genbin], lumi) );
-                trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1*@2", RooArgList(SigmaHBin[channel+str(genbin)], fideff_var[genbin], lumi) );
+                trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1", RooArgList(fideff_var[genbin], lumi) );
+                #trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1*@2", RooArgList(SigmaHBin[channel+str(genbin)], fideff_var[genbin], lumi) );
             else :
                 trueH_norm[genbin] = RooFormulaVar("trueH"+channel+"Bin"+str(genbin)+"_norm","@0*@1*(1-@2)", RooArgList(fideff_var[genbin], lumi, JES_sig_rfv) )
 
