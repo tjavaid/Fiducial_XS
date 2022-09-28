@@ -298,7 +298,8 @@ Observables:
      ifJES: False
 
     TauB_Inc_0j_pTWgt:
-      bins: "|-10000|30|70|130|250|400|inf|"
+      bins_v0: "|-10000|30|70|130|250|400|inf|"
+      bins: "|-2|30|45|75|150|inf|"
       label: "TBjmax"
       unit: "GeV"
       gen: "GEN_TauB_Inc_0j_pTWgt"

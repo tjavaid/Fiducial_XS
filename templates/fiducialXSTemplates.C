@@ -1009,7 +1009,7 @@ void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TStri
     TString selectionObsName = "1";
     if (obsName=="costhetastar"){
         selectionObsName = "abs(cosThetaStar)";
-    }else if (obsName=="cosThetaStar"){
+/*    }else if (obsName=="cosThetaStar"){
         selectionObsName = "abs(cosThetaStar)";
     }else if (obsName=="cosTheta1"){
         selectionObsName = "abs(cosTheta1)";
@@ -1028,9 +1028,11 @@ void storeTreeAndTemplatesXS(TTree* TT, TString obsName, TString obsBinDn, TStri
     }else if (obsName=="phi1"){
         selectionObsName = "abs(Phi1)";
     }else if (obsName=="eta4l"){
-        selectionObsName = "abs(eta4l)";
+        selectionObsName = "abs(eta4l)"; */
     }else if (obsName=="rapidity4l"){
         selectionObsName = "abs(rapidity4l)";
+    }else if (obsName=="dEtaj1j2"){
+        selectionObsName = "abs(dEtaj1j2)";
     }else if (obsName=="inclusive"){
         selectionObsName = "pT4l";
     }else {
