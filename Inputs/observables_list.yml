@@ -295,16 +295,16 @@ Observables:
      unit: "GeV"
      gen: "GEN_TauC_Inc_0j_EnergyWgt"
      ifAbs: False
-     ifJES: False
+     ifJES: True
 
     TauB_Inc_0j_pTWgt:
       bins_v0: "|-10000|30|70|130|250|400|inf|"
-      bins: "|-2|30|45|75|150|inf|"
+      bins: "|-10000|30|45|75|150|inf|"
       label: "TBjmax"
       unit: "GeV"
       gen: "GEN_TauB_Inc_0j_pTWgt"
       ifAbs: False
-      ifJES: False
+      ifJES: True
 
 
   2D_Observables:
