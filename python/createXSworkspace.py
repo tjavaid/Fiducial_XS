@@ -491,7 +491,6 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     JES = RooRealVar("JES","JES", 0, -5.0, 5.0)
     logger.debug("obs_ifJES = {}".format(obs_ifJES))
 
-    cut_zerobin = {"pt_leadingjet_pt30_eta4p7":"==0", "pTj2":"<=1", "mj1j2":"<=1", "pT4lj":"==0","mass4lj":"==0","dPhiHj1":"==0","dyHj1":"==0","TauB_Inc_0j_pTWgt":"==0","TauC_Inc_0j_EnergyWgt":"==0","pT4ljj":"<=1","mass4ljj":"<=1","dEtaj1j2":"<=1","dPhij1j2":"<=1","dPhiHj1j2":"<=1"}
     if (obs_ifJES):
         lambda_JES_sig = lambdajesup[modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin]
         lambda_JES_sig_var = RooRealVar("lambda_sig_"+modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin+"_"+year, "lambda_sig_"+modelName+"_"+channel+"_"+obsNameDictKey+"_genbin"+str(obsBin)+""+"_"+recobin+"_"+year, lambda_JES_sig)
@@ -853,5 +852,4 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 #createXSworkspace("pT4l", "2e2mu", 4, 1, False, True)
 #createXSworkspace("pT4l", "2e2mu", 4, 2, False, True)
 #createXSworkspace("pT4l", "2e2mu", 4, 3, False, True)
-#def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfactor, addfakeH, modelName, physicalModel, year, obs_ifJES, obs_ifJES2, obs_ifAbs, obs_ifAbs2, zzFloatType = '') 
-#createXSworkspace("dEtaj1j2", "4mu", 3, 0, ["-10000","0","1.6","3.0","100"], False, True, "ggH_powheg_JHUgen_125", "v2","2018")
+#createXSworkspace("dEtaj1j2", "4mu", 3, 0, ["-10000","0","1.6","3.0","100"], False, True, "ggH_powheg_JHUgen_125", "v2","2018", True, False, True, False)
