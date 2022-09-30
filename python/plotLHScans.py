@@ -488,4 +488,5 @@ for obsName in observables:
                 f.write('resultsXS = '+str(resultsXS)+' \n')
             with open(datacardInputs+'/resultsXS_LHScan_observed_'+obsName.replace(' ','_')+'_v3.py', 'w') as f:
                 f.write('resultsXS = '+str(resultsXS_data)+' \n')
-        binCounter += 1
+        #binCounter += 1
+        if (obsName!='mass4l'): binCounter += 1
